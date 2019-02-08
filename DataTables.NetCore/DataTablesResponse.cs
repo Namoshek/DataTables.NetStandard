@@ -1,9 +1,8 @@
-﻿using DataTables.Queryable;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace DataTables.NetCore
 {
-    public class DataTableResponse<TEntity>
+    public class DataTablesResponse<TEntity>
     {
         [JsonProperty(PropertyName = "draw")]
         public long Draw { get; }
@@ -17,7 +16,7 @@ namespace DataTables.NetCore
         [JsonProperty(PropertyName = "data")]
         public IPagedList<TEntity> Data { get; }
 
-        public DataTableResponse(IPagedList<TEntity> data, long draw = 0)
+        public DataTablesResponse(IPagedList<TEntity> data, long draw = 0)
         {
             Data = data;
             Draw = draw;

@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using DataTables.NetCore.Sample.DataTables;
 using DataTables.NetCore.Sample.Models;
-using DataTables.Queryable;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DataTables.NetCore.Sample.Controllers
@@ -16,6 +15,11 @@ namespace DataTables.NetCore.Sample.Controllers
         }
 
         public IActionResult Index()
+        {
+            return View();
+        }
+
+        public IActionResult IndexData()
         {
             // This is done only for testing because we are not actually using a DataTable yet and this means
             // we need to add proper query string parameters manually.

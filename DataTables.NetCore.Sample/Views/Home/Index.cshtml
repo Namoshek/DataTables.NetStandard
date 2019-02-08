@@ -2,7 +2,25 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row">
+  <div class="col-sm-12">
+    <table id="users"></table>
+  </div>
 </div>
+@section Scripts
+{
+  @{ var ajaxUrl = Url.Action("IndexData", "Home"); }
+
+  <script type="text/javascript">
+    $('#users').DataTable({
+      //serverSide: true,
+      ajax: '@ajaxUrl',
+      columns: [
+        { data: 'id' },
+        { data: 'name' },
+        { data: 'email' },
+        { data: 'dateOfBirth' },
+      ]
+    });
+  </script>
+}

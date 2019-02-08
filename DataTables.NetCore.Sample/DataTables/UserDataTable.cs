@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using DataTables.NetCore.Abstract;
 using DataTables.NetCore.Sample.DataTables.ViewModels;
 using DataTables.NetCore.Sample.Models;
 

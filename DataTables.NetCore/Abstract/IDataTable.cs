@@ -1,7 +1,6 @@
 ﻿using System.Linq;
-using DataTables.Queryable;
 
-namespace DataTables.NetCore
+namespace DataTables.NetCore.Abstract
 {
     public interface IDataTable<TEntity, TEntityViewModel>
     {
@@ -33,7 +32,7 @@ namespace DataTables.NetCore
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
-        DataTableResponse<TEntityViewModel> RenderResponse(DataTablesRequest<TEntity> request);
+        DataTablesResponse<TEntityViewModel> RenderResponse(DataTablesRequest<TEntity> request);
 
         /// <summary>
         /// Renders the script.

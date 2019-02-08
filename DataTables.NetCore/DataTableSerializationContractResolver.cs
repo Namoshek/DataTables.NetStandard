@@ -13,7 +13,7 @@ namespace DataTables.NetCore
         {
             var property = base.CreateProperty(member, memberSerialization);
 
-            var columnAttribute = member.GetCustomAttribute<DataTableColumn>();
+            var columnAttribute = member.GetCustomAttribute<DTColumn>();
             if (columnAttribute != null)
             {
                 property.PropertyName = columnAttribute.Data;
