@@ -8,7 +8,7 @@ namespace DataTables.NetCore
     /// Represents DataTables column filtering/sorting info
     /// </summary>
     /// <typeparam name="TEntity">Model type</typeparam>
-    public class DataTablesColumn<TEntity>
+    public class DataTablesColumn<TEntity, TEntityViewModel>
     {
         /// <summary>
         /// Column's index
@@ -16,12 +16,26 @@ namespace DataTables.NetCore
         public int Index { get; set; }
 
         /// <summary>
-        /// Name of model type property associated with this column.
-        /// By default, "columns[i][data]" parameter value is used from the incoming DataTables request.
-        /// If "columns[i][name]" is specified, it is used instead.
-        /// If model type has no public property matching this value, exception is thrown.
+        /// Public name of this column.
+        /// This will be the name used to serialize and deserialize the json data.
         /// </summary>
-        public string PropertyName { get; set; }
+        public string PublicName { get; set; }
+
+        /// <summary>
+        /// The displayed name of the column in the actual DataTable.
+        /// </summary>
+        public string DisplayName { get; set; }
+
+        /// <summary>
+        /// Name of the private property (model) of this column.
+        /// This property name cannot be changed by incoming requests.
+        /// </summary>
+        public string PrivatePropertyName { get; set; }
+
+        /// <summary>
+        /// Name of the public property (view model) of this column.
+        /// </summary>
+        public string PublicPropertyName { get; set; }
 
         /// <summary>
         /// Flag to indicate if this column is searchable (true) or not (false).
@@ -71,7 +85,7 @@ namespace DataTables.NetCore
 
         /// <summary>
         /// Optional expression that specifies the different property which should be used if ordering by the column is required. 
-        /// If no expression provided, the same property will be used for sorting as specified by <see cref="PropertyName"/> value.
+        /// If no expression provided, the same property will be used for sorting as specified by <see cref="PrivatePropertyName"/> value.
         /// </summary>
         public Expression<Func<TEntity, object>> ColumnOrderingProperty { get; set; }
 

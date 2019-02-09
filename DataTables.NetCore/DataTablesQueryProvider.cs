@@ -3,12 +3,12 @@ using System.Linq.Expressions;
 
 namespace DataTables.NetCore
 {
-    internal class DataTablesQueryProvider<TEntity> : IQueryProvider
+    internal class DataTablesQueryProvider<TEntity, TEntityViewModel> : IQueryProvider
     {
         private IQueryProvider sourceProvider;
-        private DataTablesRequest<TEntity> request;
+        private DataTablesRequest<TEntity, TEntityViewModel> request;
 
-        internal DataTablesQueryProvider(IQueryProvider sourceProvider, DataTablesRequest<TEntity> request)
+        internal DataTablesQueryProvider(IQueryProvider sourceProvider, DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             this.sourceProvider = sourceProvider;
             this.request = request;
@@ -16,7 +16,7 @@ namespace DataTables.NetCore
 
         public IQueryable CreateQuery(Expression expression)
         {
-            return new DataTablesQueryable<TEntity>((IQueryable<TEntity>)sourceProvider.CreateQuery(expression), request);
+            return new DataTablesQueryable<TEntity, TEntityViewModel>((IQueryable<TEntity>)sourceProvider.CreateQuery(expression), request);
         }
 
         public IQueryable<TResult> CreateQuery<TResult>(Expression expression)

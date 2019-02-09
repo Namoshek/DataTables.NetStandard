@@ -13,13 +13,13 @@
 
   <script type="text/javascript">
     $('#users').DataTable({
-      //serverSide: true,
+      serverSide: true,
       ajax: '@ajaxUrl',
       columns: [
         { data: 'id' },
         { data: 'name' },
         { data: 'email' },
-        { data: 'dateOfBirth' },
+        //{ data: 'dateOfBirth' },
       ]
     });
   </script>

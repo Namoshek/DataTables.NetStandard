@@ -28,9 +28,7 @@ namespace DataTables.NetCore.Sample.Controllers
                 Request.QueryString = Request.QueryString.Add(new Microsoft.AspNetCore.Http.QueryString("?start=0&length=10"));
             }
 
-            var request = new DataTablesRequest<User>(Request.QueryString.ToUriComponent());
-
-            return Ok(_userDataTable.RenderResponse(request).AsJsonString());
+            return Ok(_userDataTable.RenderResponse(Request.QueryString.ToUriComponent()).AsJsonString());
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

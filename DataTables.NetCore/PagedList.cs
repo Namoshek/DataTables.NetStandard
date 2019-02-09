@@ -1,21 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DataTables.NetCore.Abstract;
 
 namespace DataTables.NetCore
 {
     /// <summary>
-    /// Collection of items that represents a single page of data extracted from the <see cref="IDataTablesQueryable{TEntity}"/>
-    /// after applying <see cref="DataTablesRequest{TEntity}"/> filter.
+    /// Collection of items that represents a single page of data extracted from the <see cref="IDataTablesQueryable{TEntity, TEntityViewModel}"/>
+    /// after applying <see cref="DataTablesRequest{TEntityViewModel}"/> filter.
     /// </summary>
-    /// <typeparam name="TEntity">Data type</typeparam>
-    public interface IPagedList<TEntity> : IPagedList, IList<TEntity> { }
+    /// <typeparam name="TEntityViewModel">Data type</typeparam>
+    public interface IPagedList<TEntityViewModel> : IPagedList, IList<TEntityViewModel> { }
 
     /// <summary>
     /// Internal implementation of <see cref="IPagedList{TEntity}"/> interface.
     /// </summary>
     /// <typeparam name="TEntity">Data type</typeparam>
-    internal class PagedList<TEntity> : List<TEntity>, IPagedList<TEntity>
+    internal class PagedList<TEntity, TEntityViewModel> : List<TEntityViewModel>, IPagedList<TEntityViewModel>
     {
         public int TotalCount { get; protected set; }
         public int PageNumber { get; protected set; }
@@ -34,31 +35,18 @@ namespace DataTables.NetCore
         /// Creates new instance of <see cref="PagedList{TEntity}"/> collection.
         /// </summary>
         /// <param name="queryable"><see cref="IDataTablesQueryable{TEntity}"/>instance to be paginated</param>
-        internal PagedList(IDataTablesQueryable<TEntity> queryable) : base()
+        internal PagedList(IDataTablesQueryable<TEntity, TEntityViewModel> queryable) : base()
         {
-            // pagination is on
-            if (queryable.Request.PageSize > 0)
-            {
-                int skipCount = (queryable.Request.PageNumber - 1) * queryable.Request.PageSize;
-                int takeCount = queryable.Request.PageSize;
+            PageNumber = queryable.Request.PageNumber;
+            PageSize = queryable.Request.PageSize;
+            TotalCount = queryable.Count();
+            PagesCount = PageSize <= 0 ? 1 : (int)Math.Ceiling((double)(TotalCount / PageSize));
 
-                TotalCount = queryable.Count();
-                PageNumber = queryable.Request.PageNumber;
-                PageSize = queryable.Request.PageSize;
-                PagesCount = TotalCount % PageSize == 0 ? TotalCount / PageSize : TotalCount / PageSize + 1;
+            int skipCount = Math.Abs((PageNumber - 1) * PageSize);
+            int takeCount = PageSize <= 0 ? TotalCount : PageSize;
 
-                AddRange(queryable.Skip(skipCount).Take(takeCount).ToList());
-            }
-            // no pagination
-            else
-            {
-                TotalCount = queryable.Count();
-                PageNumber = 1;
-                PageSize = -1;
-                PagesCount = 1;
-
-                AddRange(queryable.ToList());
-            }
+            var result = queryable.Skip(skipCount).Take(takeCount).ToList();
+            AddRange(AutoMapper.Mapper.Map<IEnumerable<TEntityViewModel>>(result));
         }
     }
 }

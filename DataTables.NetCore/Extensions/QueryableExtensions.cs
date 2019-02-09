@@ -16,35 +16,34 @@ namespace DataTables.NetCore.Extensions
             return filter.Invoke(query);
         }
 
-        public static IPagedList<TEntity> ToPagedList<TEntity>(this IEnumerable<TEntity> source, DataTablesRequest<TEntity> request)
+        public static IPagedList<TEntityViewModel> ToPagedList<TEntity, TEntityViewModel>(this IEnumerable<TEntity> source, DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             return source.AsQueryable().ToPagedList(request);
         }
 
-        public static IPagedList<TEntity> ToPagedList<TEntity>(this IQueryable<TEntity> queryable, DataTablesRequest<TEntity> request)
+        public static IPagedList<TEntityViewModel> ToPagedList<TEntity, TEntityViewModel>(this IQueryable<TEntity> queryable, DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             return queryable.Filter(request).ToPagedList();
         }
-
         
-        public static IPagedList<TEntity> ToPagedList<TEntity>(this IDataTablesQueryable<TEntity> queryable)
+        public static IPagedList<TEntityViewModel> ToPagedList<TEntity, TEntityViewModel>(this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
         {
-            return new PagedList<TEntity>(queryable);
+            return new PagedList<TEntity, TEntityViewModel>(queryable);
         }
 
-        public static Task<IPagedList<TEntity>> ToPagedListAsync<TEntity>(this IEnumerable<TEntity> source, DataTablesRequest<TEntity> request)
+        public static Task<IPagedList<TEntityViewModel>> ToPagedListAsync<TEntity, TEntityViewModel>(this IEnumerable<TEntity> source, DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             return Task.Factory.StartNew(() => source.AsQueryable().ToPagedList(request));
         }
 
-        public static Task<IPagedList<TEntity>> ToPagedListAsync<TEntity>(this IQueryable<TEntity> queryable, DataTablesRequest<TEntity> request)
+        public static Task<IPagedList<TEntityViewModel>> ToPagedListAsync<TEntity, TEntityViewModel>(this IQueryable<TEntity> queryable, DataTablesRequest<TEntity, TEntityViewModel> request)
         {
-            return Task.Factory.StartNew(() => queryable.Filter(request).ToPagedList());
+            return queryable.Filter(request).ToPagedListAsync();
         }
 
-        public static Task<IPagedList<TEntity>> ToPagedListAsync<TEntity>(this IDataTablesQueryable<TEntity> queryable)
+        public static Task<IPagedList<TEntityViewModel>> ToPagedListAsync<TEntity, TEntityViewModel>(this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
         {
-            return Task.Factory.StartNew<IPagedList<TEntity>>(() => new PagedList<TEntity>(queryable));
+            return Task.Factory.StartNew<IPagedList<TEntityViewModel>>(() => new PagedList<TEntity, TEntityViewModel>(queryable));
         }
 
         public static IPagedList<TEntity> Apply<TEntity>(this IPagedList<TEntity> list, Action<TEntity> action)
@@ -56,17 +55,7 @@ namespace DataTables.NetCore.Extensions
             return list;
         }
 
-        public static IPagedList<TResult> Convert<TEntity, TResult>(this IPagedList<TEntity> source, Func<TEntity, TResult> converter)
-        {
-            var list = new PagedList<TResult>(source);
-            foreach (var item in source)
-            {
-                list.Add(converter(item));
-            }
-            return list;
-        }
-
-        public static IDataTablesQueryable<TEntity> Filter<TEntity>(this IQueryable<TEntity> queryable, DataTablesRequest<TEntity> request)
+        public static IDataTablesQueryable<TEntity, TEntityViewModel> Filter<TEntity, TEntityViewModel>(this IQueryable<TEntity> queryable, DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             // Modify the IQueryable<T> with consecutive steps.
             // If you need to change the order or add extra steps,
@@ -102,28 +91,28 @@ namespace DataTables.NetCore.Extensions
                 request.Log.BeginInvoke(sb.ToString(), null, null);
             }
 
-            return (IDataTablesQueryable<TEntity>)queryable;
+            return (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable;
         }
 
-        public static IDataTablesQueryable<TEntity> AsDataTablesQueryable<TEntity>(this IQueryable<TEntity> queryable, DataTablesRequest<TEntity> request)
+        public static IDataTablesQueryable<TEntity, TEntityViewModel> AsDataTablesQueryable<TEntity, TEntityViewModel>(this IQueryable<TEntity> queryable, DataTablesRequest<TEntity, TEntityViewModel> request)
         {
-            return new DataTablesQueryable<TEntity>(queryable, request);
+            return new DataTablesQueryable<TEntity, TEntityViewModel>(queryable, request);
         }
 
-        public static IDataTablesQueryable<TEntity> CustomFilter<TEntity>(this IDataTablesQueryable<TEntity> queryable)
+        public static IDataTablesQueryable<TEntity, TEntityViewModel> CustomFilter<TEntity, TEntityViewModel>(this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
         {
             if (queryable.Request.CustomFilterPredicate != null)
             {
-                queryable = (IDataTablesQueryable<TEntity>)queryable.Where(queryable.Request.CustomFilterPredicate);
+                return (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.Where(queryable.Request.CustomFilterPredicate);
             }
+
             return queryable;
         }
 
-        public static IDataTablesQueryable<TEntity> GlobalSearch<TEntity>(this IDataTablesQueryable<TEntity> queryable)
+        public static IDataTablesQueryable<TEntity, TEntityViewModel> GlobalSearch<TEntity, TEntityViewModel>(this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
         {
             if (!string.IsNullOrEmpty(queryable.Request.GlobalSearchValue))
             {
-                // searchable columns
                 var columns = queryable.Request.Columns.Where(c => c.IsSearchable);
 
                 if (columns.Any())
@@ -131,20 +120,19 @@ namespace DataTables.NetCore.Extensions
                     Expression<Func<TEntity, bool>> predicate = null;
                     foreach (var c in columns)
                     {
-                        var expr = c.GlobalSearchPredicate ?? BuildStringContainsPredicate<TEntity>(c.PropertyName, queryable.Request.GlobalSearchValue, c.SearchCaseInsensitive);
+                        var expr = c.GlobalSearchPredicate ?? BuildStringContainsPredicate<TEntity>(c.PrivatePropertyName, queryable.Request.GlobalSearchValue, c.SearchCaseInsensitive);
                         predicate = predicate == null ?
                             PredicateBuilder.Create(expr) :
                             predicate.Or(expr);
                     }
-                    queryable = (IDataTablesQueryable<TEntity>)queryable.Where(predicate);
+                    queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.Where(predicate);
                 }
             }
             return queryable;
         }
 
-        public static IDataTablesQueryable<TEntity> ColumnsSearch<TEntity>(this IDataTablesQueryable<TEntity> queryable)
+        public static IDataTablesQueryable<TEntity, TEntityViewModel> ColumnsSearch<TEntity, TEntityViewModel>(this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
         {
-            // searchable columns
             var columns = queryable.Request.Columns.Where(c =>
                 c.IsSearchable &&
                 !string.IsNullOrEmpty(c.SearchValue));
@@ -154,19 +142,18 @@ namespace DataTables.NetCore.Extensions
                 Expression<Func<TEntity, bool>> predicate = null;
                 foreach (var c in columns)
                 {
-                    var expr = c.ColumnSearchPredicate ?? BuildStringContainsPredicate<TEntity>(c.PropertyName, c.SearchValue, c.SearchCaseInsensitive);
+                    var expr = c.ColumnSearchPredicate ?? BuildStringContainsPredicate<TEntity>(c.PrivatePropertyName, c.SearchValue, c.SearchCaseInsensitive);
                     predicate = predicate == null ?
                         PredicateBuilder.Create(expr) :
                         predicate.And(expr);
                 }
-                queryable = (IDataTablesQueryable<TEntity>)queryable.Where(predicate);
+                queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.Where(predicate);
             }
             return queryable;
         }
 
-        public static IDataTablesQueryable<TEntity> Order<TEntity>(this IDataTablesQueryable<TEntity> queryable)
+        public static IDataTablesQueryable<TEntity, TEntityViewModel> Order<TEntity, TEntityViewModel>(this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
         {
-            // orderable columns
             var columns = queryable.Request.Columns.Where(c =>
                 c.IsOrderable &&
                 c.OrderingIndex != -1)
@@ -176,8 +163,8 @@ namespace DataTables.NetCore.Extensions
 
             foreach (var c in columns)
             {
-                var propertyName = c.ColumnOrderingProperty != null ? c.ColumnOrderingProperty.GetPropertyPath() : c.PropertyName;
-                queryable = (IDataTablesQueryable<TEntity>)queryable.OrderBy(propertyName, c.OrderingDirection, c.OrderingCaseInsensitive, alreadyOrdered);
+                var propertyName = c.ColumnOrderingProperty != null ? c.ColumnOrderingProperty.GetPropertyPath() : c.PrivatePropertyName;
+                queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.OrderBy(propertyName, c.OrderingDirection, c.OrderingCaseInsensitive, alreadyOrdered);
                 alreadyOrdered = true;
             }
 
