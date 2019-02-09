@@ -183,6 +183,7 @@ namespace DataTables.NetCore
                 var column = OriginalColumns.FirstOrDefault(c => c.PublicName == data);
                 if (column != null)
                 {
+                    column.Index = int.Parse(colIndex);
                     column.SearchValue = query[$"columns[{colIndex}][search][value]"];
                     Columns.Add(column);
                 }
