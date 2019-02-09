@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using DataTables.NetCore.Abstract;
 using DataTables.NetCore.Sample.DataTables.ViewModels;
 using DataTables.NetCore.Sample.Models;
@@ -15,9 +14,9 @@ namespace DataTables.NetCore.Sample.DataTables
             _dbContext = dbContext;
         }
 
-        public override IList<DataTablesColumn<User, UserViewModel>> Columns()
+        public override IDataTablesColumnsCollection<User, UserViewModel> Columns()
         {
-            return new List<DataTablesColumn<User, UserViewModel>>
+            return new DataTablesColumnsList<User, UserViewModel>
             {
                 new DataTablesColumn<User, UserViewModel>
                 {

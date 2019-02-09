@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 namespace DataTables.NetCore.Abstract
 {
@@ -8,7 +7,7 @@ namespace DataTables.NetCore.Abstract
         /// <summary>
         /// Column definitions for this DataTable.
         /// </summary>
-        IList<DataTablesColumn<TEntity, TEntityViewModel>> Columns();
+        IDataTablesColumnsCollection<TEntity, TEntityViewModel> Columns();
 
         /// <summary>
         /// Gets the query used to fetch data for the DataTable.
@@ -31,6 +30,14 @@ namespace DataTables.NetCore.Abstract
         /// <summary>
         /// Renders the script.
         /// </summary>
-        string RenderScript();
+        /// <param name="url">The url of the data endpoint for the DataTable</param>
+        /// <param name="method">The http method used for the data endpoint (get or post)</param>
+        string RenderScript(string url, string method);
+
+        /// <summary>
+        /// Renders the HTML.
+        /// </summary>
+        /// <returns></returns>
+        string RenderHtml();
     }
 }

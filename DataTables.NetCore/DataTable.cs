@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using DataTables.NetCore.Abstract;
+using DataTables.NetCore.Builder;
 using DataTables.NetCore.Extensions;
 
 namespace DataTables.NetCore
@@ -13,26 +13,31 @@ namespace DataTables.NetCore
     /// <seealso cref="Abstract.IDataTable{TEntity, TEntityViewModel}" />
     public abstract class DataTable<TEntity, TEntityViewModel> : IDataTable<TEntity, TEntityViewModel>
     {
-        public abstract IList<DataTablesColumn<TEntity, TEntityViewModel>> Columns();
+        public abstract IDataTablesColumnsCollection<TEntity, TEntityViewModel> Columns();
         public abstract IQueryable<TEntity> Query();
 
         public DataTablesResponse<TEntity, TEntityViewModel> RenderResponse(string query)
         {
             var data = RenderResults(query);
 
-            return new DataTablesResponse<TEntity, TEntityViewModel>(data, new DataTablesColumnsList<TEntity, TEntityViewModel>(Columns()));
+            return new DataTablesResponse<TEntity, TEntityViewModel>(data, Columns());
         }
 
         public IPagedList<TEntityViewModel> RenderResults(string query)
         {
-            var request = new DataTablesRequest<TEntity, TEntityViewModel>(query, new DataTablesColumnsList<TEntity, TEntityViewModel>(Columns()));
+            var request = new DataTablesRequest<TEntity, TEntityViewModel>(query, Columns());
 
             return Query().ToPagedList(request);
         }
 
-        public string RenderScript()
+        public string RenderScript(string url, string method = "get")
         {
-            throw new System.NotImplementedException();
+            return DataTablesConfigurationBuilder.BuildDataTableConfigurationScript(Columns(), GetType().Name, url, method);
+        }
+
+        public string RenderHtml()
+        {
+            return $"<table id=\"{GetType().Name}\"></table>";
         }
     }
 }

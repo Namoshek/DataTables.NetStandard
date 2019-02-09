@@ -4,23 +4,12 @@
 
 <div class="row">
   <div class="col-sm-12">
-    <table id="users"></table>
+    @Html.Raw(ViewBag.DataTableHtml)
   </div>
 </div>
 @section Scripts
 {
-  @{ var ajaxUrl = Url.Action("IndexData", "Home"); }
-
   <script type="text/javascript">
-    $('#users').DataTable({
-      serverSide: true,
-      ajax: '@ajaxUrl',
-      columns: [
-        { data: 'id' },
-        { data: 'name' },
-        { data: 'email' },
-        //{ data: 'dateOfBirth' },
-      ]
-    });
+    @Html.Raw(ViewBag.DataTableScript)
   </script>
 }

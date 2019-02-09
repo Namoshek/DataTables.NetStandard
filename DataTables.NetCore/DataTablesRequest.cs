@@ -4,10 +4,8 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web;
-using DataTables.NetCore.Extensions;
 
 namespace DataTables.NetCore
 {
@@ -190,6 +188,10 @@ namespace DataTables.NetCore
             }
         }
 
+        /// <summary>
+        /// Parses the column ordering configuration from query.
+        /// </summary>
+        /// <param name="query">The query.</param>
         protected void ParseColumnOrderingConfigurationFromQuery(NameValueCollection query)
         {
             var orderKeys = query.AllKeys.Where(k => k != null && Regex.IsMatch(k, ColumnOrderingPattern));
@@ -204,8 +206,9 @@ namespace DataTables.NetCore
                     if (column != null)
                     {
                         column.OrderingIndex = sortingIndex;
-                        column.OrderingDirection = query[$"order[{index}][dir]"] == "desc" ?
-                            ListSortDirection.Descending : ListSortDirection.Ascending;
+                        column.OrderingDirection = query[$"order[{index}][dir]"] == "desc"
+                            ? ListSortDirection.Descending 
+                            : ListSortDirection.Ascending;
                     }
                 }
             }

@@ -16,6 +16,9 @@ namespace DataTables.NetCore.Sample.Controllers
 
         public IActionResult Index()
         {
+            ViewBag.DataTableScript = _userDataTable.RenderScript(Url.Action("IndexData", "Home"));
+            ViewBag.DataTableHtml = _userDataTable.RenderHtml();
+
             return View();
         }
 

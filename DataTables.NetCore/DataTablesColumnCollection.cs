@@ -40,7 +40,7 @@ namespace DataTables.NetCore
     /// Internal implementation of <see cref="IDataTablesColumnsCollection{TEntity, TEntityViewModel}"/>
     /// </summary>
     /// <typeparam name="TEntity">Model type</typeparam>
-    internal class DataTablesColumnsList<TEntity, TEntityViewModel> : List<DataTablesColumn<TEntity, TEntityViewModel>>, IDataTablesColumnsCollection<TEntity, TEntityViewModel>
+    public class DataTablesColumnsList<TEntity, TEntityViewModel> : List<DataTablesColumn<TEntity, TEntityViewModel>>, IDataTablesColumnsCollection<TEntity, TEntityViewModel>
     {
         public DataTablesColumnsList() : base() { }
         public DataTablesColumnsList(IEnumerable<DataTablesColumn<TEntity, TEntityViewModel>> items) : base(items) { }
