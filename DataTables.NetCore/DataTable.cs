@@ -13,6 +13,8 @@ namespace DataTables.NetCore
     /// <seealso cref="Abstract.IDataTable{TEntity, TEntityViewModel}" />
     public abstract class DataTable<TEntity, TEntityViewModel> : IDataTable<TEntity, TEntityViewModel>
     {
+        public virtual string TableIdentifier { get; set; }
+
         public abstract IDataTablesColumnsCollection<TEntity, TEntityViewModel> Columns();
         public abstract IQueryable<TEntity> Query();
 
@@ -32,12 +34,17 @@ namespace DataTables.NetCore
 
         public string RenderScript(string url, string method = "get")
         {
-            return DataTablesConfigurationBuilder.BuildDataTableConfigurationScript(Columns(), GetType().Name, url, method);
+            return DataTablesConfigurationBuilder.BuildDataTableConfigurationScript(Columns(), GetTableIdentifier(), url, method);
         }
 
         public string RenderHtml()
         {
-            return $"<table id=\"{GetType().Name}\"></table>";
+            return $"<table id=\"{GetTableIdentifier()}\"></table>";
+        }
+
+        private string GetTableIdentifier()
+        {
+            return TableIdentifier ?? GetType().Name;
         }
     }
 }
