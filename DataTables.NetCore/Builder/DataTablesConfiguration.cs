@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DataTables.NetCore.Builder
 {
@@ -14,16 +15,25 @@ namespace DataTables.NetCore.Builder
 
         public object Clone()
         {
-            return MemberwiseClone();
+            var copy = (DataTablesConfiguration)MemberwiseClone();
+
+            copy.Columns = Columns.Select(c => (DataTablesConfigurationColumn)c.Clone()).ToList();
+
+            return copy;
         }
 
-        public class DataTablesConfigurationColumn
+        public class DataTablesConfigurationColumn : ICloneable
         {
             public string Data { get; set; }
             public string Name { get; set; }
             public string Title { get; set; }
             public bool Searchable { get; set; }
             public bool Orderable { get; set; }
+
+            public object Clone()
+            {
+                return MemberwiseClone();
+            }
         }
     }
 }
