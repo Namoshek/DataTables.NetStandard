@@ -64,7 +64,7 @@ namespace DataTables.NetCore
         /// Custom predicate to filter the queryable even when the <see cref="GlobalSearchValue"/> not specified.
         /// If custom filter predicate is specified, it is appended in the first place to the resulting queryable.
         /// </summary>
-        public Expression<Func<TEntity, bool>> CustomFilterPredicate { get; set; } = null;
+        public Expression<Func<TEntity, bool>> GlobalFilterPredicate { get; set; } = null;
 
         /// <summary>
         /// Set this property to log incoming request parameters and resulting queries to the given delegate. 
