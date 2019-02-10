@@ -10,5 +10,7 @@ namespace DataTables.NetCore.Sample.Models
         public string Name { get; set; }
         public string Email { get; set; }
         public DateTimeOffset DateOfBirth { get; set; }
+
+        public Location Location { get; set; }
     }
 }

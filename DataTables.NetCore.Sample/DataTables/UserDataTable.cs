@@ -2,6 +2,7 @@
 using DataTables.NetCore.Abstract;
 using DataTables.NetCore.Sample.DataTables.ViewModels;
 using DataTables.NetCore.Sample.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataTables.NetCore.Sample.DataTables
 {
@@ -44,13 +45,58 @@ namespace DataTables.NetCore.Sample.DataTables
                     PrivatePropertyName = nameof(User.Email),
                     IsOrderable = true,
                     IsSearchable = true
+                },
+                new DataTablesColumn<User, UserViewModel>
+                {
+                    PublicName = "dateOfBirth",
+                    DisplayName = "Date of Birth",
+                    PublicPropertyName = nameof(UserViewModel.DateOfBirth),
+                    PrivatePropertyName = nameof(User.DateOfBirth),
+                    IsOrderable = true,
+                    IsSearchable = false
+                },
+                new DataTablesColumn<User, UserViewModel>
+                {
+                    PublicName = "address",
+                    DisplayName = "Address",
+                    PublicPropertyName = nameof(UserViewModel.Address),
+                    PrivatePropertyName = nameof(User.Location.Street),
+                    IsOrderable = true,
+                    IsSearchable = true
+                },
+                new DataTablesColumn<User, UserViewModel>
+                {
+                    PublicName = "postCode",
+                    DisplayName = "Post Code",
+                    PublicPropertyName = nameof(UserViewModel.PostCode),
+                    PrivatePropertyName = nameof(User.Location.PostCode),
+                    IsOrderable = true,
+                    IsSearchable = true
+                },
+                new DataTablesColumn<User, UserViewModel>
+                {
+                    PublicName = "city",
+                    DisplayName = "City",
+                    PublicPropertyName = nameof(UserViewModel.City),
+                    PrivatePropertyName = nameof(User.Location.City),
+                    IsOrderable = true,
+                    IsSearchable = true
+                },
+                new DataTablesColumn<User, UserViewModel>
+                {
+                    PublicName = "country",
+                    DisplayName = "Country",
+                    PublicPropertyName = nameof(UserViewModel.Country),
+                    PrivatePropertyName = nameof(User.Location.Country),
+                    IsOrderable = true,
+                    IsSearchable = true
                 }
             };
         }
 
         public override IQueryable<User> Query()
         {
-            return _dbContext.Users;
+            return _dbContext.Users.Include(u => u.Location);
         }
     }
 }

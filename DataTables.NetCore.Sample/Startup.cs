@@ -31,7 +31,7 @@ namespace DataTables.NetCore.Sample
 
             Mapper.Initialize(m =>
             {
-                m.CreateMap<User, UserViewModel>();
+                m.AddProfile<DefaultMappingProfile>();
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
