@@ -60,7 +60,7 @@ namespace DataTables.NetCore.Sample.DataTables
                     PublicName = "address",
                     DisplayName = "Address",
                     PublicPropertyName = nameof(UserViewModel.Address),
-                    PrivatePropertyName = nameof(User.Location.Street),
+                    PrivatePropertyName = $"{nameof(User.Location)}.{nameof(Location.Street)}",
                     IsOrderable = true,
                     IsSearchable = true
                 },
@@ -69,7 +69,7 @@ namespace DataTables.NetCore.Sample.DataTables
                     PublicName = "postCode",
                     DisplayName = "Post Code",
                     PublicPropertyName = nameof(UserViewModel.PostCode),
-                    PrivatePropertyName = nameof(User.Location.PostCode),
+                    PrivatePropertyName = $"{nameof(User.Location)}.{nameof(Location.PostCode)}",
                     IsOrderable = true,
                     IsSearchable = true
                 },
@@ -78,7 +78,7 @@ namespace DataTables.NetCore.Sample.DataTables
                     PublicName = "city",
                     DisplayName = "City",
                     PublicPropertyName = nameof(UserViewModel.City),
-                    PrivatePropertyName = nameof(User.Location.City),
+                    PrivatePropertyName = $"{nameof(User.Location)}.{nameof(Location.City)}",
                     IsOrderable = true,
                     IsSearchable = true
                 },
@@ -87,7 +87,7 @@ namespace DataTables.NetCore.Sample.DataTables
                     PublicName = "country",
                     DisplayName = "Country",
                     PublicPropertyName = nameof(UserViewModel.Country),
-                    PrivatePropertyName = nameof(User.Location.Country),
+                    PrivatePropertyName = $"{nameof(User.Location)}.{nameof(Location.Country)}",
                     IsOrderable = true,
                     IsSearchable = true
                 }
