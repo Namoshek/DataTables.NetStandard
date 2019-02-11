@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -74,6 +75,76 @@ namespace DataTables.NetCore.Util
             var notNullExp = Expression.NotEqual(exp, Expression.Constant(null, typeof(object)));
 
             return Expression.Lambda<Func<TEntity, bool>>(Expression.AndAlso(notNullExp, containsMethodExp), parameterExp);
+        }
+
+        /// <summary>
+        /// Replaces the given <paramref name="source"/> with the given <paramref name="target"/>
+        /// in the given <paramref name="expression"/>. Can be used to replace lambda variabels with
+        /// backed-in constants.
+        /// </summary>
+        /// <typeparam name="TInput"></typeparam>
+        /// <typeparam name="TOutput"></typeparam>
+        /// <param name="expression"></param>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        internal static Expression<TOutput> ReplaceVariableWithExpression<TInput, TOutput>(Expression<TInput> expression, ParameterExpression source, Expression target)
+        {
+            return new ParameterReplacerVisitor<TOutput>(source, target).VisitAndConvert(expression);
+        }
+
+        /// <summary>
+        /// Utility class that can be used to replace parameters in expressions.
+        /// </summary>
+        /// <typeparam name="TOutput"></typeparam>
+        private class ParameterReplacerVisitor<TOutput> : ExpressionVisitor
+        {
+            private ParameterExpression _source;
+            private Expression _target;
+
+            public ParameterReplacerVisitor(ParameterExpression source, Expression target)
+            {
+                _source = source;
+                _target = target;
+            }
+
+            /// <summary>
+            /// Replaces the stored source with the stored target in the given <paramref name="root"/>.
+            /// </summary>
+            /// <typeparam name="T"></typeparam>
+            /// <param name="root"></param>
+            /// <returns></returns>
+            internal Expression<TOutput> VisitAndConvert<T>(Expression<T> root)
+            {
+                return (Expression<TOutput>)VisitLambda(root);
+            }
+
+            /// <summary>
+            /// Creates a new expression of a lambda that has the given parameter (source)
+            /// replaced with the given expression (target).
+            /// </summary>
+            /// <typeparam name="T"></typeparam>
+            /// <param name="node"></param>
+            /// <returns></returns>
+            protected override Expression VisitLambda<T>(Expression<T> node)
+            {
+                // Here we select the new list of parameters, without the parameter
+                // we want to eliminate
+                var parameters = node.Parameters.Where(p => p != _source);
+
+                return Expression.Lambda<TOutput>(Visit(node.Body), parameters);
+            }
+
+            /// <summary>
+            /// Replace the given parameter (source) with the given expression (target)
+            /// by visiting all nodes.
+            /// </summary>
+            /// <param name="node"></param>
+            /// <returns></returns>
+            protected override Expression VisitParameter(ParameterExpression node)
+            {
+                // Replace the source with the target, visit other params as usual
+                return node == _source ? _target : base.VisitParameter(node);
+            }
         }
     }
 }

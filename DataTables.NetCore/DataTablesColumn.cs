@@ -81,7 +81,7 @@ namespace DataTables.NetCore
         /// Optional predicate expression that will be used to search by the searchable column when <see cref="SearchValue"/> is specified. 
         /// If no predicate provided, <see cref="string.Contains(string)"/> method is used by default.
         /// </summary>
-        public Expression<Func<TEntity, bool>> ColumnSearchPredicate { get; set; }
+        public Expression<Func<TEntity, string, bool>> ColumnSearchPredicate { get; set; }
 
         /// <summary>
         /// Optional expression that specifies the different property which should be used if ordering by the column is required. 
@@ -93,6 +93,6 @@ namespace DataTables.NetCore
         /// Optional predicate expression that will be used to search by the searchable column when <see cref="DataTablesRequest{TEntity}.GlobalSearchValue"/> is specified. 
         /// If no predicate provided, <see cref="string.Contains(string)"/> method is used by default.
         /// </summary>
-        public Expression<Func<TEntity, bool>> GlobalSearchPredicate { get; set; }
+        public Expression<Func<TEntity, string, bool>> GlobalSearchPredicate { get; set; }
     }
 }

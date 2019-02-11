@@ -60,7 +60,8 @@ namespace DataTables.NetCore.Extensions
         public static IDataTablesQueryable<TEntity, TEntityViewModel> ApplyGlobalSearchFilter<TEntity, TEntityViewModel>(
             this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
         {
-            if (!string.IsNullOrEmpty(queryable.Request.GlobalSearchValue))
+            var globalSearchValue = queryable.Request.GlobalSearchValue;
+            if (!string.IsNullOrEmpty(globalSearchValue))
             {
                 var columns = queryable.Request.Columns.Where(c => c.IsSearchable);
 
@@ -70,12 +71,24 @@ namespace DataTables.NetCore.Extensions
 
                     foreach (var c in columns)
                     {
-                        var expr = c.GlobalSearchPredicate ?? ExpressionHelper.BuildStringContainsPredicate<TEntity>(c.PrivatePropertyName, 
-                            queryable.Request.GlobalSearchValue, c.SearchCaseInsensitive);
+                        Expression<Func<TEntity, bool>> expression;
 
-                        predicate = predicate == null ?
-                            PredicateBuilder.Create(expr) :
-                            predicate.Or(expr);
+                        if (c.GlobalSearchPredicate != null)
+                        {
+                            var expr = c.GlobalSearchPredicate;
+                            var source = expr.Parameters.Single(p => p.Type == typeof(string));
+                            var target = Expression.Constant(globalSearchValue);
+                            expression = ExpressionHelper.ReplaceVariableWithExpression<Func<TEntity, string, bool>, Func<TEntity, bool>>(expr, source, target);
+                        }
+                        else
+                        {
+                            expression = ExpressionHelper.BuildStringContainsPredicate<TEntity>(c.PrivatePropertyName,
+                                queryable.Request.GlobalSearchValue, c.SearchCaseInsensitive);
+                        }
+
+                        predicate = predicate == null
+                            ? PredicateBuilder.Create(expression)
+                            : predicate.Or(expression);
                     }
 
                     queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.Where(predicate);
@@ -104,12 +117,24 @@ namespace DataTables.NetCore.Extensions
 
                 foreach (var c in columns)
                 {
-                    var expr = c.ColumnSearchPredicate ?? ExpressionHelper.BuildStringContainsPredicate<TEntity>(c.PrivatePropertyName, 
-                        c.SearchValue, c.SearchCaseInsensitive);
+                    Expression<Func<TEntity, bool>> expression;
 
-                    predicate = predicate == null ?
-                        PredicateBuilder.Create(expr) :
-                        predicate.And(expr);
+                    if (c.ColumnSearchPredicate != null)
+                    {
+                        var expr = c.ColumnSearchPredicate;
+                        var source = expr.Parameters.Single(p => p.Type == typeof(string));
+                        var target = Expression.Constant(c.SearchValue);
+                        expression = ExpressionHelper.ReplaceVariableWithExpression<Func<TEntity, string, bool>, Func<TEntity, bool>>(expr, source, target);
+                    }
+                    else
+                    {
+                        expression = ExpressionHelper.BuildStringContainsPredicate<TEntity>(c.PrivatePropertyName,
+                            c.SearchValue, c.SearchCaseInsensitive);
+                    }
+
+                    predicate = predicate == null
+                        ? PredicateBuilder.Create(expression)
+                        : predicate.And(expression);
                 }
 
                 queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.Where(predicate);
