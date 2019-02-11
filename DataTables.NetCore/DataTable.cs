@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DataTables.NetCore.Abstract;
 using DataTables.NetCore.Builder;
 using DataTables.NetCore.Extensions;
@@ -13,7 +14,15 @@ namespace DataTables.NetCore
     /// <seealso cref="Abstract.IDataTable{TEntity, TEntityViewModel}" />
     public abstract class DataTable<TEntity, TEntityViewModel> : IDataTable<TEntity, TEntityViewModel>
     {
-        public virtual string TableIdentifier { get; set; }
+        protected readonly string _tableIdentifier;
+
+        /// <summary>
+        /// DataTable constructor. Gets and stores the table identifier.
+        /// </summary>
+        public DataTable()
+        {
+            _tableIdentifier = GetTableIdentifier();
+        }
 
         public abstract IDataTablesColumnsCollection<TEntity, TEntityViewModel> Columns();
         public abstract IQueryable<TEntity> Query();
@@ -34,17 +43,21 @@ namespace DataTables.NetCore
 
         public string RenderScript(string url, string method = "get")
         {
-            return DataTablesConfigurationBuilder.BuildDataTableConfigurationScript(Columns(), GetTableIdentifier(), url, method);
+            return DataTablesConfigurationBuilder.BuildDataTableConfigurationScript(Columns(), _tableIdentifier, url, method);
         }
 
         public string RenderHtml()
         {
-            return $"<table id=\"{GetTableIdentifier()}\"></table>";
+            return $"<table id=\"{_tableIdentifier}\"></table>";
         }
 
-        private string GetTableIdentifier()
+        /// <summary>
+        /// Returns the identifier for the table. Can be something static or a generated
+        /// value that ensures uniqueness.
+        /// </summary>
+        protected string GetTableIdentifier()
         {
-            return TableIdentifier ?? GetType().Name;
+            return $"{GetType().Name}_{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
         }
     }
 }

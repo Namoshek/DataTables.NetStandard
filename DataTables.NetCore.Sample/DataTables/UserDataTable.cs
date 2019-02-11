@@ -10,8 +10,6 @@ namespace DataTables.NetCore.Sample.DataTables
     {
         protected SampleDbContext _dbContext;
 
-        public override string TableIdentifier { get; set; } = "users";
-
         public UserDataTable(SampleDbContext dbContext)
         {
             _dbContext = dbContext;
