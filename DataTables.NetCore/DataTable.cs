@@ -24,6 +24,15 @@ namespace DataTables.NetCore
             _tableIdentifier = GetTableIdentifier();
         }
 
+        /// <summary>
+        /// DataTable constructor. Uses the given table identifier.
+        /// </summary>
+        /// <param name="tableIdentifier"></param>
+        public DataTable(string tableIdentifier)
+        {
+            _tableIdentifier = tableIdentifier;
+        }
+
         public abstract IDataTablesColumnsCollection<TEntity, TEntityViewModel> Columns();
         public abstract IQueryable<TEntity> Query();
 
