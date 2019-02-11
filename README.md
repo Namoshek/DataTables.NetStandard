@@ -55,9 +55,9 @@ public class PersonDataTable
         _dbContext = dbContext;
     }
 
-    public override IDataTablesColumnsCollection<Person, PersonViewModel> Columns()
+    public override IList<DataTablesColumn<Person, PersonViewModel>> Columns()
     {
-        return new DataTablesColumnsList<Person, PersonViewModel>
+        return new List<DataTablesColumn<Person, PersonViewModel>>
         {
             new DataTablesColumn<Person, PersonViewModel>
             {
@@ -147,14 +147,14 @@ public class PersonDataTable
 ### Defining `DataTablesColumn`s
 
 Within your DataTable class, you'll need to override the abstract method
-`public abstract IDataTablesColumnsCollection<TEntity, TEntityViewModel> Columns()`
+`public abstract IList<DataTablesColumn<TEntity, TEntityViewModel>> Columns()`
 with your concrete implementation. The method needs to return a collection of
 `DataTablesColumn`s:
 
 ```csharp
-public override IDataTablesColumnsCollection<Person, PersonViewModel> Columns()
+public override IList<DataTablesColumn<Person, PersonViewModel>> Columns()
 {
-    return new DataTablesColumnsList<Person, PersonViewModel>
+    return new List<DataTablesColumn<Person, PersonViewModel>>
     {
         new DataTablesColumn<Person, PersonViewModel>
         {

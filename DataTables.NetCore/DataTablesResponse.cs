@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace DataTables.NetCore
 {
@@ -21,7 +22,7 @@ namespace DataTables.NetCore
         [JsonProperty(PropertyName = "data")]
         public IPagedList<TEntityViewModel> Data { get; }
 
-        protected IDataTablesColumnsCollection<TEntity, TEntityViewModel> Columns { get; set; }
+        protected IList<DataTablesColumn<TEntity, TEntityViewModel>> Columns { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataTablesResponse{TEntity, TEntityViewModel}"/> class.
@@ -29,7 +30,7 @@ namespace DataTables.NetCore
         /// <param name="data">The data.</param>
         /// <param name="columns">The columns.</param>
         /// <param name="draw">The draw.</param>
-        public DataTablesResponse(IPagedList<TEntityViewModel> data, IDataTablesColumnsCollection<TEntity, TEntityViewModel> columns, long draw = 0)
+        public DataTablesResponse(IPagedList<TEntityViewModel> data, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns, long draw = 0)
         {
             Data = data;
             Columns = columns;

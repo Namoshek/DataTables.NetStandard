@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DataTables.NetCore.Abstract;
 using DataTables.NetCore.Builder;
@@ -33,7 +34,7 @@ namespace DataTables.NetCore
             _tableIdentifier = tableIdentifier;
         }
 
-        public abstract IDataTablesColumnsCollection<TEntity, TEntityViewModel> Columns();
+        public abstract IList<DataTablesColumn<TEntity, TEntityViewModel>> Columns();
         public abstract IQueryable<TEntity> Query();
 
         public DataTablesResponse<TEntity, TEntityViewModel> RenderResponse(string query)

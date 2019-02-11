@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace DataTables.NetCore.Abstract
 {
@@ -7,7 +8,7 @@ namespace DataTables.NetCore.Abstract
         /// <summary>
         /// Column definitions for this DataTable.
         /// </summary>
-        IDataTablesColumnsCollection<TEntity, TEntityViewModel> Columns();
+        IList<DataTablesColumn<TEntity, TEntityViewModel>> Columns();
 
         /// <summary>
         /// Gets the query used to fetch data for the DataTable.

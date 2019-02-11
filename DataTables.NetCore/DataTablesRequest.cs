@@ -58,7 +58,7 @@ namespace DataTables.NetCore
         /// var column = request.Columns[s => s.FirstName];
         /// </code>
         /// </example>
-        public IDataTablesColumnsCollection<TEntity, TEntityViewModel> Columns { get; private set; } = new DataTablesColumnsList<TEntity, TEntityViewModel>();
+        public IList<DataTablesColumn<TEntity, TEntityViewModel>> Columns { get; private set; } = new List<DataTablesColumn<TEntity, TEntityViewModel>>();
 
         /// <summary>
         /// Custom predicate to filter the queryable even when the <see cref="GlobalSearchValue"/> not specified.
@@ -80,7 +80,7 @@ namespace DataTables.NetCore
         /// <summary>
         /// Original set of column definitions for the underlying DataTables.
         /// </summary>
-        public IDataTablesColumnsCollection<TEntity, TEntityViewModel> OriginalColumns { get; protected set; } = null;
+        public IList<DataTablesColumn<TEntity, TEntityViewModel>> OriginalColumns { get; protected set; } = null;
 
         /// <summary>
         /// Gets original request parameter value by its name
@@ -97,35 +97,35 @@ namespace DataTables.NetCore
         /// This constructor is useful with it's needed to create <see cref="DataTablesRequest{T}"/> from the Nancy's <a href="https://github.com/NancyFx/Nancy/blob/master/src/Nancy/Request.cs">Request.Form</a> data.
         /// </summary>
         /// <param name="form">Request form data</param>
-        public DataTablesRequest(IDictionary<string, object> form, IDataTablesColumnsCollection<TEntity, TEntityViewModel> columns)
+        public DataTablesRequest(IDictionary<string, object> form, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
             : this(form.Aggregate(new NameValueCollection(), (k, v) => { k.Add(v.Key, v.Value.ToString()); return k; }), columns) { }
 
         /// <summary>
         /// Creates new <see cref="DataTablesRequest{T}"/> from <see cref="DataTablesAjaxPostModel"/>.
         /// </summary>
         /// <param name="ajaxPostModel">Contains datatables parameters sent from client side when POST method is used.</param>
-        public DataTablesRequest(DataTablesAjaxPostModel ajaxPostModel, IDataTablesColumnsCollection<TEntity, TEntityViewModel> columns)
+        public DataTablesRequest(DataTablesAjaxPostModel ajaxPostModel, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
             : this(ajaxPostModel.ToNameValueCollection(), columns) { }
 
         /// <summary>
         /// Creates new <see cref="DataTablesRequest{T}"/> from <see cref="Uri"/> instance.
         /// </summary>
         /// <param name="uri"><see cref="Uri"/> instance</param>
-        public DataTablesRequest(Uri uri, IDataTablesColumnsCollection<TEntity, TEntityViewModel> columns)
+        public DataTablesRequest(Uri uri, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
             : this(uri.Query, columns) { }
 
         /// <summary>
         /// Creates new <see cref="DataTablesRequest{T}"/> from http query string.
         /// </summary>
         /// <param name="queryString"></param>
-        public DataTablesRequest(string queryString, IDataTablesColumnsCollection<TEntity, TEntityViewModel> columns)
+        public DataTablesRequest(string queryString, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
             : this(HttpUtility.ParseQueryString(queryString), columns) { }
 
         /// <summary>
         /// Creates new <see cref="DataTablesRequest{T}"/> from <see cref="NameValueCollection"/> instance.
         /// </summary>
         /// <param name="query"></param>
-        public DataTablesRequest(NameValueCollection query, IDataTablesColumnsCollection<TEntity, TEntityViewModel> columns)
+        public DataTablesRequest(NameValueCollection query, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
         {
             if (query == null)
             {

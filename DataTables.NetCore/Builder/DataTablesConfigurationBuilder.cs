@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace DataTables.NetCore.Builder
@@ -14,7 +15,8 @@ namespace DataTables.NetCore.Builder
             return $"$.extend(true, $.fn.dataTable.defaults, {output});";
         }
 
-        public static string BuildDataTableConfigurationScript<TEntity, TEntityViewModel>(IDataTablesColumnsCollection<TEntity, TEntityViewModel> columns, string tableName, string url, string method)
+        public static string BuildDataTableConfigurationScript<TEntity, TEntityViewModel>(IList<DataTablesColumn<TEntity, TEntityViewModel>> columns, 
+            string tableName, string url, string method)
         {
             var configuration = (DataTablesConfiguration)Configuration.Clone();
             configuration.Ajax = url;
