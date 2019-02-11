@@ -24,13 +24,6 @@ namespace DataTables.NetCore.Sample.Controllers
 
         public IActionResult IndexData()
         {
-            // This is done only for testing because we are not actually using a DataTable yet and this means
-            // we need to add proper query string parameters manually.
-            if (!Request.QueryString.HasValue)
-            {
-                Request.QueryString = Request.QueryString.Add(new Microsoft.AspNetCore.Http.QueryString("?start=0&length=10"));
-            }
-
             return Ok(_userDataTable.RenderResponse(Request.QueryString.ToUriComponent()).AsJsonString());
         }
 

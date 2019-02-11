@@ -26,7 +26,7 @@ namespace DataTables.NetCore.Sample.DataTables
                     PublicName = "id",
                     DisplayName = "ID",
                     PublicPropertyName = nameof(UserViewModel.Id),
-                    PrivatePropertyName = nameof(UserViewModel.Id),
+                    PrivatePropertyName = nameof(User.Id),
                     IsOrderable = true,
                     IsSearchable = true
                 },
