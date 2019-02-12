@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using DataTables.NetCore.Sample.DataTables;
 using DataTables.NetCore.Sample.DataTables.ViewModels;
-using DataTables.NetCore.Sample.Models;
+using DataTables.NetCore.ViewRenderer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -27,14 +27,15 @@ namespace DataTables.NetCore.Sample
                 options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=Sample;Trusted_Connection=True;");
             });
 
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddDataTables();
             services.AddScoped<UserDataTable>();
 
             Mapper.Initialize(m =>
             {
-                m.AddProfile<DefaultMappingProfile>();
+                m.AddProfile(new DefaultMappingProfile(services.BuildServiceProvider().GetService<IViewRenderService>()));
             });
-
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

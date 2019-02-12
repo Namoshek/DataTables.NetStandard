@@ -38,30 +38,12 @@ namespace DataTables.NetCore
             Request = request;
         }
 
-        public Type ElementType
-        {
-            get => typeof(TEntity);
-        }
+        public Type ElementType => typeof(TEntity);
+        public Expression Expression => _sourceQueryable.Expression;
+        public IQueryProvider Provider => _sourceProvider;
 
-        public Expression Expression
-        {
-            get => _sourceQueryable.Expression;
-        }
-
-        public IQueryProvider Provider
-        {
-            get => _sourceProvider;
-        }
-
-        public IEnumerator<TEntity> GetEnumerator()
-        {
-            return _sourceQueryable.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _sourceQueryable.GetEnumerator();
-        }
+        public IEnumerator<TEntity> GetEnumerator() => _sourceQueryable.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => _sourceQueryable.GetEnumerator();
 
         public override string ToString()
         {

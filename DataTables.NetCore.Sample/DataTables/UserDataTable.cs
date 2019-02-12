@@ -92,6 +92,15 @@ namespace DataTables.NetCore.Sample.DataTables
                     PrivatePropertyName = $"{nameof(User.Location)}.{nameof(Location.Country)}",
                     IsOrderable = true,
                     IsSearchable = true
+                },
+                new DataTablesColumn<User, UserViewModel>
+                {
+                    PublicName = "action",
+                    DisplayName = "Action",
+                    PublicPropertyName = nameof(UserViewModel.Action),
+                    PrivatePropertyName = null,
+                    IsOrderable = false,
+                    IsSearchable = false
                 }
             };
         }
