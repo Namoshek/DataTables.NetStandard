@@ -101,6 +101,24 @@ namespace DataTables.NetCore.Sample.DataTables
                     PrivatePropertyName = null,
                     IsOrderable = false,
                     IsSearchable = false
+                },
+                new DataTablesColumn<User, UserViewModel>
+                {
+                    PublicName = "action2",
+                    DisplayName = "Action 2",
+                    PublicPropertyName = nameof(UserViewModel.Action2),
+                    PrivatePropertyName = null,
+                    IsOrderable = false,
+                    IsSearchable = false
+                },
+                new DataTablesColumn<User, UserViewModel>
+                {
+                    PublicName = "action3",
+                    DisplayName = "Action 3",
+                    PublicPropertyName = nameof(UserViewModel.Action3),
+                    PrivatePropertyName = null,
+                    IsOrderable = false,
+                    IsSearchable = false
                 }
             };
         }

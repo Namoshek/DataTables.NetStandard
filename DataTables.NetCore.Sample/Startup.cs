@@ -32,6 +32,10 @@ namespace DataTables.NetCore.Sample
             services.AddDataTables();
             services.AddScoped<UserDataTable>();
 
+            // Building the service provider early to get the IViewRenderService is a hack that is necessary to get access 
+            // to the Razor partial compiler in the DefaultMappingProfile. As the IViewRenderService depends on services
+            // from Microsoft.AspNetCore.Mvc.Razor, it is necessary to configure MVC with services.AddMvc() before
+            // configuring the Mapper like this.
             Mapper.Initialize(m =>
             {
                 m.AddProfile(new DefaultMappingProfile(services.BuildServiceProvider().GetService<IViewRenderService>()));

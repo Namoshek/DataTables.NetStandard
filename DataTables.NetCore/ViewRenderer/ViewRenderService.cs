@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
+using Scriban;
 
 namespace DataTables.NetCore.ViewRenderer
 {
@@ -34,7 +35,7 @@ namespace DataTables.NetCore.ViewRenderer
         /// <param name="model">The model.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public async Task<string> RenderToStringAsync(string viewName, object model)
+        public async Task<string> RenderRazorToStringAsync(string viewName, object model)
         {
             if (string.IsNullOrWhiteSpace(viewName))
             {
@@ -70,6 +71,18 @@ namespace DataTables.NetCore.ViewRenderer
 
                 return sw.ToString();
             }
+        }
+
+        /// <summary>
+        /// Renders a liquid template using the given data to a string asynchronously.
+        /// </summary>
+        /// <param name="viewName">Name of the view.</param>
+        /// <param name="model">The model.</param>
+        public static string RenderLiquidToString(string viewName, object model)
+        {
+            var view = File.ReadAllText(Directory.GetCurrentDirectory() + "/Views/" + viewName);
+            var template = Template.Parse(view);
+            return template.Render(model);
         }
     }
 }
