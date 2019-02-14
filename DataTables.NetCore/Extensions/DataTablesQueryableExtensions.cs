@@ -82,8 +82,15 @@ namespace DataTables.NetCore.Extensions
                         }
                         else
                         {
-                            expression = ExpressionHelper.BuildStringContainsPredicate<TEntity>(c.PrivatePropertyName,
-                                queryable.Request.GlobalSearchValue, c.SearchCaseInsensitive);
+                            if (queryable.Request.GlobalSearchRegex)
+                            {
+                                expression = ExpressionHelper.BuildRegexPredicate<TEntity>(c.PrivatePropertyName, queryable.Request.GlobalSearchValue);
+                            }
+                            else
+                            {
+                                expression = ExpressionHelper.BuildStringContainsPredicate<TEntity>(c.PrivatePropertyName,
+                                    queryable.Request.GlobalSearchValue, c.SearchCaseInsensitive);
+                            }
                         }
 
                         predicate = predicate == null
@@ -128,8 +135,15 @@ namespace DataTables.NetCore.Extensions
                     }
                     else
                     {
-                        expression = ExpressionHelper.BuildStringContainsPredicate<TEntity>(c.PrivatePropertyName,
-                            c.SearchValue, c.SearchCaseInsensitive);
+                        if (c.SearchRegex)
+                        {
+                            expression = ExpressionHelper.BuildRegexPredicate<TEntity>(c.PrivatePropertyName, c.SearchValue);
+                        }
+                        else
+                        {
+                            expression = ExpressionHelper.BuildStringContainsPredicate<TEntity>(c.PrivatePropertyName,
+                                c.SearchValue, c.SearchCaseInsensitive);
+                        }
                     }
 
                     predicate = predicate == null

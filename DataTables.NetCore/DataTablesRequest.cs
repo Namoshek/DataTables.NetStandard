@@ -37,7 +37,13 @@ namespace DataTables.NetCore
 
         /// <summary>
         /// True if the <see cref="GlobalSearchValue"/> should be treated as a regular expression for advanced searching, false otherwise.
-        /// This feature is not implemented yet.
+        /// Note: If a custom <see cref="GlobalFilterPredicate"/> is used, implementing the regex logic has to be done individually as well.
+        /// 
+        /// Note: If this option is set to false, then requests asking for regex evaluation will be handled as if they were non-regex requests.
+        ///       The reason for this is security as we only allow regex evaluation if the server-side agrees to it.
+        ///       
+        /// Note: As Linq queries with regex logic cannot be translated to native SQL queries, all queries with regex logic
+        ///       will be evaluated in-memory, which is highly inefficient with large data sets. Be careful using this option.
         /// </summary>
         public bool GlobalSearchRegex { get; private set; }
 
@@ -173,16 +179,27 @@ namespace DataTables.NetCore
                 // Retrieve the numeric column index
                 var colIndex = Regex.Match(key, ColumnPattern).Groups[1].Value;
 
-                // Retrieve the unique column key and name
-                string data = query[$"columns[{colIndex}][data]"];
-                string name = query[$"columns[{colIndex}][name]"];
+                // Retrieve the unique column key (and name)
+                string data = query[$"columns[{colIndex}][data]"] ?? query[$"columns[{colIndex}][name]"];
 
                 // Attempt to find a column with the given data
                 var column = OriginalColumns.FirstOrDefault(c => c.PublicName == data);
                 if (column != null)
                 {
+                    // We clone all columns we find because we don't want to change our original columns
+                    column = (DataTablesColumn<TEntity, TEntityViewModel>)column.Clone();
+
+                    // Parsing the index like this is safe because of the regex we used before
                     column.Index = int.Parse(colIndex);
+
                     column.SearchValue = query[$"columns[{colIndex}][search][value]"];
+
+                    if (bool.TryParse(query[$"columns[{colIndex}][search][regex]"], out bool regexSearch))
+                    {
+                        // We only allow regex search if it is enabled for the column on the server-side
+                        column.SearchRegex = (column.SearchRegex && regexSearch);
+                    }
+
                     Columns.Add(column);
                 }
             }
@@ -197,11 +214,14 @@ namespace DataTables.NetCore
             var orderKeys = query.AllKeys.Where(k => k != null && Regex.IsMatch(k, ColumnOrderingPattern));
             foreach (var key in orderKeys)
             {
+                // Retrieve the numeric column index
                 var index = Regex.Match(key, ColumnOrderingPattern).Groups[1].Value;
 
+                // Parse the actual column index used to sort
                 if (int.TryParse(index, out int sortingIndex) &&
                     int.TryParse(query[$"order[{index}][column]"], out int columnIndex))
                 {
+                    // Attempt to find a column with the given index
                     var column = Columns.FirstOrDefault(c => c.Index == columnIndex);
                     if (column != null)
                     {

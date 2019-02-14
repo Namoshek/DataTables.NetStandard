@@ -164,6 +164,7 @@ public override IList<DataTablesColumn<Person, PersonViewModel>> Columns()
             PrivatePropertyName = nameof(Person.Id),
             IsOrderable = true,
             IsSearchable = true,
+            SearchRegex = true,
             GlobalSearchPredicate = (p, s) => p.Id.ToString().Contains(s),
             ColumnSearchPredicate = (p, s) => p.Id.ToString().Contains(s),
             ColumnOrderingProperty = (p) => p.Id
@@ -182,6 +183,7 @@ Column                      | Function
 `PrivatePropertyName`       | The name of the property used to query the data on the query model. Can be a composite property name in dot-notation (e.g. `Location.Street`).
 `IsOrderable`               | If the table should be orderable by this column.
 `IsSearchable`              | If the column should be searchable. Affects both column search as well as global search.
+`SearchRegex`               | If column search values should be evaluated as regex expressions. The server-side option can still be disabled by the client, but the client cannot enable regex evaluation if the server has it disabled for a column. **Note: regex search is performed in-memory as Linq queries containing `Regex.IsMatch(value, pattern)` cannot be translated to native SQL queries. Avoid usage for larger data sets if possible.**
 `GlobalSearchPredicate`     | An expression that is used to search the column when a global search value is set. The expression receives the query model and the global search value as parameters.
 `ColumnSearchPredicate`     | An expression that is used to search the column when a column search value is set. The expression receives the query model and the column search value as parameters.
 `ColumnOrderingProperty`    | An expression that selects a column of the query model to order the results by. Can be a nested property.

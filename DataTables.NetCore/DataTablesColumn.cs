@@ -8,7 +8,7 @@ namespace DataTables.NetCore
     /// Represents DataTables column filtering/sorting info
     /// </summary>
     /// <typeparam name="TEntity">Model type</typeparam>
-    public class DataTablesColumn<TEntity, TEntityViewModel>
+    public class DataTablesColumn<TEntity, TEntityViewModel> : ICloneable
     {
         /// <summary>
         /// Column's index
@@ -54,6 +54,15 @@ namespace DataTables.NetCore
 
         /// <summary>
         /// Flag to indicate if the search term for this column should be treated as regular expression (true) or not (false).
+        /// If this is set to false, no regex logic is applied even if the client requests it (for security reasons).
+        /// Note: If a custom <see cref="ColumnSearchPredicate"/> or a <see cref="GlobalSearchPredicate"/> is used, 
+        ///       implementing the regex logic has to be done invidually as well.
+        /// 
+        /// Note: If this option is set to false, then requests asking for regex evaluation will be handled as if they were non-regex 
+        ///       requests. The reason for this is security as we only allow regex evaluation if the server-side agrees to it.
+        ///       
+        /// Note: As Linq queries with regex logic cannot be translated to native SQL queries, all queries with regex logic
+        ///       will be evaluated in-memory, which is highly inefficient with large data sets. Be careful using this option.
         /// </summary>
         public bool SearchRegex { get; set; }
 
@@ -94,5 +103,16 @@ namespace DataTables.NetCore
         /// If no predicate provided, <see cref="string.Contains(string)"/> method is used by default.
         /// </summary>
         public Expression<Func<TEntity, string, bool>> GlobalSearchPredicate { get; set; }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>
+        /// A new object that is a copy of this instance.
+        /// </returns>
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

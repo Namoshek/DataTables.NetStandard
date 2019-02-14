@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace DataTables.NetCore.Util
 {
@@ -21,6 +22,11 @@ namespace DataTables.NetCore.Util
         /// <see cref="MethodInfo"/> for the <see cref="string.Contains(char)"/> method.
         /// </summary>
         internal static readonly MethodInfo String_Contains = typeof(string).GetMethod(nameof(String.Contains), new[] { typeof(string) });
+
+        /// <summary>
+        /// <see cref="MethodInfo"/> for the <see cref="Regex.IsMatch(string, string)"/> method.
+        /// </summary>
+        internal static readonly MethodInfo Regex_IsMatch = typeof(Regex).GetMethod(nameof(Regex.IsMatch), new[] { typeof(string), typeof(string) });
 
         /// <summary>
         /// Builds an <see cref="Expression"/> for the given <paramref name="propertyName"/>.
@@ -75,6 +81,34 @@ namespace DataTables.NetCore.Util
             var notNullExp = Expression.NotEqual(exp, Expression.Constant(null, typeof(object)));
 
             return Expression.Lambda<Func<TEntity, bool>>(Expression.AndAlso(notNullExp, containsMethodExp), parameterExp);
+        }
+
+        /// <summary>
+        /// Builds an <see cref="Expression"/> for the given property name which performs a <see cref="Regex.IsMatch(string, string)"/>
+        /// check on the property with the given <paramref name="regex"/> as value.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="regex">The regex.</param>
+        internal static Expression<Func<TEntity, bool>> BuildRegexPredicate<TEntity>(string propertyName, string regex)
+        {
+            var type = typeof(TEntity);
+            var parameterExp = Expression.Parameter(type, "e");
+            var propertyExp = BuildPropertyExpression(parameterExp, propertyName);
+
+            Expression exp = propertyExp;
+
+            if (propertyExp.Type != typeof(string))
+            {
+                exp = Expression.Call(propertyExp, Object_ToString);
+            }
+
+            var regexExp = Expression.Constant(regex, typeof(string));
+            var resultExp = Expression.Call(Regex_IsMatch, exp, regexExp);
+
+            var notNullExp = Expression.NotEqual(exp, Expression.Constant(null, typeof(object)));
+
+            return Expression.Lambda<Func<TEntity, bool>>(Expression.AndAlso(notNullExp, resultExp), parameterExp);
         }
 
         /// <summary>
