@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using DataTables.NetCore.Abstract;
 using DataTables.NetCore.Builder;
 using DataTables.NetCore.Extensions;
@@ -22,7 +23,7 @@ namespace DataTables.NetCore
         /// </summary>
         public DataTable()
         {
-            _tableIdentifier = GetTableIdentifier();
+            _tableIdentifier = BuildTableIdentifier();
         }
 
         /// <summary>
@@ -53,19 +54,104 @@ namespace DataTables.NetCore
 
         public string RenderScript(string url, string method = "get")
         {
-            return DataTablesConfigurationBuilder.BuildDataTableConfigurationScript(Columns(), _tableIdentifier, url, method);
+            return DataTablesConfigurationBuilder.BuildDataTableConfigurationScript(Columns(), GetTableIdentifier(), url, method);
         }
 
         public string RenderHtml()
         {
-            return $"<table id=\"{_tableIdentifier}\"></table>";
+            var sb = new StringBuilder();
+
+            sb.Append($"<table id=\"{GetTableIdentifier()}\">");
+
+            sb.Append(RenderTableHeader());
+            sb.Append(RenderTableBody());
+            sb.Append(RenderTableFooter());
+
+            sb.Append("</table>");
+
+            return sb.ToString();
+        }
+
+        public string GetTableIdentifier()
+        {
+            return _tableIdentifier;
+        }
+
+        /// <summary>
+        /// Renders the table header. Can be overwritten to change the rendering.
+        /// </summary>
+        protected virtual string RenderTableHeader()
+        {
+            var sb = new StringBuilder();
+
+            sb.Append("<thead>");
+            sb.Append("<tr>");
+
+            foreach (var column in Columns())
+            {
+                sb.Append(RenderTableHeaderColumn(column));
+            }
+
+            sb.Append("</tr>");
+            sb.Append("</thead>");
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Renders a table header column. Can be overwritten to change the rendering.
+        /// It is also possible to return a different template based on the given column.
+        /// </summary>
+        /// <param name="column">The column.</param>
+        protected virtual string RenderTableHeaderColumn(DataTablesColumn<TEntity, TEntityViewModel> column)
+        {
+            return $"<th>{column.DisplayName}</th>";
+        }
+
+        /// <summary>
+        /// Renders the table body. Can be overwritten to change the rendering.
+        /// </summary>
+        protected virtual string RenderTableBody()
+        {
+            return "<td></td>";
+        }
+
+        /// <summary>
+        /// Renders the table footer. Can be overwritten to change the rendering.
+        /// </summary>
+        protected virtual string RenderTableFooter()
+        {
+            var sb = new StringBuilder();
+
+            sb.Append("<tfoot>");
+            sb.Append("<tr>");
+
+            foreach (var column in Columns())
+            {
+                sb.Append(RenderTableFooterColumn(column));
+            }
+
+            sb.Append("</tr>");
+            sb.Append("</tfoot>");
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Renders the table footer column. Can be overwritten to change the rendering.
+        /// It is also possible to return a different template based on the given column.
+        /// </summary>
+        /// <param name="column">The column.</param>
+        protected virtual string RenderTableFooterColumn(DataTablesColumn<TEntity, TEntityViewModel> column)
+        {
+            return "<th></th>";
         }
 
         /// <summary>
         /// Returns the identifier for the table. Can be something static or a generated
         /// value that ensures uniqueness.
         /// </summary>
-        protected string GetTableIdentifier()
+        protected string BuildTableIdentifier()
         {
             return $"{GetType().Name}_{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
         }

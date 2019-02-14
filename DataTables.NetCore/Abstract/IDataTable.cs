@@ -38,7 +38,11 @@ namespace DataTables.NetCore.Abstract
         /// <summary>
         /// Renders the HTML.
         /// </summary>
-        /// <returns></returns>
         string RenderHtml();
+
+        /// <summary>
+        /// Gets the table identifier.
+        /// </summary>
+        string GetTableIdentifier();
     }
 }

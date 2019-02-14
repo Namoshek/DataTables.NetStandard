@@ -2,14 +2,14 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="row">
-  <div class="col-sm-12">
-    @Html.Raw(ViewBag.DataTableHtml)
-  </div>
+<div class="table-responsive">
+  @Html.Raw(ViewBag.DataTableHtml)
 </div>
 @section Scripts
 {
   <script type="text/javascript">
-    @Html.Raw(ViewBag.DataTableScript)
+    $(document).ready(function () {
+      @Html.Raw(ViewBag.DataTableScript)
+    });
   </script>
 }

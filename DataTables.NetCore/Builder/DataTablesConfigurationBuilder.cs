@@ -34,9 +34,9 @@ namespace DataTables.NetCore.Builder
                 });
             }
 
-            var output = JsonConvert.SerializeObject(configuration, GetSerializerSettings());
+            var config = JsonConvert.SerializeObject(configuration, GetSerializerSettings());
 
-            return $"$(document).ready(function() {{ $('#{tableName}').DataTable({output}); }} );";
+            return $"var dt_{tableName} = $('#{tableName}').DataTable({config});";
         }
 
         protected static JsonSerializerSettings GetSerializerSettings()
