@@ -10,6 +10,17 @@
   <script type="text/javascript">
     $(document).ready(function () {
       @Html.Raw(ViewBag.DataTableScript)
+
+      yadcf.init(
+        dt_@Html.Raw(ViewBag.DataTableName),
+        [
+          { column_number: 0, filter_type: 'text', filter_delay: 350, filter_reset_button_text: false, style_class: 'form-control-sm' },
+          { column_number: 1, filter_type: 'text', filter_delay: 350, filter_reset_button_text: false, style_class: 'form-control-sm' },
+          { column_number: 2, filter_type: 'text', filter_delay: 350, filter_reset_button_text: false, style_class: 'form-control-sm' }
+        ],
+        {
+          filters_position: 'footer'
+        });
     });
   </script>
 }
