@@ -53,7 +53,6 @@ namespace DataTables.NetCore.Extensions
             this IQueryable<TEntity> queryable, DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             queryable = queryable.AsDataTablesQueryable(request)
-                .ApplyGlobalFilterPredicate()
                 .ApplyGlobalSearchFilter()
                 .ApplyColumnSearchFilter()
                 .ApplyOrder();

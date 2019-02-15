@@ -37,7 +37,8 @@ namespace DataTables.NetCore
 
         /// <summary>
         /// True if the <see cref="GlobalSearchValue"/> should be treated as a regular expression for advanced searching, false otherwise.
-        /// Note: If a custom <see cref="GlobalFilterPredicate"/> is used, implementing the regex logic has to be done individually as well.
+        /// Note: If a custom <see cref="DataTablesColumn{TEntity, TEntityViewModel}.GlobalSearchPredicate"/> is used on columns,
+        ///       implementing the regex logic has to be done individually as well.
         /// 
         /// Note: If this option is set to false, then requests asking for regex evaluation will be handled as if they were non-regex requests.
         ///       The reason for this is security as we only allow regex evaluation if the server-side agrees to it.
@@ -65,12 +66,6 @@ namespace DataTables.NetCore
         /// </code>
         /// </example>
         public IList<DataTablesColumn<TEntity, TEntityViewModel>> Columns { get; private set; } = new List<DataTablesColumn<TEntity, TEntityViewModel>>();
-
-        /// <summary>
-        /// Custom predicate to filter the queryable even when the <see cref="GlobalSearchValue"/> not specified.
-        /// If custom filter predicate is specified, it is appended in the first place to the resulting queryable.
-        /// </summary>
-        public Expression<Func<TEntity, bool>> GlobalFilterPredicate { get; set; }
 
         /// <summary>
         /// Set this property to log incoming request parameters and resulting queries to the given delegate. 

@@ -32,24 +32,6 @@ namespace DataTables.NetCore.Extensions
         }
 
         /// <summary>
-        /// Applies the <see cref="DataTablesRequest{TEntity, TEntityViewModel}.GlobalFilterPredicate"/> of the given
-        /// <see cref="IDataTablesQueryable{TEntity, TEntityViewModel}"/> to the query, if set.
-        /// </summary>
-        /// <typeparam name="TEntity">The type of the entity.</typeparam>
-        /// <typeparam name="TEntityViewModel">The type of the entity view model.</typeparam>
-        /// <param name="queryable">The queryable.</param>
-        public static IDataTablesQueryable<TEntity, TEntityViewModel> ApplyGlobalFilterPredicate<TEntity, TEntityViewModel>(
-            this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
-        {
-            if (queryable.Request.GlobalFilterPredicate != null)
-            {
-                return (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.Where(queryable.Request.GlobalFilterPredicate);
-            }
-
-            return queryable;
-        }
-
-        /// <summary>
         /// Applies the <see cref="DataTablesRequest{TEntity, TEntityViewModel}.GlobalSearchValue"/> of the given
         /// <see cref="IDataTablesQueryable{TEntity, TEntityViewModel}"/> to the query, if set.
         /// To perform the global search, the method will add a search expression for each searchable column of the request.
