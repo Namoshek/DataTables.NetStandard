@@ -6,13 +6,14 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>0.1.0</Version>
     <Authors>Namoshek</Authors>
-    <Description>Self-containing DataTable classes that manage rendering, querying, filtering, sorting and other desireable tasks for the user.</Description>
+    <Description>Self-containing DataTable classes for the datatables.net jQuery plugin that manage rendering, querying, filtering, sorting and other desireable tasks for the user.</Description>
     <PackageProjectUrl>https://github.com/Namoshek/DataTables.NetCore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Namoshek/DataTables.NetCore.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <AssemblyVersion>0.0.1.0</AssemblyVersion>
     <FileVersion>0.0.1.0</FileVersion>
     <PackageLicenseUrl>https://github.com/Namoshek/DataTables.NetCore/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageTags>datatables, datatables.net, queryable, linq, efcore, entity-framework-core</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
