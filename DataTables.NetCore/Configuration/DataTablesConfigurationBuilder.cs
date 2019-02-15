@@ -44,7 +44,7 @@ namespace DataTables.NetCore.Configuration
                 {
                     Data = column.PublicName,
                     Name = column.PublicName,
-                    Title = column.DisplayName,
+                    Title = column.DisplayName ?? column.PublicName.FirstCharToUpper(),
                     Searchable = column.IsSearchable,
                     Orderable = column.IsOrderable,
                     AdditionalOptions = column.AdditionalOptions.DeepClone()
