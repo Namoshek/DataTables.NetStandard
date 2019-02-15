@@ -26,8 +26,12 @@ and extensions of said package.
 
 ## Installation
 
-Currently, there is no NuGet download available just yet.
-Package usage is only possible through cloning and manual compilation or import.
+The package can be found on [nuget.org](https://www.nuget.org/packages/DataTables.NetStandard/).
+You can install the package with:
+
+```pwsh
+$> Install-Package DataTables.NetStandard
+```
 
 ## Usage
 
