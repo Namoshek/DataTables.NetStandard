@@ -224,7 +224,7 @@ public class PersonDataTable
 }
 ```
 
-## Options
+## Configuration
 
 ### Global Configuration and per-table Overrides
 
@@ -320,7 +320,16 @@ which is returned from the `Query()` method using `Include(propertyExpression)` 
 
 ### Global Filtering
 
-TODO
+A global filter can be applied to the DataTable by constraining the query returned by `IQueryable<TEntity> Query()`:
+
+```csharp
+public override IQueryable<Person> Query()
+{
+    return _dbContext.Persons
+        .Include(p => p.Location)
+        .Where(p => p.Id > 100 || p.Name.Contains("Admin"));
+}
+```
 
 ## Advanced Usage
 
