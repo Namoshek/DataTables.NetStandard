@@ -21,7 +21,7 @@
           { column_number: 0, filter_type: 'text', filter_delay: 350, filter_reset_button_text: false, style_class: 'form-control-sm', exclude: true },
           { column_number: 1, filter_type: 'text', filter_delay: 350, filter_reset_button_text: false, style_class: 'form-control-sm' },
           { column_number: 2, filter_type: 'text', filter_delay: 350, filter_reset_button_text: false, style_class: 'form-control-sm' },
-          { column_number: 5, filter_type: 'select', filter_reset_button_text: false, style_class: 'form-control-sm', data: @Html.Raw(JsonConvert.SerializeObject(DataTable.GetDistinctColumnValues(u => u.Location.PostCode)))}
+          { column_number: 5, filter_type: 'select', filter_reset_button_text: false, style_class: 'form-control-sm', data: @Html.Raw(JsonConvert.SerializeObject(DataTable.GetDistinctColumnValues("postCode")))}
         ],
         {
           filters_position: 'footer'

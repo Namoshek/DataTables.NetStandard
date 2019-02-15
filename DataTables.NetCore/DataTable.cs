@@ -6,6 +6,7 @@ using System.Text;
 using DataTables.NetCore.Abstract;
 using DataTables.NetCore.Builder;
 using DataTables.NetCore.Extensions;
+using DataTables.NetCore.Util;
 
 namespace DataTables.NetCore
 {
@@ -76,6 +77,36 @@ namespace DataTables.NetCore
         public string GetTableIdentifier()
         {
             return _tableIdentifier;
+        }
+
+        /// <summary>
+        /// Returns a list of distinct column values that can be used for select filters.
+        /// </summary>
+        /// <param name="columnName">Name of the column.</param>
+        /// <exception cref="ArgumentException">No column with public name <paramref name="columnName"/> available.</exception>
+        public virtual IList<string> GetDistinctColumnValues(string columnName)
+        {
+            var column = Columns().FirstOrDefault(c => c.PublicName == columnName);
+            if (column == null)
+            {
+                throw new ArgumentException($"No column with public name {columnName} available.");
+            }
+
+            return GetDistinctColumnValues(column);
+        }
+
+        /// <summary>
+        /// Returns a list of distinct column values that can be used for select filters.
+        /// </summary>
+        /// <param name="column">The column.</param>
+        public virtual IList<string> GetDistinctColumnValues(DataTablesColumn<TEntity, TEntityViewModel> column)
+        {
+            var parameterExp = ExpressionHelper.BuildParameterExpression<TEntity>();
+            var propertyExp = ExpressionHelper.BuildPropertyExpression(parameterExp, column.PrivatePropertyName);
+            var stringExp = Expression.Call(propertyExp, ExpressionHelper.Object_ToString);
+            var lambda = Expression.Lambda<Func<TEntity, string>>(stringExp, parameterExp);
+
+            return GetDistinctColumnValues(lambda);
         }
 
         /// <summary>

@@ -29,6 +29,17 @@ namespace DataTables.NetCore.Util
         internal static readonly MethodInfo Regex_IsMatch = typeof(Regex).GetMethod(nameof(Regex.IsMatch), new[] { typeof(string), typeof(string) });
 
         /// <summary>
+        /// Builds a parameter expression for the given type
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        internal static ParameterExpression BuildParameterExpression<TEntity>()
+        {
+            var type = typeof(TEntity);
+
+            return Expression.Parameter(type, "e");
+        }
+
+        /// <summary>
         /// Builds an <see cref="Expression"/> for the given <paramref name="propertyName"/>.
         /// The property name has to be given as dot-separated property path, e.g. <code>Destination.Location.City</code>.
         /// </summary>
@@ -58,8 +69,7 @@ namespace DataTables.NetCore.Util
         /// <param name="caseInsensitive">if set to <c>true</c> [case insensitive].</param>
         internal static Expression<Func<TEntity, bool>> BuildStringContainsPredicate<TEntity>(string propertyName, string stringConstant, bool caseInsensitive)
         {
-            var type = typeof(TEntity);
-            var parameterExp = Expression.Parameter(type, "e");
+            var parameterExp = BuildParameterExpression<TEntity>();
             var propertyExp = BuildPropertyExpression(parameterExp, propertyName);
 
             Expression exp = propertyExp;
@@ -92,8 +102,7 @@ namespace DataTables.NetCore.Util
         /// <param name="regex">The regex.</param>
         internal static Expression<Func<TEntity, bool>> BuildRegexPredicate<TEntity>(string propertyName, string regex)
         {
-            var type = typeof(TEntity);
-            var parameterExp = Expression.Parameter(type, "e");
+            var parameterExp = BuildParameterExpression<TEntity>();
             var propertyExp = BuildPropertyExpression(parameterExp, propertyName);
 
             Expression exp = propertyExp;
