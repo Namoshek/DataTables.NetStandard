@@ -1,4 +1,4 @@
-# DataTables.NetCore
+# DataTables.NetStandard
 
 This package provides a way to create self-contained DataTable classes 
 for the famous [datatables.net](https://datatables.net) jQuery plugin which
@@ -32,8 +32,8 @@ Package usage is only possible through cloning and manual compilation or import.
 ## Usage
 
 To create a DataTable, you'll need to create a new class implementing the 
-[`IDataTable` ](DataTables.NetCore/Abstract/IDataTable.cs) interface.
-There is an abstract base class called [`DataTable`](DataTables.NetCore/DataTable.cs)
+[`IDataTable` ](DataTables.NetStandard/Abstract/IDataTable.cs) interface.
+There is an abstract base class called [`DataTable`](DataTables.NetStandard/DataTable.cs)
 available for you to inherit from, providing default implementations for most methods.
 You only have to provide own implementations for a few methods:
 
@@ -88,8 +88,8 @@ public override Expression<Func<Person, PersonViewModel>> MappingFunction()
 Of course you can also create a base class for all your DataTables with a generic implementation
 of the mapping provider function if you don't want to define the same function over and over again.
 
-For a quick start, we recommend having a look at the [PersonDataTable](DataTables.NetCore.Sample/DataTables/PersonDataTable.cs)
-example in the [Sample](DataTables.NetCore.Sample/) project. It is a basic example showcasing
+For a quick start, we recommend having a look at the [PersonDataTable](DataTables.NetStandard.Sample/DataTables/PersonDataTable.cs)
+example in the [Sample](DataTables.NetStandard.Sample/) project. It is a basic example showcasing
 what is possible with this package and how easy it is to setup a new DataTable.
 
 After defining a custom DataTable, you only have to register it in your service container,
@@ -115,7 +115,7 @@ for your DataTables is optional:
 
 // _Layout.cshtml (Optional)
 <script type="text/javascript">
-    @Html.Raw(DataTables.NetCore.Configuration.DataTablesConfigurationBuilder.BuildGlobalConfigurationScript())
+    @Html.Raw(DataTables.NetStandard.Configuration.DataTablesConfigurationBuilder.BuildGlobalConfigurationScript())
 </script>
 @RenderSection("Scripts", required: false)
 ```
@@ -460,7 +460,7 @@ Using the `personDataTable.GetTableIdentifier()` method, you have access to the 
 in above example. This means you can simply add your plugin JavaScript code in your view right after rendering the
 DataTable in order to have access to the table through the `dt_PersonDataTable` variable.
 
-As an example, you can have a look at the [sample project](DataTables.NetCore.Sample/) where we are using a DataTable extension package called
+As an example, you can have a look at the [sample project](DataTables.NetStandard.Sample/) where we are using a DataTable extension package called
 [`yadcf`](https://github.com/vedmack/yadcf). It provides filters for individual columns and can be initialized easily.
 For better illustration, here a full example including the rendering of the DataTable script:
 
