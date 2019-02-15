@@ -1,6 +1,7 @@
 # DataTables.NetCore
 
-This package provides a way to create self-contained DataTable classes which
+This package provides a way to create self-contained DataTable classes 
+for the famous [datatables.net](https://datatables.net) jQuery plugin which
 manage rendering, querying, filtering, sorting and other desireable tasks for you,
 written in .NET Standard for ASP.NET Core applications with focus on Entity Framework Core.
 The package is heavily inspired by Laravels (PHP) counterpart [`yajra/datatables`](https://github.com/yajra/laravel-datatables)
