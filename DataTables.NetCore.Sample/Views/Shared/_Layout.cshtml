@@ -63,7 +63,7 @@
   <script src="~/js/jquery.dataTables.yadcf.js"></script>
   <script src="~/js/site.js" asp-append-version="true"></script>
   <script type="text/javascript">
-    @Html.Raw(DataTables.NetCore.Builder.DataTablesConfigurationBuilder.BuildGlobalConfigurationScript())
+    @Html.Raw(DataTables.NetCore.Configuration.DataTablesConfigurationBuilder.BuildGlobalConfigurationScript())
   </script>
   @RenderSection("Scripts", required: false)
 </body>

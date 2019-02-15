@@ -4,7 +4,7 @@ using System.Linq;
 using DataTables.NetCore.Extensions;
 using Newtonsoft.Json;
 
-namespace DataTables.NetCore.Builder
+namespace DataTables.NetCore.Configuration
 {
     public class DataTablesConfiguration : ICloneable
     {

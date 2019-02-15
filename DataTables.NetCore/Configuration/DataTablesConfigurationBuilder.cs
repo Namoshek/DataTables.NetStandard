@@ -3,7 +3,7 @@ using DataTables.NetCore.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace DataTables.NetCore.Builder
+namespace DataTables.NetCore.Configuration
 {
     public class DataTablesConfigurationBuilder
     {

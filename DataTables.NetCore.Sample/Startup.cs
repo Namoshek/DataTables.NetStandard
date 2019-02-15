@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DataTables.NetCore.Builder;
+using DataTables.NetCore.Configuration;
 using DataTables.NetCore.Sample.DataTables;
 using DataTables.NetCore.Sample.DataTables.ViewModels;
 using DataTables.NetCore.ViewRenderer;

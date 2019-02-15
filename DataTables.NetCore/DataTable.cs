@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using DataTables.NetCore.Abstract;
-using DataTables.NetCore.Builder;
+using DataTables.NetCore.Configuration;
 using DataTables.NetCore.Extensions;
 using DataTables.NetCore.Util;
 
