@@ -240,7 +240,7 @@ namespace DataTables.NetCore
                     int.TryParse(query[$"order[{index}][column]"], out int columnIndex))
                 {
                     // Attempt to find a column with the given index
-                    var column = Columns.FirstOrDefault(c => c.Index == columnIndex);
+                    var column = Columns.FirstOrDefault(c => c.Index == columnIndex && c.IsOrderable);
                     if (column != null)
                     {
                         column.OrderingIndex = sortingIndex;
