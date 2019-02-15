@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace DataTables.NetCore.Abstract
 {
@@ -14,6 +16,12 @@ namespace DataTables.NetCore.Abstract
         /// Gets the query used to fetch data for the DataTable.
         /// </summary>
         IQueryable<TEntity> Query();
+
+        /// <summary>
+        /// A mapping function used to map query models to view models.
+        /// </summary>
+        /// <returns></returns>
+        Expression<Func<TEntity, TEntityViewModel>> MappingFunction();
 
         /// <summary>
         /// Renders the results based on the given <see cref="DataTablesRequest{TEntityViewModel}"/>.

@@ -70,23 +70,28 @@ namespace DataTables.NetCore
         /// Custom predicate to filter the queryable even when the <see cref="GlobalSearchValue"/> not specified.
         /// If custom filter predicate is specified, it is appended in the first place to the resulting queryable.
         /// </summary>
-        public Expression<Func<TEntity, bool>> GlobalFilterPredicate { get; set; } = null;
+        public Expression<Func<TEntity, bool>> GlobalFilterPredicate { get; set; }
 
         /// <summary>
         /// Set this property to log incoming request parameters and resulting queries to the given delegate. 
         /// For example, to log to the console, set this property to <see cref="Console.Write(string)"/>.
         /// </summary>
-        public Action<string> Log { get; set; } = null;
+        public Action<string> Log { get; set; }
 
         /// <summary>
         /// Original request parameters collection.
         /// </summary>
-        public NameValueCollection OriginalRequest { get; protected set; } = null;
+        public NameValueCollection OriginalRequest { get; protected set; }
 
         /// <summary>
         /// Original set of column definitions for the underlying DataTables.
         /// </summary>
-        public IList<DataTablesColumn<TEntity, TEntityViewModel>> OriginalColumns { get; protected set; } = null;
+        public IList<DataTablesColumn<TEntity, TEntityViewModel>> OriginalColumns { get; protected set; }
+
+        /// <summary>
+        /// Mapping function used to map query models to view models.
+        /// </summary>
+        public Expression<Func<TEntity, TEntityViewModel>> MappingFunction { get; protected set; }
 
         /// <summary>
         /// Gets original request parameter value by its name
@@ -103,35 +108,47 @@ namespace DataTables.NetCore
         /// This constructor is useful with it's needed to create <see cref="DataTablesRequest{T}"/> from the Nancy's <a href="https://github.com/NancyFx/Nancy/blob/master/src/Nancy/Request.cs">Request.Form</a> data.
         /// </summary>
         /// <param name="form">Request form data</param>
-        public DataTablesRequest(IDictionary<string, object> form, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
-            : this(form.Aggregate(new NameValueCollection(), (k, v) => { k.Add(v.Key, v.Value.ToString()); return k; }), columns) { }
+        /// <param name="columns">DataTable columns</param>
+        /// <param name="mappingFunction">View model mapping function</param>
+        public DataTablesRequest(IDictionary<string, object> form, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns, 
+            Expression<Func<TEntity, TEntityViewModel>> mappingFunction)
+            : this(form.Aggregate(new NameValueCollection(), (k, v) => { k.Add(v.Key, v.Value.ToString()); return k; }), columns, mappingFunction) { }
 
         /// <summary>
         /// Creates new <see cref="DataTablesRequest{T}"/> from <see cref="DataTablesAjaxPostModel"/>.
         /// </summary>
         /// <param name="ajaxPostModel">Contains datatables parameters sent from client side when POST method is used.</param>
-        public DataTablesRequest(DataTablesAjaxPostModel ajaxPostModel, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
-            : this(ajaxPostModel.ToNameValueCollection(), columns) { }
+        /// <param name="columns">DataTable columns</param>
+        /// <param name="mappingFunction">View model mapping function</param>
+        public DataTablesRequest(DataTablesAjaxPostModel ajaxPostModel, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns,
+            Expression<Func<TEntity, TEntityViewModel>> mappingFunction)
+            : this(ajaxPostModel.ToNameValueCollection(), columns, mappingFunction) { }
 
         /// <summary>
         /// Creates new <see cref="DataTablesRequest{T}"/> from <see cref="Uri"/> instance.
         /// </summary>
         /// <param name="uri"><see cref="Uri"/> instance</param>
-        public DataTablesRequest(Uri uri, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
-            : this(uri.Query, columns) { }
+        /// <param name="columns">DataTable columns</param>
+        /// <param name="mappingFunction">View model mapping function</param>
+        public DataTablesRequest(Uri uri, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns, Expression<Func<TEntity, TEntityViewModel>> mappingFunction)
+            : this(uri.Query, columns, mappingFunction) { }
 
         /// <summary>
         /// Creates new <see cref="DataTablesRequest{T}"/> from http query string.
         /// </summary>
         /// <param name="queryString"></param>
-        public DataTablesRequest(string queryString, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
-            : this(HttpUtility.ParseQueryString(queryString), columns) { }
+        /// <param name="columns">DataTable columns</param>
+        /// <param name="mappingFunction">View model mapping function</param>
+        public DataTablesRequest(string queryString, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns, Expression<Func<TEntity, TEntityViewModel>> mappingFunction)
+            : this(HttpUtility.ParseQueryString(queryString), columns, mappingFunction) { }
 
         /// <summary>
         /// Creates new <see cref="DataTablesRequest{T}"/> from <see cref="NameValueCollection"/> instance.
         /// </summary>
         /// <param name="query"></param>
-        public DataTablesRequest(NameValueCollection query, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
+        /// <param name="columns">DataTable columns</param>
+        /// <param name="mappingFunction">View model mapping function</param>
+        public DataTablesRequest(NameValueCollection query, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns, Expression<Func<TEntity, TEntityViewModel>> mappingFunction)
         {
             if (query == null)
             {
@@ -145,6 +162,7 @@ namespace DataTables.NetCore
 
             OriginalRequest = new NameValueCollection(query);
             OriginalColumns = columns;
+            MappingFunction = mappingFunction;
 
             ParseGlobalConfigurationFromQuery(query);
             ParseColumnConfigurationFromQuery(query);

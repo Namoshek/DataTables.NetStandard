@@ -46,7 +46,9 @@ namespace DataTables.NetCore
             int takeCount = PageSize <= 0 ? TotalCount : PageSize;
 
             var result = queryable.Skip(skipCount).Take(takeCount).ToList();
-            AddRange(AutoMapper.Mapper.Map<IEnumerable<TEntityViewModel>>(result));
+
+            var mapToViewModel = queryable.Request.MappingFunction.Compile();
+            AddRange(result.Select(e => mapToViewModel(e)));
         }
     }
 }

@@ -39,6 +39,7 @@ namespace DataTables.NetCore
 
         public abstract IList<DataTablesColumn<TEntity, TEntityViewModel>> Columns();
         public abstract IQueryable<TEntity> Query();
+        public abstract Expression<Func<TEntity, TEntityViewModel>> MappingFunction();
 
         public string GetTableIdentifier()
         {
@@ -54,7 +55,7 @@ namespace DataTables.NetCore
 
         public virtual IPagedList<TEntityViewModel> RenderResults(string query)
         {
-            var request = new DataTablesRequest<TEntity, TEntityViewModel>(query, Columns());
+            var request = new DataTablesRequest<TEntity, TEntityViewModel>(query, Columns(), MappingFunction());
 
             return Query().ToPagedList(request);
         }

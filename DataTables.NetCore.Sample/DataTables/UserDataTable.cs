@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using DataTables.NetCore.Abstract;
 using DataTables.NetCore.Sample.DataTables.ViewModels;
 using DataTables.NetCore.Sample.Models;
@@ -133,6 +135,11 @@ namespace DataTables.NetCore.Sample.DataTables
         public override IQueryable<User> Query()
         {
             return _dbContext.Users.Include(u => u.Location);
+        }
+
+        public override Expression<Func<User, UserViewModel>> MappingFunction()
+        {
+            return u => AutoMapper.Mapper.Map<UserViewModel>(u);
         }
 
         public override IDictionary<string, dynamic> AdditionalDataTableOptions()
