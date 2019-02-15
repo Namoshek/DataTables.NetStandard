@@ -65,6 +65,7 @@ namespace DataTables.NetCore.Sample.DataTables
                     PrivatePropertyName = $"{nameof(User.Location)}.{nameof(Location.Street)}",
                     IsOrderable = true,
                     IsSearchable = true,
+                    ColumnSearchPredicate = (u, s) => (u.Location.Street + " " + u.Location.HouseNumber).Contains(s),
                     GlobalSearchPredicate = (u, s) => (u.Location.Street + " " + u.Location.HouseNumber).Contains(s)
                 },
                 new DataTablesColumn<User, UserViewModel>

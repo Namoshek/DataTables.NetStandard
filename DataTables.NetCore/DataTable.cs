@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using DataTables.NetCore.Abstract;
 using DataTables.NetCore.Builder;
@@ -78,6 +79,15 @@ namespace DataTables.NetCore
         }
 
         /// <summary>
+        /// Returns a list of distinct column values that can be used for select filters.
+        /// </summary>
+        /// <param name="property"></param>
+        public virtual IList<string> GetDistinctColumnValues(Expression<Func<TEntity, string>> property)
+        {
+            return Query().Select(property).Distinct().ToList();
+        }
+
+        /// <summary>
         /// Renders the table header. Can be overwritten to change the rendering.
         /// </summary>
         protected virtual string RenderTableHeader()
@@ -151,9 +161,9 @@ namespace DataTables.NetCore
         /// Returns the identifier for the table. Can be something static or a generated
         /// value that ensures uniqueness.
         /// </summary>
-        protected string BuildTableIdentifier()
+        protected virtual string BuildTableIdentifier()
         {
-            return $"{GetType().Name}_{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
+            return GetType().Name;
         }
     }
 }

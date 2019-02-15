@@ -10,6 +10,7 @@ namespace DataTables.NetCore.Builder
         public string Ajax { get; set; }
         public string Method { get; set; }
         public string Dom { get; set; }
+        public bool StateSave { get; set; } = true;
 
         public IList<DataTablesConfigurationColumn> Columns { get; protected set; } = new List<DataTablesConfigurationColumn>();
 
