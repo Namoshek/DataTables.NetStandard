@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DataTables.NetCore.Sample.Models
 {
-    public class User
+    public class Person
     {
         [Key]
         public long Id { get; set; }

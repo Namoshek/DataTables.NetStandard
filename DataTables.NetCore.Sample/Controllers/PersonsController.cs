@@ -5,25 +5,25 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DataTables.NetCore.Sample.Controllers
 {
-    public class HomeController : Controller
+    public class PersonsController : Controller
     {
-        protected UserDataTable _userDataTable;
+        protected PersonDataTable _personDataTable;
 
-        public HomeController(UserDataTable userDataTable)
+        public PersonsController(PersonDataTable personDataTable)
         {
-            _userDataTable = userDataTable;
+            _personDataTable = personDataTable;
         }
 
         public IActionResult Index()
         {
-            ViewBag.DataTable = _userDataTable;
+            ViewBag.DataTable = _personDataTable;
 
             return View();
         }
 
-        public IActionResult IndexData()
+        public IActionResult TableData()
         {
-            return Ok(_userDataTable.RenderResponse(Request.QueryString.ToUriComponent()).AsJsonString());
+            return Ok(_personDataTable.RenderResponse(Request.QueryString.ToUriComponent()).AsJsonString());
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

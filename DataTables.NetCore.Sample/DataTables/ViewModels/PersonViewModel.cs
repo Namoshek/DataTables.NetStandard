@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace DataTables.NetCore.Sample.DataTables.ViewModels
 {
-    public class UserViewModel
+    public class PersonViewModel
     {
         public long Id { get; set; }
 

@@ -31,7 +31,7 @@ namespace DataTables.NetCore.Sample
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddDataTables();
-            services.AddScoped<UserDataTable>();
+            services.AddScoped<PersonDataTable>();
 
             // Configure DataTables configuration builder
             DataTablesConfigurationBuilder.DefaultConfiguration.AdditionalOptions.Add("stateSave", false);
@@ -54,7 +54,7 @@ namespace DataTables.NetCore.Sample
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Persons/Error");
                 app.UseHsts();
             }
 
@@ -65,7 +65,7 @@ namespace DataTables.NetCore.Sample
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Persons}/{action=Index}/{id?}");
             });
         }
     }

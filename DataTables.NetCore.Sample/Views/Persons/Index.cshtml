@@ -3,17 +3,18 @@
 
 @{
     ViewData["Title"] = "Home Page";
-    var DataTable = (UserDataTable)ViewBag.DataTable;
+    var DataTable = (PersonDataTable)ViewBag.DataTable;
 }
 
 <div class="table-responsive">
   @Html.Raw(DataTable.RenderHtml())
 </div>
+
 @section Scripts
 {
   <script type="text/javascript">
     $(document).ready(function () {
-      @Html.Raw(DataTable.RenderScript(Url.Action("IndexData", "Home")))
+      @Html.Raw(DataTable.RenderScript(Url.Action("TableData", "Persons")))
 
       yadcf.init(
         dt_@Html.Raw(DataTable.GetTableIdentifier()),

@@ -12,7 +12,7 @@ namespace DataTables.NetCore.Sample.Models
         public string City { get; set; }
         public string Country { get; set; }
 
-        public long UserId { get; set; }
-        public User User { get; set; }
+        public long PersonId { get; set; }
+        public Person Person { get; set; }
     }
 }

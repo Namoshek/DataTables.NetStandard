@@ -9,117 +9,117 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataTables.NetCore.Sample.DataTables
 {
-    public class UserDataTable : DataTable<User, UserViewModel>, IDataTable<User, UserViewModel>
+    public class PersonDataTable : DataTable<Person, PersonViewModel>, IDataTable<Person, PersonViewModel>
     {
         protected SampleDbContext _dbContext;
 
-        public UserDataTable(SampleDbContext dbContext)
+        public PersonDataTable(SampleDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public override IList<DataTablesColumn<User, UserViewModel>> Columns()
+        public override IList<DataTablesColumn<Person, PersonViewModel>> Columns()
         {
-            var columns = new List<DataTablesColumn<User, UserViewModel>>
+            var columns = new List<DataTablesColumn<Person, PersonViewModel>>
             {
-                new DataTablesColumn<User, UserViewModel>
+                new DataTablesColumn<Person, PersonViewModel>
                 {
                     PublicName = "id",
                     DisplayName = "ID",
-                    PublicPropertyName = nameof(UserViewModel.Id),
-                    PrivatePropertyName = nameof(User.Id),
+                    PublicPropertyName = nameof(PersonViewModel.Id),
+                    PrivatePropertyName = nameof(Person.Id),
                     IsOrderable = true,
                     IsSearchable = true,
                     SearchRegex = true
                 },
-                new DataTablesColumn<User, UserViewModel>
+                new DataTablesColumn<Person, PersonViewModel>
                 {
                     PublicName = "name",
                     DisplayName = "Name",
-                    PublicPropertyName = nameof(UserViewModel.Name),
-                    PrivatePropertyName = nameof(User.Name),
+                    PublicPropertyName = nameof(PersonViewModel.Name),
+                    PrivatePropertyName = nameof(Person.Name),
                     IsOrderable = true,
                     IsSearchable = true
                 },
-                new DataTablesColumn<User, UserViewModel>
+                new DataTablesColumn<Person, PersonViewModel>
                 {
                     PublicName = "email",
                     DisplayName = "Email",
-                    PublicPropertyName = nameof(UserViewModel.Email),
-                    PrivatePropertyName = nameof(User.Email),
+                    PublicPropertyName = nameof(PersonViewModel.Email),
+                    PrivatePropertyName = nameof(Person.Email),
                     IsOrderable = true,
                     IsSearchable = true
                 },
-                new DataTablesColumn<User, UserViewModel>
+                new DataTablesColumn<Person, PersonViewModel>
                 {
                     PublicName = "dateOfBirth",
                     DisplayName = "Date of Birth",
-                    PublicPropertyName = nameof(UserViewModel.DateOfBirth),
-                    PrivatePropertyName = nameof(User.DateOfBirth),
+                    PublicPropertyName = nameof(PersonViewModel.DateOfBirth),
+                    PrivatePropertyName = nameof(Person.DateOfBirth),
                     IsOrderable = true,
                     IsSearchable = false
                 },
-                new DataTablesColumn<User, UserViewModel>
+                new DataTablesColumn<Person, PersonViewModel>
                 {
                     PublicName = "address",
                     DisplayName = "Address",
-                    PublicPropertyName = nameof(UserViewModel.Address),
-                    PrivatePropertyName = $"{nameof(User.Location)}.{nameof(Location.Street)}",
+                    PublicPropertyName = nameof(PersonViewModel.Address),
+                    PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.Street)}",
                     IsOrderable = true,
                     IsSearchable = true,
-                    ColumnSearchPredicate = (u, s) => (u.Location.Street + " " + u.Location.HouseNumber).Contains(s),
-                    GlobalSearchPredicate = (u, s) => (u.Location.Street + " " + u.Location.HouseNumber).Contains(s)
+                    ColumnSearchPredicate = (p, s) => (p.Location.Street + " " + p.Location.HouseNumber).Contains(s),
+                    GlobalSearchPredicate = (p, s) => (p.Location.Street + " " + p.Location.HouseNumber).Contains(s)
                 },
-                new DataTablesColumn<User, UserViewModel>
+                new DataTablesColumn<Person, PersonViewModel>
                 {
                     PublicName = "postCode",
                     DisplayName = "Post Code",
-                    PublicPropertyName = nameof(UserViewModel.PostCode),
-                    PrivatePropertyName = $"{nameof(User.Location)}.{nameof(Location.PostCode)}",
+                    PublicPropertyName = nameof(PersonViewModel.PostCode),
+                    PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.PostCode)}",
                     IsOrderable = true,
                     IsSearchable = true
                 },
-                new DataTablesColumn<User, UserViewModel>
+                new DataTablesColumn<Person, PersonViewModel>
                 {
                     PublicName = "city",
                     DisplayName = "City",
-                    PublicPropertyName = nameof(UserViewModel.City),
-                    PrivatePropertyName = $"{nameof(User.Location)}.{nameof(Location.City)}",
+                    PublicPropertyName = nameof(PersonViewModel.City),
+                    PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.City)}",
                     IsOrderable = true,
                     IsSearchable = true
                 },
-                new DataTablesColumn<User, UserViewModel>
+                new DataTablesColumn<Person, PersonViewModel>
                 {
                     PublicName = "country",
                     DisplayName = "Country",
-                    PublicPropertyName = nameof(UserViewModel.Country),
-                    PrivatePropertyName = $"{nameof(User.Location)}.{nameof(Location.Country)}",
+                    PublicPropertyName = nameof(PersonViewModel.Country),
+                    PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.Country)}",
                     IsOrderable = true,
                     IsSearchable = true
                 },
-                new DataTablesColumn<User, UserViewModel>
+                new DataTablesColumn<Person, PersonViewModel>
                 {
                     PublicName = "action",
                     DisplayName = "Action",
-                    PublicPropertyName = nameof(UserViewModel.Action),
+                    PublicPropertyName = nameof(PersonViewModel.Action),
                     PrivatePropertyName = null,
                     IsOrderable = false,
                     IsSearchable = false
                 },
-                new DataTablesColumn<User, UserViewModel>
+                new DataTablesColumn<Person, PersonViewModel>
                 {
                     PublicName = "action2",
                     DisplayName = "Action 2",
-                    PublicPropertyName = nameof(UserViewModel.Action2),
+                    PublicPropertyName = nameof(PersonViewModel.Action2),
                     PrivatePropertyName = null,
                     IsOrderable = false,
                     IsSearchable = false
                 },
-                new DataTablesColumn<User, UserViewModel>
+                new DataTablesColumn<Person, PersonViewModel>
                 {
                     PublicName = "action3",
                     DisplayName = "Action 3",
-                    PublicPropertyName = nameof(UserViewModel.Action3),
+                    PublicPropertyName = nameof(PersonViewModel.Action3),
                     PrivatePropertyName = null,
                     IsOrderable = false,
                     IsSearchable = false
@@ -132,14 +132,14 @@ namespace DataTables.NetCore.Sample.DataTables
             return columns;
         }
 
-        public override IQueryable<User> Query()
+        public override IQueryable<Person> Query()
         {
-            return _dbContext.Users.Include(u => u.Location);
+            return _dbContext.Persons.Include(p => p.Location);
         }
 
-        public override Expression<Func<User, UserViewModel>> MappingFunction()
+        public override Expression<Func<Person, PersonViewModel>> MappingFunction()
         {
-            return u => AutoMapper.Mapper.Map<UserViewModel>(u);
+            return p => AutoMapper.Mapper.Map<PersonViewModel>(p);
         }
 
         public override IDictionary<string, dynamic> AdditionalDataTableOptions()

@@ -87,7 +87,7 @@ public override Expression<Func<Person, PersonViewModel>> MappingFunction()
 Of course you can also create a base class for all your DataTables with a generic implementation
 of the mapping provider function if you don't want to define the same function over and over again.
 
-For a quick start, we recommend having a look at the [UserDataTable](DataTables.NetCore.Sample/DataTables/UserDataTable.cs)
+For a quick start, we recommend having a look at the [PersonDataTable](DataTables.NetCore.Sample/DataTables/PersonDataTable.cs)
 example in the [Sample](DataTables.NetCore.Sample/) project. It is a basic example showcasing
 what is possible with this package and how easy it is to setup a new DataTable.
 
@@ -98,13 +98,17 @@ for your DataTables is optional:
 
 ```csharp
 // MyTable.cshtml
+@{
+    var DataTable = (MyCustomDataTable)ViewBag.MyCustomDataTable;
+}
+
 <div class="table-responsive">
-  @Html.Raw(MyCustomDataTable.RenderHtml())
+  @Html.Raw(DataTable.RenderHtml())
 </div>
 
 @section Scripts {
     $(document).ready(function () {
-        @Html.Raw(MyCustomDataTable.RenderScript(Url.Action("TableData", "MyController")))
+        @Html.Raw(DataTable.RenderScript(Url.Action("TableData", "MyController")))
     });
 }
 
@@ -215,7 +219,7 @@ public class PersonDataTable
 
     public override IQueryable<Person> Query()
     {
-        return _dbContext.Persons.Include(u => u.Location);
+        return _dbContext.Persons.Include(p => p.Location);
     }
 }
 ```
@@ -375,10 +379,10 @@ public class DefaultMappingProfile : Profile
             // The Scriban package does not require any dependency injection and offers static methods, which
             // makes it a very easy to use library. The template language Liquid is quite different from Razor
             // though, so it can be a bit of work to get used to it.
-            // Probably important: If the row object (user) is passed directly as second argument, its properties
-            // will be accessible in the template directly (i.e. <code>u.Id</code> -> <code>{{ id }}</code>).
-            // If the row object is wrapped in another object like <code>new { User = u }</code>, the properties
-            // will be accessible with <code>{{ user.id }}</code> for example.
+            // Probably important: If the row object (person) is passed directly as second argument, its properties
+            // will be accessible in the template directly (i.e. <code>p.Id</code> -> <code>{{ id }}</code>).
+            // If the row object is wrapped in another object like <code>new { Person = p }</code>, the properties
+            // will be accessible with <code>{{ person.id }}</code> for example.
             // Important: Template files have to be copied to the output folder during builds. Make sure this
             //            setting is set correctly in the file properties.
             .ForMember(vm => vm.Action, m => m.MapFrom(p => ViewRenderService.RenderLiquidToString("DataTables/Person/Action.twig",p)))
