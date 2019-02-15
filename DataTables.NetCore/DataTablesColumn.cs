@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
+using DataTables.NetCore.Extensions;
 
 namespace DataTables.NetCore
 {
@@ -105,6 +107,12 @@ namespace DataTables.NetCore
         public Expression<Func<TEntity, string, bool>> GlobalSearchPredicate { get; set; }
 
         /// <summary>
+        /// A dictionary of additional options that should be passed to the DataTables script for this column.
+        /// The entries are serialized as is and no PascalCase to camelCase transformation is performed.
+        /// </summary>
+        public IDictionary<string, dynamic> AdditionalOptions { get; set; } = new Dictionary<string, dynamic>();
+
+        /// <summary>
         /// Creates a new object that is a copy of the current instance.
         /// </summary>
         /// <returns>
@@ -112,7 +120,11 @@ namespace DataTables.NetCore
         /// </returns>
         public object Clone()
         {
-            return MemberwiseClone();
+            var clone = (DataTablesColumn<TEntity, TEntityViewModel>)MemberwiseClone();
+
+            clone.AdditionalOptions = clone.AdditionalOptions.DeepClone();
+
+            return clone;
         }
     }
 }

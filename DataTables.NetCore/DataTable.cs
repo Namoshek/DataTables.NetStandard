@@ -40,26 +40,31 @@ namespace DataTables.NetCore
         public abstract IList<DataTablesColumn<TEntity, TEntityViewModel>> Columns();
         public abstract IQueryable<TEntity> Query();
 
-        public DataTablesResponse<TEntity, TEntityViewModel> RenderResponse(string query)
+        public string GetTableIdentifier()
+        {
+            return _tableIdentifier;
+        }
+
+        public virtual DataTablesResponse<TEntity, TEntityViewModel> RenderResponse(string query)
         {
             var data = RenderResults(query);
 
             return new DataTablesResponse<TEntity, TEntityViewModel>(data, Columns());
         }
 
-        public IPagedList<TEntityViewModel> RenderResults(string query)
+        public virtual IPagedList<TEntityViewModel> RenderResults(string query)
         {
             var request = new DataTablesRequest<TEntity, TEntityViewModel>(query, Columns());
 
             return Query().ToPagedList(request);
         }
 
-        public string RenderScript(string url, string method = "get")
+        public virtual string RenderScript(string url, string method = "get")
         {
-            return DataTablesConfigurationBuilder.BuildDataTableConfigurationScript(Columns(), GetTableIdentifier(), url, method);
+            return DataTablesConfigurationBuilder.BuildDataTableConfigurationScript(Columns(), GetTableIdentifier(), url, method, AdditionalDataTableOptions());
         }
 
-        public string RenderHtml()
+        public virtual string RenderHtml()
         {
             var sb = new StringBuilder();
 
@@ -74,9 +79,13 @@ namespace DataTables.NetCore
             return sb.ToString();
         }
 
-        public string GetTableIdentifier()
+        /// <summary>
+        /// Additional data table options. The options are serialized as they are without changing PascalCase to
+        /// camelCase or something similar.
+        /// </summary>
+        public virtual IDictionary<string, dynamic> AdditionalDataTableOptions()
         {
-            return _tableIdentifier;
+            return new Dictionary<string, dynamic>();
         }
 
         /// <summary>

@@ -18,7 +18,7 @@ namespace DataTables.NetCore.Sample.DataTables
 
         public override IList<DataTablesColumn<User, UserViewModel>> Columns()
         {
-            return new List<DataTablesColumn<User, UserViewModel>>
+            var columns = new List<DataTablesColumn<User, UserViewModel>>
             {
                 new DataTablesColumn<User, UserViewModel>
                 {
@@ -123,11 +123,26 @@ namespace DataTables.NetCore.Sample.DataTables
                     IsSearchable = false
                 }
             };
+
+            // We can also add additional options to a column
+            columns.Last().AdditionalOptions.Add("className", "text-center");
+
+            return columns;
         }
 
         public override IQueryable<User> Query()
         {
             return _dbContext.Users.Include(u => u.Location);
+        }
+
+        public override IDictionary<string, dynamic> AdditionalDataTableOptions()
+        {
+            return new Dictionary<string, dynamic>
+            {
+                { "stateSave", true },
+                { "pagingType", "full_numbers" },
+                { "search", new { smart = true } }
+            };
         }
     }
 }

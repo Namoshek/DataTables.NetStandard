@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DataTables.NetCore.Builder;
 using DataTables.NetCore.Sample.DataTables;
 using DataTables.NetCore.Sample.DataTables.ViewModels;
 using DataTables.NetCore.ViewRenderer;
@@ -31,6 +32,9 @@ namespace DataTables.NetCore.Sample
 
             services.AddDataTables();
             services.AddScoped<UserDataTable>();
+
+            // Configure DataTables configuration builder
+            DataTablesConfigurationBuilder.DefaultConfiguration.AdditionalOptions.Add("stateSave", false);
 
             // Building the service provider early to get the IViewRenderService is a hack that is necessary to get access 
             // to the Razor partial compiler in the DefaultMappingProfile. As the IViewRenderService depends on services
