@@ -388,6 +388,9 @@ public class DefaultMappingProfile : Profile
 
 You can also return raw HTML in your view models to generate styled cells or action columns for example.
 As this can be a bit cumbersome, we provide some helpers that can render templates with your row data.
+In order to use the helpers, you'll have to add the additional package
+[`DataTables.NetStandard.TemplateMapper`](https://www.nuget.org/packages/DataTables.NetStandard.TemplateMapper/)
+to your project.
 You find some examples below with an explanation of the different methods within code comments.
 
 ```csharp
@@ -413,7 +416,10 @@ public class DefaultMappingProfile : Profile
             // will be accessible with <code>{{ person.id }}</code> for example.
             // Important: Template files have to be copied to the output folder during builds. Make sure this
             //            setting is set correctly in the file properties.
-            .ForMember(vm => vm.Action, m => m.MapFrom(p => ViewRenderService.RenderLiquidToString("DataTables/Person/Action.twig",p)))
+            .ForMember(vm => vm.Action, m => m.MapFrom(p => ViewRenderService.RenderLiquidTemplateFileWithData("DataTables/Person/Action.twig", p)))
+
+            // The same renderer is also available for string based templates instead of file based ones.
+            .ForMember(vm => vm.Action, m => m.MapFrom(p => ViewRenderService.RenderLiquidTemplateWithData("<a href=\"#person-{{id}}\">Link 2</a>", p)))
 
             // This renders the given view as Razor template through the ASP.NET Core MVC Razor engine. Rendering
             // the view this way allows you to use basically all Razor functions available. There is a significant
@@ -427,7 +433,8 @@ public class DefaultMappingProfile : Profile
 
 _Note: When you use dependencies within your mapping profile, you'll have to inject these dependencies
 into the profile yourself when initializing your `Mapper`. Of course you'll need to register or create
-all of the required dependencies before you can pass them to the profile._
+all of the required dependencies before you can pass them to the profile. We provide an extension method
+for the `IServiceCollection` called `services.AddDataTablesTemplateMapper()` which does this for you._
 
 ### Customizing the Table Rendering
 

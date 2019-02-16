@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Scriban;
 
-namespace DataTables.NetStandard.ViewRenderer
+namespace DataTables.NetStandard.TemplateMapper
 {
     public class ViewRenderService : IViewRenderService
     {
@@ -29,7 +29,7 @@ namespace DataTables.NetStandard.ViewRenderer
         }
 
         /// <summary>
-        /// Renders a view as string asynchronously. Can be used outside of controller context.
+        /// Renders a Razor view as string asynchronously. Can be used outside of controller context.
         /// </summary>
         /// <param name="viewName">Name of the view.</param>
         /// <param name="model">The model.</param>
@@ -74,15 +74,28 @@ namespace DataTables.NetStandard.ViewRenderer
         }
 
         /// <summary>
-        /// Renders a liquid template using the given data to a string asynchronously.
+        /// Renders a liquid template file using the given data to a string.
         /// </summary>
         /// <param name="viewName">Name of the view.</param>
         /// <param name="model">The model.</param>
-        public static string RenderLiquidToString(string viewName, object model)
+        public static string RenderLiquidTemplateFileWithData(string viewName, object model)
         {
             var view = File.ReadAllText(Directory.GetCurrentDirectory() + "/Views/" + viewName);
-            var template = Template.Parse(view);
-            return template.Render(model);
+
+            return RenderLiquidTemplateWithData(view, model);
+        }
+
+        /// <summary>
+        /// Renders a liquid template using the given data to a string.
+        /// </summary>
+        /// <param name="template">The template.</param>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        public static string RenderLiquidTemplateWithData(string template, object model)
+        {
+            var parsedTemplate = Template.Parse(template);
+
+            return parsedTemplate.Render(model);
         }
     }
 }

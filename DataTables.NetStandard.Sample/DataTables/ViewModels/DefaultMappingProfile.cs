@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using DataTables.NetStandard.Sample.Models;
-using DataTables.NetStandard.ViewRenderer;
+using DataTables.NetStandard.TemplateMapper;
 
 namespace DataTables.NetStandard.Sample.DataTables.ViewModels
 {
@@ -30,7 +30,7 @@ namespace DataTables.NetStandard.Sample.DataTables.ViewModels
                 // will be accessible with <code>{{ person.id }}</code> for example.
                 // Important: Template files have to be copied to the output folder during builds. Make sure this
                 //            setting is set correctly in the file properties.
-                .ForMember(vm => vm.Action2, m => m.MapFrom(p => ViewRenderService.RenderLiquidToString("DataTables/Person/Action.twig", p)))
+                .ForMember(vm => vm.Action2, m => m.MapFrom(p => ViewRenderService.RenderLiquidTemplateFileWithData("DataTables/Person/Action.twig", p)))
 
                 // This renders the given view as Razor template through the ASP.NET Core MVC Razor engine. Rendering
                 // the view this way allows you to use basically all Razor functions available. There is a significant

@@ -25,6 +25,7 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\DataTables.NetStandard.TemplateMapper\DataTables.NetStandard.TemplateMapper.csproj" />
     <ProjectReference Include="..\DataTables.NetStandard\DataTables.NetStandard.csproj" />
   </ItemGroup>
 

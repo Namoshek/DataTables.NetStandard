@@ -4,14 +4,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <Authors>Namoshek</Authors>
     <Description>Self-containing DataTable classes for the datatables.net jQuery plugin that manage rendering, querying, filtering, sorting and other desireable tasks for the user.</Description>
     <PackageProjectUrl>https://github.com/Namoshek/DataTables.NetStandard</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Namoshek/DataTables.NetStandard.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>0.0.1.0</AssemblyVersion>
-    <FileVersion>0.0.1.0</FileVersion>
+    <AssemblyVersion>0.0.2.0</AssemblyVersion>
+    <FileVersion>0.0.2.0</FileVersion>
     <PackageLicenseUrl>https://github.com/Namoshek/DataTables.NetStandard/blob/master/LICENSE.md</PackageLicenseUrl>
     <PackageTags>datatables, datatables.net, queryable, linq, efcore, entity-framework-core</PackageTags>
     <PackageId>DataTables.NetStandard</PackageId>
@@ -23,9 +23,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor" Version="2.2.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-    <PackageReference Include="Scriban" Version="1.2.9" />
   </ItemGroup>
 
 </Project>

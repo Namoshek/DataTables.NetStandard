@@ -2,7 +2,7 @@
 using DataTables.NetStandard.Configuration;
 using DataTables.NetStandard.Sample.DataTables;
 using DataTables.NetStandard.Sample.DataTables.ViewModels;
-using DataTables.NetStandard.ViewRenderer;
+using DataTables.NetStandard.TemplateMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +30,7 @@ namespace DataTables.NetStandard.Sample
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddDataTables();
+            services.AddDataTablesTemplateMapper();
             services.AddScoped<PersonDataTable>();
 
             // Configure DataTables configuration builder
