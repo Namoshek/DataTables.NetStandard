@@ -42,8 +42,7 @@ available for you to inherit from, providing default implementations for most me
 You only have to provide own implementations for a few methods:
 
 ```csharp
-public class PersonDataTable 
-    : DataTable<Person, PersonViewModel>, IDataTable<Person, PersonViewModel>
+public class PersonDataTable : DataTable<Person, PersonViewModel>, IDataTable<Person, PersonViewModel>
 {
     public override IList<DataTablesColumn<Person, PersonViewModel>> Columns()
     {
@@ -135,8 +134,7 @@ some related `Location` information. The example showcases a lot of the supporte
 options combined in one table.
 
 ```csharp
-public class PersonDataTable
-    : DataTable<Person, PersonViewModel>, IDataTable<Person, PersonViewModel>
+public class PersonDataTable : DataTable<Person, PersonViewModel>, IDataTable<Person, PersonViewModel>
 {
     protected SampleDbContext _dbContext;
 
