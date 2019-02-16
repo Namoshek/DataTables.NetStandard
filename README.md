@@ -124,6 +124,10 @@ for your DataTables is optional:
 @RenderSection("Scripts", required: false)
 ```
 
+Please note that this package does not include the actual DataTables script file as well as the stylesheet.
+You will have to add these files to the layout yourself. This package only generates the table HTML and
+the script that renders the actual table.
+
 ## Full Example
 
 The following is a working example of a DataTable that queries `Persons` with
