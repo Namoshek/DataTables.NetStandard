@@ -301,7 +301,12 @@ public override IList<DataTablesColumn<Person, PersonViewModel>> Columns()
             SearchRegex = true,
             GlobalSearchPredicate = (p, s) => p.Id.ToString().Contains(s),
             ColumnSearchPredicate = (p, s) => p.Id.ToString().Contains(s),
-            ColumnOrderingProperty = (p) => p.Id
+            ColumnOrderingProperty = (p) => p.Id,
+            AdditionalOptions = new Dictionary<string, dynamic>
+            {
+                { "visible", false },
+                { "className", "hidden" }
+            }
         },
         // More column definitions ...
     };
@@ -321,6 +326,7 @@ Column                      | Mandatory | Default                         | Func
 `GlobalSearchPredicate`     | No        | `PrivatePropertyName` property `Contains(searchValue)` | An expression that is used to search the column when a global search value is set. The expression receives the query model and the global search value as parameters. _Note: You should make sure the expression can be translated by Linq to SQL, otherwise it may be evaluated in-memory._
 `ColumnSearchPredicate`     | No        | `PrivatePropertyName` property `Contains(searchValue)` | An expression that is used to search the column when a column search value is set. The expression receives the query model and the column search value as parameters. _Note: You should make sure the expression can be translated by Linq to SQL, otherwise it may be evaluated in-memory._
 `ColumnOrderingProperty`    | No        | `PrivatePropertyName`           | An expression that selects a column of the query model to order the results by. Can be a nested property.
+`AdditionalOption`          | No        | empty `Dictionary`              | A dictionary that can be used to pass additional columns options which are serialized as part of the generated DataTable script. The additional options are serialized as they are, without changing dictionary keys from _PascalCase_ to _camelCase_.
 
 Properties selected with dot-notation require that the given nested objects get loaded by the query
 which is returned from the `Query()` method using `Include(propertyExpression)` or similar.
