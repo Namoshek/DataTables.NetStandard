@@ -10,15 +10,6 @@ namespace DataTables.NetStandard.Enhanced.Filters
         public abstract string FilterType { get; }
 
         /// <summary>
-        /// Gets or sets the data used to initialize the filter. For filters of type `select`,
-        /// this can be a range of options for example.
-        /// 
-        /// Note: If, instead of a list of strings, a list of options is passed, they will be
-        /// serialized as-they-are.
-        /// </summary>
-        public virtual IList<object> Data { get; set; } = null;
-
-        /// <summary>
         /// Gets the filter delay in milliseconds. Is used to throttle filtering on some inputs.
         /// </summary>
         public virtual int FilterDelay { get; } = 350;
@@ -34,12 +25,12 @@ namespace DataTables.NetStandard.Enhanced.Filters
         public string StyleClass { get; set; }
 
 
-        public object GetFilterOptions(int columnIndex)
+        public virtual FilterOptions GetFilterOptions(int columnIndex)
         {
             return GetFilterOptions(columnIndex, null);
         }
 
-        protected object GetFilterOptions(int columnIndex, IDictionary<string, dynamic> additionalOptions)
+        protected FilterOptions GetFilterOptions(int columnIndex, IDictionary<string, dynamic> additionalOptions)
         {
             if (additionalOptions == null)
             {
@@ -50,7 +41,6 @@ namespace DataTables.NetStandard.Enhanced.Filters
             {
                 ColumnNumber = columnIndex,
                 Type = FilterType,
-                Data = Data,
                 FilterDelay = FilterDelay,
                 FilterResetButtonText = FilterResetButtonText,
                 StyleClass = StyleClass,

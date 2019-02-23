@@ -80,7 +80,7 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables
                     PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.PostCode)}",
                     IsOrderable = true,
                     IsSearchable = true,
-                    ColumnFilter = new SelectFilter()
+                    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.PostCode, p.Location.PostCode))
                 },
                 new EnhancedDataTablesColumn<Person, PersonViewModel>
                 {
@@ -90,7 +90,7 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables
                     PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.City)}",
                     IsOrderable = true,
                     IsSearchable = true,
-                    ColumnFilter = new SelectFilter()
+                    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.City, p.Location.City))
                 },
                 new EnhancedDataTablesColumn<Person, PersonViewModel>
                 {
@@ -100,7 +100,7 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables
                     PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.Country)}",
                     IsOrderable = true,
                     IsSearchable = true,
-                    ColumnFilter = new SelectFilter()
+                    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.Country, p.Location.Country))
                 },
                 new EnhancedDataTablesColumn<Person, PersonViewModel>
                 {

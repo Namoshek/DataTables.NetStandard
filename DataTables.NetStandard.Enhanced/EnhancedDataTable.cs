@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using DataTables.NetStandard.Enhanced.Filters;
+using MoreLinq.Extensions;
 using Newtonsoft.Json;
 
 namespace DataTables.NetStandard.Enhanced
@@ -49,11 +52,12 @@ namespace DataTables.NetStandard.Enhanced
 
             var columns = EnhancedColumns();
 
-            // Load data for select filters
-            // TODO: generalize
-            columns.Where(c => c.ColumnFilter is IFilterWithData)
+            columns.Where(c => c.ColumnFilter is IFilterWithSelectableData<TEntity> && (c.ColumnFilter as IFilterWithSelectableData<TEntity>).Data == null)
                 .ToList()
-                .ForEach(c => c.ColumnFilter.Data = GetDistinctColumnValues(c.PublicName).Cast<object>().ToList());
+                .ForEach(c => {
+                    var col = c.ColumnFilter as IFilterWithSelectableData<TEntity>;
+                    col.Data = GetDistinctColumnValuesForSelect(col.KeyValueSelector()).Cast<object>().ToList();
+                });
 
             var columnFilters = columns.Where(c => c.ColumnFilter != null)
                 .Select(c => c.ColumnFilter.GetFilterOptions(columns.IndexOf(c)))
@@ -66,6 +70,15 @@ namespace DataTables.NetStandard.Enhanced
             script += $"yadcf.init(dt_{GetTableIdentifier()}, {columnOptions}, {globalOptions});";
 
             return script;
+        }
+
+        /// <summary>
+        /// Returns a list of distinct column values that can be used for select filters.
+        /// </summary>
+        /// <param name="property"></param>
+        public virtual IList<LabelValuePair> GetDistinctColumnValuesForSelect(Expression<Func<TEntity, LabelValuePair>> selector)
+        {
+            return Query().Select(selector).DistinctBy(e => e.Value).ToList();
         }
     }
 }
