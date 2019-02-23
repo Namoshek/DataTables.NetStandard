@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using DataTables.NetStandard.Configuration;
-using DataTables.NetStandard.Sample.DataTables;
-using DataTables.NetStandard.Sample.DataTables.ViewModels;
+using DataTables.NetStandard.Enhanced.Sample.DataTables;
+using DataTables.NetStandard.Enhanced.Sample.DataTables.ViewModels;
 using DataTables.NetStandard.TemplateMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DataTables.NetStandard.Sample
+namespace DataTables.NetStandard.Enhanced.Sample
 {
     public class Startup
     {
@@ -25,7 +25,7 @@ namespace DataTables.NetStandard.Sample
         {
             services.AddDbContext<SampleDbContext>(options =>
             {
-                options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=DataTables.NetStandard.Sample;Trusted_Connection=True;");
+                options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=DataTables.NetStandard.Enhanced.Sample;Trusted_Connection=True;");
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace DataTables.NetStandard.Sample
+namespace DataTables.NetStandard.Enhanced.Sample
 {
     public class Program
     {
