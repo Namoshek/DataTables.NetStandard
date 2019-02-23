@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using DataTables.NetStandard.Abstract;
 using DataTables.NetStandard.Configuration;
 using DataTables.NetStandard.Extensions;
 using DataTables.NetStandard.Util;
@@ -15,37 +14,56 @@ namespace DataTables.NetStandard
     /// </summary>
     /// <typeparam name="TEntity">The type of the entity.</typeparam>
     /// <typeparam name="TEntityViewModel">The type of the entity view model.</typeparam>
-    /// <seealso cref="Abstract.IDataTable{TEntity, TEntityViewModel}" />
-    public abstract class DataTable<TEntity, TEntityViewModel> : IDataTable<TEntity, TEntityViewModel>
+    public abstract class DataTable<TEntity, TEntityViewModel>
     {
-        protected readonly string _tableIdentifier;
+        protected string _tableIdentifier;
 
         /// <summary>
         /// DataTable constructor. Gets and stores the table identifier.
         /// </summary>
         public DataTable()
         {
-            _tableIdentifier = BuildTableIdentifier();
+            SetTableIdentifier(BuildTableIdentifier());
         }
 
         /// <summary>
-        /// DataTable constructor. Uses the given table identifier.
+        /// Column definitions for this DataTable.
         /// </summary>
-        /// <param name="tableIdentifier"></param>
-        public DataTable(string tableIdentifier)
-        {
-            _tableIdentifier = tableIdentifier;
-        }
-
         public abstract IList<DataTablesColumn<TEntity, TEntityViewModel>> Columns();
+
+        /// <summary>
+        /// Gets the query used to fetch data for the DataTable.
+        /// </summary>
         public abstract IQueryable<TEntity> Query();
+
+        /// <summary>
+        /// A mapping function used to map query models to view models.
+        /// </summary>
+        /// <returns></returns>
         public abstract Expression<Func<TEntity, TEntityViewModel>> MappingFunction();
 
+        /// <summary>
+        /// Gets the table identifier.
+        /// </summary>
         public string GetTableIdentifier()
         {
             return _tableIdentifier;
         }
 
+        /// <summary>
+        /// Sets the table identifier. Should only be used in the constructor.
+        /// </summary>
+        /// <param name="tableIdentifier">The table identifier.</param>
+        protected void SetTableIdentifier(string tableIdentifier)
+        {
+            _tableIdentifier = tableIdentifier;
+        }
+
+        /// <summary>
+        /// Renders the results based on the given <see cref="DataTablesRequest{TEntityViewModel}"/> and builds a response
+        /// that can be returned immediately.
+        /// </summary>
+        /// <param name="query">The query.</param>
         public virtual DataTablesResponse<TEntity, TEntityViewModel> RenderResponse(string query)
         {
             var data = RenderResults(query);
@@ -53,6 +71,10 @@ namespace DataTables.NetStandard
             return new DataTablesResponse<TEntity, TEntityViewModel>(data, Columns());
         }
 
+        /// <summary>
+        /// Renders the results based on the given <see cref="DataTablesRequest{TEntityViewModel}"/>.
+        /// </summary>
+        /// <param name="query">The query.</param>
         public virtual IPagedList<TEntityViewModel> RenderResults(string query)
         {
             var request = new DataTablesRequest<TEntity, TEntityViewModel>(query, Columns(), MappingFunction());
@@ -60,11 +82,19 @@ namespace DataTables.NetStandard
             return Query().ToPagedList(request);
         }
 
+        /// <summary>
+        /// Renders the script.
+        /// </summary>
+        /// <param name="url">The url of the data endpoint for the DataTable</param>
+        /// <param name="method">The http method used for the data endpoint (get or post)</param>
         public virtual string RenderScript(string url, string method = "get")
         {
             return DataTablesConfigurationBuilder.BuildDataTableConfigurationScript(Columns(), GetTableIdentifier(), url, method, AdditionalDataTableOptions());
         }
 
+        /// <summary>
+        /// Renders the HTML.
+        /// </summary>
         public virtual string RenderHtml()
         {
             var sb = new StringBuilder();

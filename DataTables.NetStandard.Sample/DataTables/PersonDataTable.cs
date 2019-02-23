@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using DataTables.NetStandard.Abstract;
 using DataTables.NetStandard.Sample.DataTables.ViewModels;
 using DataTables.NetStandard.Sample.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataTables.NetStandard.Sample.DataTables
 {
-    public class PersonDataTable : DataTable<Person, PersonViewModel>, IDataTable<Person, PersonViewModel>
+    public class PersonDataTable : DataTable<Person, PersonViewModel>
     {
         protected SampleDbContext _dbContext;
 
