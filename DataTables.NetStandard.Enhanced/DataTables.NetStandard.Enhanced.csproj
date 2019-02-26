@@ -10,4 +10,8 @@
     <PackageReference Include="morelinq" Version="3.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DataTables.NetStandard\DataTables.NetStandard.csproj" />
+  </ItemGroup>
+
 </Project>
