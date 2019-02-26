@@ -35,8 +35,11 @@ namespace DataTables.NetStandard.Configuration
             string tableName, string url, string method, IDictionary<string, dynamic> additionalOptions = null)
         {
             var configuration = (DataTablesConfiguration)DefaultConfiguration.Clone();
-            configuration.Ajax = url;
-            configuration.Method = method;
+            configuration.Ajax = new DataTablesConfiguration.AjaxConfiguration
+            {
+                Url = url,
+                Method = method
+            };
 
             foreach (var column in columns)
             {

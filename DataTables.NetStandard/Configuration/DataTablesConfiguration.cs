@@ -9,8 +9,7 @@ namespace DataTables.NetStandard.Configuration
     public class DataTablesConfiguration : ICloneable
     {
         public bool ServerSide { get; set; } = true;
-        public string Ajax { get; set; }
-        public string Method { get; set; }
+        public AjaxConfiguration Ajax { get; set; } = new AjaxConfiguration();
 
         /// <summary>
         /// A dictionary of additional options that will be passed to DataTable instances.
@@ -58,6 +57,18 @@ namespace DataTables.NetStandard.Configuration
             {
                 return MemberwiseClone();
             }
+        }
+
+        /// <summary>
+        /// Part of the DataTables configuration for server-side processing.
+        /// </summary>
+        public class AjaxConfiguration
+        {
+            [JsonProperty(PropertyName = "url")]
+            public string Url { get; set; }
+
+            [JsonProperty(PropertyName = "type")]
+            public string Method { get; set; }
         }
     }
 }
