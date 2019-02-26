@@ -508,6 +508,10 @@ For better illustration, here a full example including the rendering of the Data
 </script>
 ```
 
+## Credits
+
+Some of the code in this repository was inspired by Alexander Krutovs project called [DataTables.Queryable](https://github.com/AlexanderKrutov/DataTables.Queryable).
+
 ## License
 
 The code is licensed under the [MIT license](LICENSE.md).
