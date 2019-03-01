@@ -143,6 +143,7 @@ namespace DataTables.NetStandard.Util
         {
             private ParameterExpression _source;
             private Expression _target;
+            private bool _isRoot = false;
 
             public ParameterReplacerVisitor(ParameterExpression source, Expression target)
             {
@@ -158,6 +159,8 @@ namespace DataTables.NetStandard.Util
             /// <returns></returns>
             internal Expression<TOutput> VisitAndConvert<T>(Expression<T> root)
             {
+                _isRoot = true;
+
                 return (Expression<TOutput>)VisitLambda(root);
             }
 
@@ -170,6 +173,14 @@ namespace DataTables.NetStandard.Util
             /// <returns></returns>
             protected override Expression VisitLambda<T>(Expression<T> node)
             {
+                // We only want to perform parameter elimination for the root node
+                if (!_isRoot)
+                {
+                    return node;
+                }
+
+                _isRoot = false;
+
                 // Here we select the new list of parameters, without the parameter
                 // we want to eliminate
                 var parameters = node.Parameters.Where(p => p != _source);
