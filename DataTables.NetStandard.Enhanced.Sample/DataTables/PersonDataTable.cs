@@ -103,6 +103,17 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables
                 },
                 new EnhancedDataTablesColumn<Person, PersonViewModel>
                 {
+                    PublicName = "fullAddress",
+                    DisplayName = "Full Address",
+                    PublicPropertyName = nameof(PersonViewModel.FullAddress),
+                    PrivatePropertyName = nameof(Person.Location.Id),
+                    IsOrderable = true,
+                    IsSearchable = true,
+                    SearchPredicate = (p, s) => p.Location.Id.ToString() == s,
+                    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.FullAddress, p.Location.Id.ToString()))
+                },
+                new EnhancedDataTablesColumn<Person, PersonViewModel>
+                {
                     PublicName = "action",
                     DisplayName = "Action",
                     PublicPropertyName = nameof(PersonViewModel.Action),

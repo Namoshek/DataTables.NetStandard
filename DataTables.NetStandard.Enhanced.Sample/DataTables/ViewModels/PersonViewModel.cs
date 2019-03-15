@@ -14,6 +14,7 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables.ViewModels
         public string PostCode { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
+        public string FullAddress { get; set; }
         public string Action { get; set; }
         public string Action2 { get; set; }
         public string Action3 { get; set; }
