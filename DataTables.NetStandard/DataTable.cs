@@ -60,25 +60,35 @@ namespace DataTables.NetStandard
         }
 
         /// <summary>
-        /// Renders the results based on the given <see cref="DataTablesRequest{TEntityViewModel}"/> and builds a response
-        /// that can be returned immediately.
+        /// Renders the results based on the given <see cref="DataTablesRequest{TEntity, TEntityViewModel}"/>
+        /// and builds a response that can be returned immediately.
         /// </summary>
         /// <param name="query">The query.</param>
         public virtual DataTablesResponse<TEntity, TEntityViewModel> RenderResponse(string query)
         {
-            var data = RenderResults(query);
+            var request = BuildRequest(query);
+            var data = RenderResults(request);
 
-            return new DataTablesResponse<TEntity, TEntityViewModel>(data, Columns());
+            return new DataTablesResponse<TEntity, TEntityViewModel>(data, Columns(), request.Draw);
         }
 
         /// <summary>
-        /// Renders the results based on the given <see cref="DataTablesRequest{TEntityViewModel}"/>.
+        /// Renders the results based on a <see cref="DataTablesRequest{TEntity, TEntityViewModel}"/>
+        /// built from the given <paramref name="query"/>.
         /// </summary>
         /// <param name="query">The query.</param>
         public virtual IPagedList<TEntityViewModel> RenderResults(string query)
         {
-            var request = new DataTablesRequest<TEntity, TEntityViewModel>(query, Columns(), MappingFunction());
+            return Query().ToPagedList(BuildRequest(query));
+        }
 
+        /// <summary>
+        /// Renders the results based on the given <see cref="DataTablesRequest{TEntity, TEntityViewModel}"/>.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        public virtual IPagedList<TEntityViewModel> RenderResults(DataTablesRequest<TEntity, TEntityViewModel> request)
+        {
             return Query().ToPagedList(request);
         }
 
@@ -235,6 +245,17 @@ namespace DataTables.NetStandard
         protected virtual string BuildTableIdentifier()
         {
             return GetType().Name;
+        }
+
+        /// <summary>
+        /// Builds a <see cref="DataTablesRequest{TEntity, TEntityViewModel}"/> based on the given
+        /// <paramref name="query"/>, <see cref="Columns"/> and <see cref="MappingFunction"/>.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <returns></returns>
+        protected virtual DataTablesRequest<TEntity, TEntityViewModel> BuildRequest(string query)
+        {
+            return new DataTablesRequest<TEntity, TEntityViewModel>(query, Columns(), MappingFunction());
         }
     }
 }

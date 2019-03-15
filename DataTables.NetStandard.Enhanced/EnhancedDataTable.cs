@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using DataTables.NetStandard.Enhanced.Filters;
+using DataTables.NetStandard.Extensions;
 using MoreLinq.Extensions;
 using Newtonsoft.Json;
 
@@ -42,6 +44,25 @@ namespace DataTables.NetStandard.Enhanced
         }
 
         /// <summary>
+        /// Renders the results based on the given <see cref="DataTablesRequest{TEntity, TEntityViewModel}"/>
+        /// and builds a response that can be returned immediately.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        public override DataTablesResponse<TEntity, TEntityViewModel> RenderResponse(string query)
+        {
+            var request = BuildRequest(query);
+            var data = RenderResults(request);
+
+            var columnFilters = GetColumnFilterOptions(request);
+            var filterData = columnFilters.ToDictionary(f => $"yadcf_data_{f.ColumnNumber}", f => f.Data as dynamic);
+
+            return new EnhancedDataTablesResponse<TEntity, TEntityViewModel>(data, 
+                Columns(),
+                request.Draw,
+                filterData);
+        }
+
+        /// <summary>
         /// Renders the script.
         /// </summary>
         /// <param name="url">The url of the data endpoint for the DataTable</param>
@@ -49,19 +70,7 @@ namespace DataTables.NetStandard.Enhanced
         public override string RenderScript(string url, string method = "get")
         {
             var script = base.RenderScript(url, method);
-
-            var columns = EnhancedColumns();
-
-            columns.Where(c => c.ColumnFilter is IFilterWithSelectableData<TEntity> && (c.ColumnFilter as IFilterWithSelectableData<TEntity>).Data == null)
-                .ToList()
-                .ForEach(c => {
-                    var col = c.ColumnFilter as IFilterWithSelectableData<TEntity>;
-                    col.Data = GetDistinctColumnValuesForSelect(col.KeyValueSelector()).Cast<object>().ToList();
-                });
-
-            var columnFilters = columns.Where(c => c.ColumnFilter != null)
-                .Select(c => c.ColumnFilter.GetFilterOptions(columns.IndexOf(c)))
-                .ToList();
+            var columnFilters = GetColumnFilterOptions();
 
             var columnOptions = JsonConvert.SerializeObject(columnFilters);
             var globalOptions = JsonConvert.SerializeObject(AdditionalFilterOptions());
@@ -76,9 +85,38 @@ namespace DataTables.NetStandard.Enhanced
         /// Returns a list of distinct column values that can be used for select filters.
         /// </summary>
         /// <param name="property"></param>
-        public virtual IList<LabelValuePair> GetDistinctColumnValuesForSelect(Expression<Func<TEntity, LabelValuePair>> selector)
+        public virtual IList<LabelValuePair> GetDistinctColumnValuesForSelect(Expression<Func<TEntity, LabelValuePair>> selector,
+            DataTablesRequest<TEntity, TEntityViewModel> request)
         {
-            return Query().Select(selector).DistinctBy(e => e.Value).ToList();
+            var query = Query();
+
+            if (request != null)
+            {
+                query = query.Apply(request);
+            }
+                
+            return query.Select(selector.Compile())
+                .DistinctBy(e => e.Value)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Returns a list of prefilled column filters with their corresponding options.
+        /// </summary>
+        protected virtual IList<FilterOptions> GetColumnFilterOptions(DataTablesRequest<TEntity, TEntityViewModel> request = null)
+        {
+            var columns = EnhancedColumns();
+
+            columns.Where(c => c.ColumnFilter is IFilterWithSelectableData<TEntity> && (c.ColumnFilter as IFilterWithSelectableData<TEntity>).Data == null)
+                .ToList()
+                .ForEach(c => {
+                    var col = c.ColumnFilter as IFilterWithSelectableData<TEntity>;
+                    col.Data = GetDistinctColumnValuesForSelect(col.KeyValueSelector(), request).Cast<object>().ToList();
+                });
+
+            return columns.Where(c => c.ColumnFilter != null)
+                .Select(c => c.ColumnFilter.GetFilterOptions(columns.IndexOf(c)))
+                .ToList();
         }
     }
 }
