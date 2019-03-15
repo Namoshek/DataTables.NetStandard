@@ -55,9 +55,10 @@ namespace DataTables.NetStandard.Extensions
                     {
                         Expression<Func<TEntity, bool>> expression;
 
-                        if (c.GlobalSearchPredicate != null)
+                        var searchPredicate = c.GlobalSearchPredicate ?? c.SearchPredicate;
+                        if (searchPredicate != null)
                         {
-                            var expr = c.GlobalSearchPredicate;
+                            var expr = searchPredicate;
                             var source = expr.Parameters.Single(p => p.Type == typeof(string));
                             var target = Expression.Constant(globalSearchValue);
                             expression = ExpressionHelper.ReplaceVariableWithExpression<Func<TEntity, string, bool>, Func<TEntity, bool>>(expr, source, target);
@@ -108,9 +109,10 @@ namespace DataTables.NetStandard.Extensions
                 {
                     Expression<Func<TEntity, bool>> expression;
 
-                    if (c.ColumnSearchPredicate != null)
+                    var searchPredicate = c.ColumnSearchPredicate ?? c.SearchPredicate;
+                    if (searchPredicate != null)
                     {
-                        var expr = c.ColumnSearchPredicate;
+                        var expr = searchPredicate;
                         var source = expr.Parameters.Single(p => p.Type == typeof(string));
                         var target = Expression.Constant(c.SearchValue);
                         expression = ExpressionHelper.ReplaceVariableWithExpression<Func<TEntity, string, bool>, Func<TEntity, bool>>(expr, source, target);

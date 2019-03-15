@@ -89,8 +89,20 @@ namespace DataTables.NetStandard
         public bool SearchCaseInsensitive { get; set; }
 
         /// <summary>
-        /// Optional predicate expression that will be used to search by the searchable column when <see cref="SearchValue"/> is specified. 
-        /// If no predicate provided, <see cref="string.Contains(string)"/> method is used by default.
+        /// Optional predicate expression that will be used to search by the searchable column when <see cref="SearchValue"/>
+        /// or <see cref="DataTablesRequest{TEntity, TEntityViewModel}.GlobalSearchValue"/> is specified.
+        /// If no predicate is provided, the <see cref="string.Contains(string)"/> method is used by default.
+        /// 
+        /// If <see cref="SearchValue"/> is set and <see cref="ColumnSearchPredicate"/> is defined, then the latter
+        /// will be used instead of this search predicate.
+        /// If <see cref="DataTablesRequest{TEntity, TEntityViewModel}.GlobalSearchValue"/> is set and <see cref="GlobalSearchPredicate"/>
+        /// is defined, then the latter will be used instead of this search predicate.
+        /// </summary>
+        public Expression<Func<TEntity, string, bool>> SearchPredicate { get; set; }
+
+        /// <summary>
+        /// Optional predicate expression that will be used to search by the searchable column when <see cref="SearchValue"/> is specified.
+        /// If no predicate is provided, the <see cref="SearchPredicate"/> or <see cref="string.Contains(string)"/> method is used by default.
         /// </summary>
         public Expression<Func<TEntity, string, bool>> ColumnSearchPredicate { get; set; }
 
@@ -101,8 +113,9 @@ namespace DataTables.NetStandard
         public Expression<Func<TEntity, object>> ColumnOrderingProperty { get; set; }
 
         /// <summary>
-        /// Optional predicate expression that will be used to search by the searchable column when <see cref="DataTablesRequest{TEntity}.GlobalSearchValue"/> is specified. 
-        /// If no predicate provided, <see cref="string.Contains(string)"/> method is used by default.
+        /// Optional predicate expression that will be used to search by the searchable column when 
+        /// <see cref="DataTablesRequest{TEntity, TEntityViewModel}.GlobalSearchValue"/> is specified.
+        /// If no predicate is provided, the <see cref="SearchPredicate"/> or <see cref="string.Contains(string)"/> method is used by default.
         /// </summary>
         public Expression<Func<TEntity, string, bool>> GlobalSearchPredicate { get; set; }
 

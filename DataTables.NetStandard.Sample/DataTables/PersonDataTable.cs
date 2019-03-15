@@ -66,8 +66,7 @@ namespace DataTables.NetStandard.Sample.DataTables
                     PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.Street)}",
                     IsOrderable = true,
                     IsSearchable = true,
-                    ColumnSearchPredicate = (p, s) => (p.Location.Street + " " + p.Location.HouseNumber).Contains(s),
-                    GlobalSearchPredicate = (p, s) => (p.Location.Street + " " + p.Location.HouseNumber).Contains(s)
+                    SearchPredicate = (p, s) => (p.Location.Street + " " + p.Location.HouseNumber).ToLower().Contains(s.ToLower())
                 },
                 new DataTablesColumn<Person, PersonViewModel>
                 {

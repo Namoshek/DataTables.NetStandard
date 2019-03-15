@@ -197,8 +197,8 @@ public class PersonDataTable : DataTable<Person, PersonViewModel>, IDataTable<Pe
                 PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.Street)}",
                 IsOrderable = true,
                 IsSearchable = true,
-                ColumnSearchPredicate = (p, s) => (p.Location.Street + " " + p.Location.HouseNumber).Contains(s),
-                GlobalSearchPredicate = (p, s) => (p.Location.Street + " " + p.Location.HouseNumber).Contains(s)
+                SearchPredicate = (p, s) => (p.Location.Street + " " + p.Location.HouseNumber)
+                    .ToLower().Contains(s.ToLower())
             },
             new DataTablesColumn<Person, PersonViewModel>
             {
@@ -305,6 +305,7 @@ public override IList<DataTablesColumn<Person, PersonViewModel>> Columns()
             IsOrderable = true,
             IsSearchable = true,
             SearchRegex = true,
+            SearchPredicate = (p, s) => p.Id.ToString().Contains(s),
             GlobalSearchPredicate = (p, s) => p.Id.ToString().Contains(s),
             ColumnSearchPredicate = (p, s) => p.Id.ToString().Contains(s),
             ColumnOrderingProperty = (p) => p.Id,
@@ -329,10 +330,11 @@ Column                      | Mandatory | Default                         | Func
 `IsOrderable`               | No        | `false`                         | If the table should be orderable by this column.
 `IsSearchable`              | No        | `false`                         | If the column should be searchable. Enables or disables both, column search as well as global search.
 `SearchRegex`               | No        | `false`                         | If column search values should be evaluated as regex expressions. The server-side option can still be disabled on a per-request basis by the client, but the client cannot enable regex evaluation if the server has it disabled for a column. **Note: regex search is performed in-memory as Linq queries containing `Regex.IsMatch(value, pattern)` cannot be translated to native SQL queries. Avoid using this option for larger data sets if possible.**
-`GlobalSearchPredicate`     | No        | `PrivatePropertyName` property `Contains(searchValue)` | An expression that is used to search the column when a global search value is set. The expression receives the query model and the global search value as parameters. _Note: You should make sure the expression can be translated by Linq to SQL, otherwise it may be evaluated in-memory._
-`ColumnSearchPredicate`     | No        | `PrivatePropertyName` property `Contains(searchValue)` | An expression that is used to search the column when a column search value is set. The expression receives the query model and the column search value as parameters. _Note: You should make sure the expression can be translated by Linq to SQL, otherwise it may be evaluated in-memory._
+`SearchPredicate`           | No        | `PrivatePropertyName` property `Contains(searchValue)` | An expression that is used to search the column both when a global search value as well as a column search value is set. `ColumnSearchPredicate` and `GlobalSearchPredicate` can both override this predicate for their specific use case. The expression receives the query model and the global or column search value, depending on the search, as parameters. _Note: You should make sure the expression can be translated by Linq to SQL, otherwise it may be evaluated in-memory._
+`GlobalSearchPredicate`     | No        | `SearchPredicate` or its default | An expression that is used to search the column when a global search value is set. The expression receives the query model and the global search value as parameters. _Note: You should make sure the expression can be translated by Linq to SQL, otherwise it may be evaluated in-memory._
+`ColumnSearchPredicate`     | No        | `SearchPredicate` or its default | An expression that is used to search the column when a column search value is set. The expression receives the query model and the column search value as parameters. _Note: You should make sure the expression can be translated by Linq to SQL, otherwise it may be evaluated in-memory._
 `ColumnOrderingProperty`    | No        | `PrivatePropertyName`           | An expression that selects a column of the query model to order the results by. Can be a nested property.
-`AdditionalOptions`          | No        | empty `Dictionary`              | A dictionary that can be used to pass additional columns options which are serialized as part of the generated DataTable script. The additional options are serialized as they are, without changing dictionary keys from _PascalCase_ to _camelCase_.
+`AdditionalOptions`         | No        | empty `Dictionary`              | A dictionary that can be used to pass additional columns options which are serialized as part of the generated DataTable script. The additional options are serialized as they are, without changing dictionary keys from _PascalCase_ to _camelCase_.
 
 Properties selected with dot-notation require that the given nested objects get loaded by the query
 which is returned from the `Query()` method using `Include(propertyExpression)` or similar.
