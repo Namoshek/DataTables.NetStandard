@@ -364,6 +364,10 @@ Simply use the same model twice when creating a DataTable class:
 public class PersonDataTable : DataTable<Person, Person>, IDataTable<Person, Person> { }
 ```
 
+All members of type `Person` that are not referenced by the `PublicPropertyName` within at least
+one `DataTablesColumn` will not be part of the serialized data that is sent to the client.
+This is done in order to prevent sending data to the client which we did not intend to send.
+
 For better security and in order to fully utilize the power of this package,
 we recommend using a separate view model at any time though.
 

@@ -18,7 +18,17 @@ namespace DataTables.NetStandard.Sample.DataTables.ViewModels
         public string Action2 { get; set; }
         public string Action3 { get; set; }
 
+        public string PropertyThatShouldNotGetSerialized { get; set; } = "Foo";
+        public TestProperty NestedPropertyThatShouldNotGetSerialized { get; set; } = new TestProperty();
+
+
         [JsonConverter(typeof(LocalDateTimeConverter), "dd.MM.yyyy HH:mm:ss")]
         public DateTimeOffset DateOfBirth { get; set; }
+
+
+        public class TestProperty
+        {
+            public string Foo { get; set; } = "Bar";
+        }
     }
 }
