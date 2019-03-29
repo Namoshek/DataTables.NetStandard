@@ -100,6 +100,9 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables
                     IsOrderable = true,
                     IsSearchable = true,
                     ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.Country, p.Location.Country))
+                    {
+                        DefaultSelectionLabelValue = "Choose something",
+                    }
                 },
                 new EnhancedDataTablesColumn<Person, PersonViewModel>
                 {

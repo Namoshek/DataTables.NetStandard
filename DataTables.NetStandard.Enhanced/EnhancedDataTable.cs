@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using DataTables.NetStandard.Enhanced.Filters;
@@ -56,7 +55,7 @@ namespace DataTables.NetStandard.Enhanced
             var columnFilters = GetColumnFilterOptions(request);
             var filterData = columnFilters.ToDictionary(f => $"yadcf_data_{f.ColumnNumber}", f => f.Data as dynamic);
 
-            return new EnhancedDataTablesResponse<TEntity, TEntityViewModel>(data, 
+            return new EnhancedDataTablesResponse<TEntity, TEntityViewModel>(data,
                 Columns(),
                 request.Draw,
                 filterData);
@@ -94,7 +93,7 @@ namespace DataTables.NetStandard.Enhanced
             {
                 query = query.Apply(request);
             }
-                
+
             return query.Select(selector.Compile())
                 .DistinctBy(e => e.Value)
                 .ToList();
@@ -109,9 +108,13 @@ namespace DataTables.NetStandard.Enhanced
 
             columns.Where(c => c.ColumnFilter is IFilterWithSelectableData<TEntity> && (c.ColumnFilter as IFilterWithSelectableData<TEntity>).Data == null)
                 .ToList()
-                .ForEach(c => {
+                .ForEach(c =>
+                {
                     var col = c.ColumnFilter as IFilterWithSelectableData<TEntity>;
-                    col.Data = GetDistinctColumnValuesForSelect(col.KeyValueSelector(), request).Cast<object>().ToList();
+                    if (col.KeyValueSelector() != null)
+                    {
+                        col.Data = GetDistinctColumnValuesForSelect(col.KeyValueSelector(), request).Cast<object>().ToList();
+                    }
                 });
 
             return columns.Where(c => c.ColumnFilter != null)
