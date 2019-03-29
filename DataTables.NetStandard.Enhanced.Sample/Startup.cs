@@ -35,6 +35,7 @@ namespace DataTables.NetStandard.Enhanced.Sample
 
             // Configure DataTables configuration builder
             DataTablesConfigurationBuilder.DefaultConfiguration.AdditionalOptions.Add("stateSave", false);
+            DataTablesConfigurationBuilder.DefaultConfiguration.AdditionalOptions.Add("scrollX", true);
 
             // Building the service provider early to get the IViewRenderService is a hack that is necessary to get access 
             // to the Razor partial compiler in the DefaultMappingProfile. As the IViewRenderService depends on services
