@@ -28,6 +28,14 @@ Awesome, then we have something in common! :smile:
   - [Action Column Rendering and Data Transformation](#action-column-rendering-and-data-transformation)
   - [Customizing the Table Rendering](#customizing-the-table-rendering)
   - [Extending DataTables with Plugins](#extending-datatables-with-plugins)
+- [Enhanced DataTables](#enhanced-datatables)
+  - [Usage](#usage-1)
+  - [Supported Filters](#supported-filters)
+    - [TextInput Filter](#textinput-filter)
+    - [Select Filter](#select-filter)
+  - [Filter Configuration](#filter-configuration)
+    - [Global Defaults](#global-defaults)
+    - [Per-Usage Configuration](#per-usage-configuration)
 - [License](#license)
 
 ## Installation
@@ -492,7 +500,7 @@ in above example. This means you can simply add your plugin JavaScript code in y
 DataTable in order to have access to the table through the `dt_PersonDataTable` variable.
 
 As an example, you can have a look at the [sample project](DataTables.NetStandard.Sample/) where we are using a DataTable extension package called
-[`yadcf`](https://github.com/vedmack/yadcf). It provides filters for individual columns and can be initialized easily.
+[yadcf](https://github.com/vedmack/yadcf). It provides filters for individual columns and can be initialized easily.
 For better illustration, here a full example including the rendering of the DataTable script:
 
 ```html
@@ -512,6 +520,138 @@ For better illustration, here a full example including the rendering of the Data
         );
     });
 </script>
+```
+
+## Enhanced DataTables
+
+Because filters are an essential part of a DataTable, there is an extension package for `DataTables.NetStandard` which utilizes the great
+and aforementioned [yadcf](https://github.com/vedmack/yadcf) library to add built-in support for filters on a per-column basis.
+The extension package is written in a way that allows for easy configuration of the filters (although sensible defaults are used anyway).
+
+To make this work, an abstract `EnhancedDataTable` base class is provided by this package, extending on the abstract `DataTable` base class.
+This base class provides additional configuration options for filters and customizes the script rendering of the base package to add
+script rendering for the `yadcf` filters defined on individual columns.
+
+### Usage
+
+To use the enhanced tables, you only need to base your tables on the `EnhancedDataTable` base class instead of `DataTable`.
+You will also need to define `EnhancedColumns()` instead of `Columns()`:
+
+```csharp
+public class PersonDataTable : EnhancedDataTable<Person, PersonViewModel>
+{
+    public override IList<EnhancedDataTablesColumn<Person, PersonViewModel>> EnhancedColumns()
+    {
+        return new List<EnhancedDataTablesColumn<Person, PersonViewModel>>
+        {
+            new EnhancedDataTablesColumn<Person, PersonViewModel>
+            {
+                PublicName = "name",
+                DisplayName = "Name",
+                PublicPropertyName = nameof(PersonViewModel.Name),
+                PrivatePropertyName = nameof(Person.Name),
+                IsOrderable = true,
+                IsSearchable = true,
+                ColumnFilter = new TextInputFilter()
+            },
+            // More columns ...
+        };
+    }
+}
+```
+
+### Supported Filters
+
+Currently, the following filters are supported by this package. You can implement your own filters though (and share them
+by making a Pull Request :smile:).
+
+#### TextInput Filter
+
+The most basic filter is the `TextInputFilter`. It provides a way to use free-text search on a per-column basis, just like the
+global filter already supported by the base package. Usage is as simple as:
+
+```csharp
+new EnhancedDataTablesColumn<Person, PersonViewModel>
+{
+    PublicName = "name",
+    DisplayName = "Name",
+    PublicPropertyName = nameof(PersonViewModel.Name),
+    PrivatePropertyName = nameof(Person.Name),
+    IsOrderable = true,
+    IsSearchable = true,
+    ColumnFilter = new TextInputFilter()
+}
+```
+
+#### Select Filter
+
+For columns with a well-defined set of values (like enums) or colums with a finite set of values (like a `country` column),
+this filter provides a way to display a select filter that contains these well-defined sets of values:
+
+```csharp
+new EnhancedDataTablesColumn<Person, PersonViewModel>
+{
+    PublicName = "country",
+    DisplayName = "Country",
+    PublicPropertyName = nameof(PersonViewModel.Country),
+    PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.Country)}",
+    IsOrderable = true,
+    IsSearchable = true,
+    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.Country, p.Location.Country))
+},
+```
+
+The filter implements the `IFilterWithSelectableData` interface. For all filters of this type, the `EnhancedDataTable` will load
+distinct values based on the given `LabelValuePair` when rendering the table or when returning an ajax response to update the filters
+with the remaining set of possible values (cumulative search).
+This will only happen if you pass a `Expression<Func<TEntity, LabelValuePair>>` to the filter constructor as seen in the example above.
+Alternatively, you can also pass an `IList<LabelValuePair>` with the options to display. This is useful if you want to display
+the localized options of an enum for example.
+
+### Filter Configuration
+
+When configuring your filters with additional options, you can always choose between configuring only one instance of a filter
+or all of your filters through a global configuration.
+
+#### Global Defaults
+
+You can customize some of the filter options globally through the `EnhancedDataTablesConfiguration` class which holds a singleton
+of the `DataTablesFilterConfiguration`. You can do this anywhere in your code. Changes to this configuration will be picked up
+by your `EnhancedDataTables` if the configuration changes were made before the table script has been rendered. It is recommended
+to place this configuration somewhere in the `Startup` class though:
+
+```csharp
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // Configure DataTables filters
+        EnhancedDataTablesConfiguration.FilterConfiguration.DefaultSelectionLabelValue = "Select something";
+        EnhancedDataTablesConfiguration.FilterConfiguration.DefaultTextInputPlaceholderValue = "Type to find";
+
+        // Other application configuration...
+    }
+}
+```
+
+#### Per-Usage Configuration
+
+Alternatively, you can also configure your filters when defining your table columns:
+
+```csharp
+new EnhancedDataTablesColumn<Person, PersonViewModel>
+{
+    PublicName = "country",
+    DisplayName = "Country",
+    PublicPropertyName = nameof(PersonViewModel.Country),
+    PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.Country)}",
+    IsOrderable = true,
+    IsSearchable = true,
+    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.Country, p.Location.Country))
+    {
+        DefaultSelectionLabelValue = "Choose something",
+    }
+}
 ```
 
 ## Credits
