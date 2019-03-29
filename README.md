@@ -606,7 +606,41 @@ distinct values based on the given `LabelValuePair` when rendering the table or 
 with the remaining set of possible values (cumulative search).
 This will only happen if you pass a `Expression<Func<TEntity, LabelValuePair>>` to the filter constructor as seen in the example above.
 Alternatively, you can also pass an `IList<LabelValuePair>` with the options to display. This is useful if you want to display
-the localized options of an enum for example.
+the localized options of an enum for example:
+
+```csharp
+new EnhancedDataTablesColumn<Person, PersonViewModel>
+{
+    PublicName = "country",
+    DisplayName = "Country",
+    PublicPropertyName = nameof(PersonViewModel.Country),
+    PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.Country)}",
+    IsOrderable = true,
+    IsSearchable = true,
+    ColumnFilter = new SelectFilter<Person>(_countryRepository.GetAll())
+},
+```
+
+Options of a select filter can also display a label different to the value they represent. This is especially useful if you want to
+display an element of a foreign table using the values of the foreign table while searching with the foreign key:
+
+```csharp
+new EnhancedDataTablesColumn<Person, PersonViewModel>
+{
+    PublicName = "fullAddress",
+    DisplayName = "Full Address",
+    PublicPropertyName = nameof(PersonViewModel.FullAddress),
+    PrivatePropertyName = nameof(Person.Location.Id),
+    IsOrderable = true,
+    IsSearchable = true,
+    SearchPredicate = (p, s) => p.Location.Id == s.ParseAsIntOrDefault(0),
+    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.FullAddress, p.Location.Id.ToString()))
+}
+```
+
+_Please note that also the value of a `LabelValuePair` has always to be a string as the search of DataTables works with strings only.
+You can still perform foreign key search in the database by using a proper `SearchPredicate` as shown in the example above, though.
+In the example, an extension method for the `string` class is used which tries to parse the string as `int` and returns a default on error._
 
 ### Filter Configuration
 

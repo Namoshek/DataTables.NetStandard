@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using DataTables.NetStandard.Enhanced.Filters;
 using DataTables.NetStandard.Enhanced.Sample.DataTables.ViewModels;
 using DataTables.NetStandard.Enhanced.Sample.Models;
+using DataTables.NetStandard.Enhanced.Sample.Util;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataTables.NetStandard.Enhanced.Sample.DataTables
@@ -112,7 +113,7 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables
                     PrivatePropertyName = nameof(Person.Location.Id),
                     IsOrderable = true,
                     IsSearchable = true,
-                    SearchPredicate = (p, s) => p.Location.Id.ToString() == s,
+                    SearchPredicate = (p, s) => p.Location.Id == s.ParseAsIntOrDefault(0),
                     ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.FullAddress, p.Location.Id.ToString()))
                 },
                 new EnhancedDataTablesColumn<Person, PersonViewModel>
