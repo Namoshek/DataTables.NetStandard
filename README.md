@@ -597,7 +597,7 @@ new EnhancedDataTablesColumn<Person, PersonViewModel>
     PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.Country)}",
     IsOrderable = true,
     IsSearchable = true,
-    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.Country, p.Location.Country))
+    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.Country))
 },
 ```
 
