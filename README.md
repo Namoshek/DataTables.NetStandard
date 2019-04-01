@@ -50,6 +50,12 @@ You can install the package with:
 $> Install-Package DataTables.NetStandard
 ```
 
+Or, if you want the [enhanced DataTables](#enhanced-datatables), with:
+
+```pwsh
+$> Install-Package DataTables.NetStandard.Enhanced
+```
+
 ## Usage
 
 To create a DataTable, you'll need to create a new class implementing the 
