@@ -7,6 +7,9 @@ written in .NET Standard for ASP.NET Core applications with focus on Entity Fram
 The package is heavily inspired by Laravels (PHP) counterpart [`yajra/datatables`](https://github.com/yajra/laravel-datatables)
 and extensions of said package.
 
+**The package is still Work in Progress, although we already use it ourselfs in production.
+So I recomment trying it out yourself. Feedback is definitely appreciated thoguh.**
+
 #### Why this package?
 
 Do you also ask yourself why you have to define and configure your DataTables both in the frontend
