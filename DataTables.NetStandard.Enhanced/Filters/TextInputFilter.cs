@@ -1,4 +1,5 @@
-﻿using DataTables.NetStandard.Enhanced.Configuration;
+﻿using System.Collections.Generic;
+using DataTables.NetStandard.Enhanced.Configuration;
 
 namespace DataTables.NetStandard.Enhanced.Filters
 {
@@ -13,9 +14,10 @@ namespace DataTables.NetStandard.Enhanced.Filters
 
         public override FilterOptions GetFilterOptions(int columnIndex)
         {
-            var options = base.GetFilterOptions(columnIndex);
-
-            options.AdditionalOptions.Add("filter_default_label", PlaceholderValue ?? EnhancedDataTablesConfiguration.FilterConfiguration.DefaultTextInputPlaceholderValue);
+            var options = base.GetFilterOptions(columnIndex, new Dictionary<string, dynamic>
+            {
+                { "filter_default_label", PlaceholderValue ?? EnhancedDataTablesConfiguration.FilterConfiguration.DefaultTextInputPlaceholderValue },
+            });
 
             return options;
         }

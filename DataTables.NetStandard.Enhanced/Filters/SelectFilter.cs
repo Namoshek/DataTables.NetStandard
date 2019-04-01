@@ -50,12 +50,13 @@ namespace DataTables.NetStandard.Enhanced.Filters
 
         public override FilterOptions GetFilterOptions(int columnIndex)
         {
-            var options = base.GetFilterOptions(columnIndex);
+            var options = base.GetFilterOptions(columnIndex, new Dictionary<string, dynamic>
+            {
+                { "omit_default_label", !(EnableDefaultSelectionLabel ?? EnhancedDataTablesConfiguration.FilterConfiguration.EnableDefaultSelectionLabel) },
+                { "filter_default_label", DefaultSelectionLabelValue ?? EnhancedDataTablesConfiguration.FilterConfiguration.DefaultSelectionLabelValue },
+            });
 
             options.Data = Data;
-
-            options.AdditionalOptions.Add("omit_default_label", !(EnableDefaultSelectionLabel ?? EnhancedDataTablesConfiguration.FilterConfiguration.EnableDefaultSelectionLabel));
-            options.AdditionalOptions.Add("filter_default_label", DefaultSelectionLabelValue ?? EnhancedDataTablesConfiguration.FilterConfiguration.DefaultSelectionLabelValue);
 
             return options;
         }
