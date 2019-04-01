@@ -59,20 +59,19 @@ namespace DataTables.NetStandard.Extensions
                         if (searchPredicate != null)
                         {
                             var expr = searchPredicate;
-                            var source = expr.Parameters.Single(p => p.Type == typeof(string));
-                            var target = Expression.Constant(globalSearchValue);
-                            expression = ExpressionHelper.ReplaceVariableWithExpression<Func<TEntity, string, bool>, Func<TEntity, bool>>(expr, source, target);
+                            var entityParam = expr.Parameters.Single(p => p.Type == typeof(TEntity));
+                            var searchValueConstant = Expression.Constant(globalSearchValue);
+                            expression = (Expression<Func<TEntity, bool>>)Expression.Lambda(Expression.Invoke(expr, entityParam, searchValueConstant), entityParam);
                         }
                         else
                         {
                             if (queryable.Request.GlobalSearchRegex)
                             {
-                                expression = ExpressionHelper.BuildRegexPredicate<TEntity>(c.PrivatePropertyName, queryable.Request.GlobalSearchValue);
+                                expression = ExpressionHelper.BuildRegexPredicate<TEntity>(c.PrivatePropertyName, globalSearchValue);
                             }
                             else
                             {
-                                expression = ExpressionHelper.BuildStringContainsPredicate<TEntity>(c.PrivatePropertyName,
-                                    queryable.Request.GlobalSearchValue, c.SearchCaseInsensitive);
+                                expression = ExpressionHelper.BuildStringContainsPredicate<TEntity>(c.PrivatePropertyName, globalSearchValue, c.SearchCaseInsensitive);
                             }
                         }
 
@@ -113,9 +112,9 @@ namespace DataTables.NetStandard.Extensions
                     if (searchPredicate != null)
                     {
                         var expr = searchPredicate;
-                        var source = expr.Parameters.Single(p => p.Type == typeof(string));
-                        var target = Expression.Constant(c.SearchValue);
-                        expression = ExpressionHelper.ReplaceVariableWithExpression<Func<TEntity, string, bool>, Func<TEntity, bool>>(expr, source, target);
+                        var entityParam = expr.Parameters.Single(p => p.Type == typeof(TEntity));
+                        var searchValueConstant = Expression.Constant(c.SearchValue);
+                        expression = (Expression<Func<TEntity, bool>>)Expression.Lambda(Expression.Invoke(expr, entityParam, searchValueConstant), entityParam);
                     }
                     else
                     {
