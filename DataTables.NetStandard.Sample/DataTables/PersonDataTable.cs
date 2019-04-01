@@ -51,6 +51,16 @@ namespace DataTables.NetStandard.Sample.DataTables
                 },
                 new DataTablesColumn<Person, PersonViewModel>
                 {
+                    PublicName = "otherEmails",
+                    DisplayName = "Other Emails",
+                    PublicPropertyName = nameof(PersonViewModel.OtherEmails),
+                    PrivatePropertyName = null,
+                    IsOrderable = false,
+                    IsSearchable = true,
+                    SearchPredicate = (p, s) => p.EmailAddresses.Any(e => e.Address.ToUpper().Contains(s.ToUpper()))
+                },
+                new DataTablesColumn<Person, PersonViewModel>
+                {
                     PublicName = "dateOfBirth",
                     DisplayName = "Date of Birth",
                     PublicPropertyName = nameof(PersonViewModel.DateOfBirth),
@@ -132,7 +142,9 @@ namespace DataTables.NetStandard.Sample.DataTables
 
         public override IQueryable<Person> Query()
         {
-            return _dbContext.Persons.Include(p => p.Location);
+            return _dbContext.Persons
+                .Include(p => p.EmailAddresses)
+                .Include(p => p.Location);
         }
 
         public override Expression<Func<Person, PersonViewModel>> MappingFunction()

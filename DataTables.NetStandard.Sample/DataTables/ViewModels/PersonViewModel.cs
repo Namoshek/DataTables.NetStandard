@@ -10,6 +10,7 @@ namespace DataTables.NetStandard.Sample.DataTables.ViewModels
 
         public string Name { get; set; }
         public string Email { get; set; }
+        public string OtherEmails { get; set; }
         public string Address { get; set; }
         public string PostCode { get; set; }
         public string City { get; set; }

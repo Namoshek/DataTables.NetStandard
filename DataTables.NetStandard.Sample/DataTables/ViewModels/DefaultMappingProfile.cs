@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using AutoMapper;
 using DataTables.NetStandard.Sample.Models;
 using DataTables.NetStandard.TemplateMapper;
 
@@ -9,6 +10,7 @@ namespace DataTables.NetStandard.Sample.DataTables.ViewModels
         public DefaultMappingProfile(IViewRenderService viewRenderService)
         {
             CreateMap<Person, PersonViewModel>()
+                .ForMember(vm => vm.OtherEmails, m => m.MapFrom(p => string.Join(", ", p.EmailAddresses.Select(e => e.Address))))
                 .ForMember(vm => vm.Address, m => m.MapFrom(p => $"{p.Location.Street} {p.Location.HouseNumber}"))
                 .ForMember(vm => vm.PostCode, m => m.MapFrom(p => p.Location.PostCode))
                 .ForMember(vm => vm.City, m => m.MapFrom(p => p.Location.City))
