@@ -24,6 +24,11 @@ namespace DataTables.NetStandard.Enhanced.Filters
         /// </summary>
         public string StyleClass { get; set; }
 
+        /// <summary>
+        /// Gets or sets the additional filter options. The options are passed directly to the yadcf library.
+        /// </summary>
+        public IDictionary<string, dynamic> AdditionalOptions = new Dictionary<string, dynamic>();
+
 
         public virtual FilterOptions GetFilterOptions(int columnIndex)
         {
@@ -32,9 +37,14 @@ namespace DataTables.NetStandard.Enhanced.Filters
 
         protected FilterOptions GetFilterOptions(int columnIndex, IDictionary<string, dynamic> additionalOptions)
         {
-            if (additionalOptions == null)
+            var additionalOptionsClone = new Dictionary<string, dynamic>(AdditionalOptions);
+
+            if (additionalOptions != null)
             {
-                additionalOptions = new Dictionary<string, dynamic>();
+                foreach (var option in additionalOptions)
+                {
+                    additionalOptionsClone.Add(option.Key, option.Value);
+                }
             }
 
             return new FilterOptions
@@ -44,7 +54,7 @@ namespace DataTables.NetStandard.Enhanced.Filters
                 FilterDelay = FilterDelay,
                 FilterResetButtonText = FilterResetButtonText,
                 StyleClass = StyleClass,
-                AdditionalOptions = additionalOptions,
+                AdditionalOptions = additionalOptionsClone,
             };
         }
     }
