@@ -3,6 +3,18 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <Version>0.1.0</Version>
+    <Authors>Namoshek</Authors>
+    <Company>Namoshek</Company>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>Enhanced features for the self-containing DataTable classes for the datatables.net jQuery plugin that manage rendering, querying, filtering, sorting and other desireable tasks for the user.</Description>
+    <PackageLicenseUrl>https://github.com/Namoshek/DataTables.NetStandard/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Namoshek/DataTables.NetStandard</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Namoshek/DataTables.NetStandard.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>datatables, datatables.net, queryable, linq, efcore, entity-framework-core</PackageTags>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+    <FileVersion>0.0.1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
