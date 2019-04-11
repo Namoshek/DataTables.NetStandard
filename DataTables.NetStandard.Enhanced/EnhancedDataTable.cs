@@ -94,6 +94,8 @@ namespace DataTables.NetStandard.Enhanced
                 query = query.Apply(request);
             }
 
+            // TODO: As soon as EFCore supports translation of .GroupBy(expr).Select(e => e.FirstOrDefault()),
+            //       this method can be improved significantly by applying the group by instead of distinctby.
             return query.Select(selector.Compile())
                 .DistinctBy(e => e.Value)
                 .ToList();
