@@ -113,7 +113,7 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables
                     PrivatePropertyName = nameof(Person.Location.Id),
                     IsOrderable = true,
                     IsSearchable = true,
-                    SearchPredicate = (p, s) => p.Location.Id == s.ParseAsIntOrDefault(0),
+                    SearchPredicate = (p, s) => p.Location.Id.ToString() == s,
                     ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.FullAddress, p.Location.Id.ToString()))
                 },
                 new EnhancedDataTablesColumn<Person, PersonViewModel>
