@@ -10,6 +10,7 @@ namespace DataTables.NetStandard.Configuration
     {
         public bool ServerSide { get; set; } = true;
         public AjaxConfiguration Ajax { get; set; } = new AjaxConfiguration();
+        public IList<IList<string>> Order { get; set; } = new List<IList<string>>();
 
         /// <summary>
         /// A dictionary of additional options that will be passed to DataTable instances.
@@ -27,6 +28,7 @@ namespace DataTables.NetStandard.Configuration
         {
             var copy = (DataTablesConfiguration)MemberwiseClone();
 
+            copy.Order = Order.Select(o => (IList<string>)o.Select(c => (string)c.Clone()).ToList()).ToList();
             copy.AdditionalOptions = AdditionalOptions.DeepClone();
             copy.Columns = Columns.Select(c => (DataTablesConfigurationColumn)c.Clone()).ToList();
 

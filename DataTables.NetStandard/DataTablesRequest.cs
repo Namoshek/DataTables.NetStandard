@@ -159,6 +159,8 @@ namespace DataTables.NetStandard
             OriginalColumns = columns;
             MappingFunction = mappingFunction;
 
+            EnsureColumnOrderingsAreUnset();
+
             ParseGlobalConfigurationFromQuery(query);
             ParseColumnConfigurationFromQuery(query);
             ParseColumnOrderingConfigurationFromQuery(query);
@@ -244,6 +246,18 @@ namespace DataTables.NetStandard
                             : ListSortDirection.Ascending;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Ensures that the ordering of all columns is unset.
+        /// </summary>
+        protected void EnsureColumnOrderingsAreUnset()
+        {
+            foreach (var column in OriginalColumns)
+            {
+                column.OrderingIndex = -1;
+                column.OrderingDirection = ListSortDirection.Ascending;
             }
         }
     }

@@ -85,7 +85,9 @@ namespace DataTables.NetStandard.Sample.DataTables
                     PublicPropertyName = nameof(PersonViewModel.PostCode),
                     PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.PostCode)}",
                     IsOrderable = true,
-                    IsSearchable = true
+                    IsSearchable = true,
+                    OrderingIndex = 0,
+                    OrderingDirection = System.ComponentModel.ListSortDirection.Ascending
                 },
                 new DataTablesColumn<Person, PersonViewModel>
                 {
@@ -103,7 +105,9 @@ namespace DataTables.NetStandard.Sample.DataTables
                     PublicPropertyName = nameof(PersonViewModel.Country),
                     PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.Country)}",
                     IsOrderable = true,
-                    IsSearchable = true
+                    IsSearchable = true,
+                    OrderingIndex = 1,
+                    OrderingDirection = System.ComponentModel.ListSortDirection.Descending
                 },
                 new DataTablesColumn<Person, PersonViewModel>
                 {
