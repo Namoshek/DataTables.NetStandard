@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DataTables.NetStandard.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -51,6 +52,17 @@ namespace DataTables.NetStandard.Configuration
                     Searchable = column.IsSearchable,
                     Orderable = column.IsOrderable,
                     AdditionalOptions = column.AdditionalOptions.DeepClone()
+                });
+            }
+
+            // We calculate the column ordering
+            var orderedColumns = columns.Where(c => c.OrderingIndex > -1).OrderBy(c => c.OrderingIndex);
+            foreach (var column in orderedColumns)
+            {
+                configuration.Order.Add(new List<string>
+                {
+                    columns.IndexOf(column).ToString(),
+                    column.OrderingDirection == System.ComponentModel.ListSortDirection.Descending ? "desc" : "asc"
                 });
             }
 
