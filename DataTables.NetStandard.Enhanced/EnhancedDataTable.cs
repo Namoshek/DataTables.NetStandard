@@ -11,27 +11,17 @@ namespace DataTables.NetStandard.Enhanced
 {
     public abstract class EnhancedDataTable<TEntity, TEntityViewModel> : DataTable<TEntity, TEntityViewModel>
     {
+        protected DataTablesFilterConfiguration _filterConfiguration;
+
+        public EnhancedDataTable()
+        {
+            _filterConfiguration = new DataTablesFilterConfiguration();
+        }
+
         /// <summary>
         /// Enhanced column definitions for this DataTable. Replaces normal column definitions.
         /// </summary>
         public abstract IList<EnhancedDataTablesColumn<TEntity, TEntityViewModel>> EnhancedColumns();
-
-        /// <summary>
-        /// Additional filter options that are used for each column if not overridden.
-        /// Used as filter options for the yadcf DataTables filter system.
-        /// </summary>
-        public virtual IDictionary<string, dynamic> AdditionalColumnFilterOptions()
-        {
-            return new Dictionary<string, dynamic>();
-        }
-
-        /// <summary>
-        /// Additional filter options used to initialize the yadcf DataTables filter system.
-        /// </summary>
-        public virtual IDictionary<string, dynamic> AdditionalFilterOptions()
-        {
-            return new Dictionary<string, dynamic>();
-        }
 
         /// <summary>
         /// We simply forward our enhanced column definitions as normal column definitions.
@@ -49,6 +39,8 @@ namespace DataTables.NetStandard.Enhanced
         /// <param name="query">The query.</param>
         public override DataTablesResponse<TEntity, TEntityViewModel> RenderResponse(string query)
         {
+            Configure();
+
             var request = BuildRequest(query);
             var data = RenderResults(request);
 
@@ -68,16 +60,81 @@ namespace DataTables.NetStandard.Enhanced
         /// <param name="method">The http method used for the data endpoint (get or post)</param>
         public override string RenderScript(string url, string method = "get")
         {
+            Configure();
+
             var script = base.RenderScript(url, method);
             var columnFilters = GetColumnFilterOptions();
 
             var columnOptions = JsonConvert.SerializeObject(columnFilters);
-            var globalOptions = JsonConvert.SerializeObject(AdditionalFilterOptions());
+            var globalOptions = JsonConvert.SerializeObject(_filterConfiguration.AdditionalFilterOptions);
 
             // We reference the DataTable instance with <code>dt_{tableIdentifier}</code>
             script += $"yadcf.init(dt_{GetTableIdentifier()}, {columnOptions}, {globalOptions});";
 
             return script;
+        }
+
+        /// <summary>
+        /// Creates a new text input filter based on the default configuration.
+        /// Can be further configured by the given <paramref name="configure"/> action.
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public virtual TextInputFilter CreateTextInputFilter(Action<TextInputFilter> configure = null)
+        {
+            var filter = new TextInputFilter
+            {
+                PlaceholderValue = _filterConfiguration.DefaultTextInputPlaceholderValue,
+                AdditionalOptions = _filterConfiguration.GetAdditionalColumnFilterOptions(typeof(TextInputFilter)),
+            };
+
+            configure?.Invoke(filter);
+
+            return filter;
+        }
+
+        /// <summary>
+        /// Creates a new select filter based on the default configuration and the given key value selector.
+        /// Can be further configured by the given <paramref name="configure"/> action.
+        /// </summary>
+        /// <param name="keyValueSelector"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public virtual SelectFilter<TEntity> CreateSelectFilter(Expression<Func<TEntity, LabelValuePair>> keyValueSelector, 
+            Action<SelectFilter<TEntity>> configure = null)
+        {
+            var filter = new SelectFilter<TEntity>(keyValueSelector)
+            {
+                EnableDefaultSelectionLabel = _filterConfiguration.EnableDefaultSelectionLabel,
+                DefaultSelectionLabelValue = _filterConfiguration.DefaultSelectionLabelValue,
+                AdditionalOptions = _filterConfiguration.GetAdditionalColumnFilterOptions(typeof(SelectFilter<TEntity>)),
+            };
+
+            configure?.Invoke(filter);
+
+            return filter;
+        }
+
+        /// <summary>
+        /// Creates a new select filter based on the default configuration and the given filter options.
+        /// Can be further configured by the given <paramref name="configure"/> action.
+        /// </summary>
+        /// <param name="filterOptions"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public virtual SelectFilter<TEntity> CreateSelectFilter(IList<LabelValuePair> filterOptions, 
+            Action<SelectFilter<TEntity>> configure = null)
+        {
+            var filter = new SelectFilter<TEntity>(filterOptions)
+            {
+                EnableDefaultSelectionLabel = _filterConfiguration.EnableDefaultSelectionLabel,
+                DefaultSelectionLabelValue = _filterConfiguration.DefaultSelectionLabelValue,
+                AdditionalOptions = _filterConfiguration.GetAdditionalColumnFilterOptions(typeof(SelectFilter<TEntity>)),
+            };
+
+            configure?.Invoke(filter);
+
+            return filter;
         }
 
         /// <summary>
@@ -99,6 +156,35 @@ namespace DataTables.NetStandard.Enhanced
             return query.Select(selector.Compile())
                 .DistinctBy(e => e.Value)
                 .ToList();
+        }
+
+        /// <summary>
+        /// Allows to configure the DataTable instance.
+        /// </summary>
+        protected override void Configure()
+        {
+            if (_isConfigured)
+            {
+                return;
+            }
+
+            var columns = Columns();
+
+            ConfigureColumns(_configuration, columns);
+            ConfigureColumnOrdering(_configuration, columns);
+            ConfigureAdditionalOptions(_configuration, columns);
+            ConfigureFilters(_filterConfiguration);
+
+            _isConfigured = true;
+        }
+
+        /// <summary>
+        /// Allows to configure the DataTable filters.
+        /// </summary>
+        /// <param name="configuration"></param>
+        protected virtual void ConfigureFilters(DataTablesFilterConfiguration configuration)
+        {
+            // We do not configure anything, but we provide a default implementation.
         }
 
         /// <summary>

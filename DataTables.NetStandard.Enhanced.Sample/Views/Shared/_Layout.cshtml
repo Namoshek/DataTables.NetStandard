@@ -64,9 +64,6 @@
   <script src="//cdn.datatables.net/colreorder/1.5.1/js/dataTables.colReorder.min.js"></script>
   <script src="~/js/jquery.dataTables.yadcf.js"></script>
   <script src="~/js/site.js" asp-append-version="true"></script>
-  <script type="text/javascript">
-    @Html.Raw(DataTables.NetStandard.Configuration.DataTablesConfigurationBuilder.BuildGlobalConfigurationScript())
-  </script>
   @RenderSection("Scripts", required: false)
 </body>
 </html>

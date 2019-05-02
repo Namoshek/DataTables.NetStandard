@@ -61,9 +61,6 @@
   </environment>
   <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
   <script src="~/js/site.js" asp-append-version="true"></script>
-  <script type="text/javascript">
-    @Html.Raw(DataTables.NetStandard.Configuration.DataTablesConfigurationBuilder.BuildGlobalConfigurationScript())
-  </script>
   @RenderSection("Scripts", required: false)
 </body>
 </html>

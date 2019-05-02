@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using DataTables.NetStandard.Enhanced.Filters;
 using DataTables.NetStandard.Enhanced.Sample.DataTables.ViewModels;
 using DataTables.NetStandard.Enhanced.Sample.Models;
-using DataTables.NetStandard.Enhanced.Sample.Util;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataTables.NetStandard.Enhanced.Sample.DataTables
 {
-    public class PersonDataTable : EnhancedDataTable<Person, PersonViewModel>
+    public class PersonDataTable : BaseDataTable<Person, PersonViewModel>
     {
         protected SampleDbContext _dbContext;
 
@@ -41,7 +38,7 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables
                     PrivatePropertyName = nameof(Person.Name),
                     IsOrderable = true,
                     IsSearchable = true,
-                    ColumnFilter = new TextInputFilter()
+                    ColumnFilter = CreateTextInputFilter()
                 },
                 new EnhancedDataTablesColumn<Person, PersonViewModel>
                 {
@@ -51,7 +48,7 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables
                     PrivatePropertyName = nameof(Person.Email),
                     IsOrderable = true,
                     IsSearchable = true,
-                    ColumnFilter = new TextInputFilter()
+                    ColumnFilter = CreateTextInputFilter()
                 },
                 new EnhancedDataTablesColumn<Person, PersonViewModel>
                 {
@@ -80,7 +77,7 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables
                     PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.PostCode)}",
                     IsOrderable = true,
                     IsSearchable = true,
-                    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.PostCode))
+                    ColumnFilter = CreateSelectFilter(p => new LabelValuePair(p.Location.PostCode))
                 },
                 new EnhancedDataTablesColumn<Person, PersonViewModel>
                 {
@@ -90,7 +87,7 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables
                     PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.City)}",
                     IsOrderable = true,
                     IsSearchable = true,
-                    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.City))
+                    ColumnFilter = CreateSelectFilter(p => new LabelValuePair(p.Location.City))
                 },
                 new EnhancedDataTablesColumn<Person, PersonViewModel>
                 {
@@ -100,10 +97,10 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables
                     PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.Country)}",
                     IsOrderable = true,
                     IsSearchable = true,
-                    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.Country))
+                    ColumnFilter = CreateSelectFilter(p => new LabelValuePair(p.Location.Country), p =>
                     {
-                        DefaultSelectionLabelValue = "Choose something",
-                    }
+                        p.DefaultSelectionLabelValue = "Choose something";
+                    })
                 },
                 new EnhancedDataTablesColumn<Person, PersonViewModel>
                 {
@@ -114,7 +111,7 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables
                     IsOrderable = true,
                     IsSearchable = true,
                     SearchPredicate = (p, s) => p.Location.Id.ToString() == s,
-                    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.FullAddress, p.Location.Id.ToString()))
+                    ColumnFilter = CreateSelectFilter(p => new LabelValuePair(p.Location.FullAddress, p.Location.Id.ToString()))
                 },
                 new EnhancedDataTablesColumn<Person, PersonViewModel>
                 {
@@ -156,28 +153,18 @@ namespace DataTables.NetStandard.Enhanced.Sample.DataTables
             return _dbContext.Persons.Include(p => p.Location);
         }
 
-        public override Expression<Func<Person, PersonViewModel>> MappingFunction()
+        protected override void ConfigureFilters(DataTablesFilterConfiguration configuration)
         {
-            return p => AutoMapper.Mapper.Map<PersonViewModel>(p);
+            base.ConfigureFilters(configuration);
+
+            configuration.DefaultSelectionLabelValue = "Select anything";
         }
 
-        public override IDictionary<string, dynamic> AdditionalDataTableOptions()
+        protected override void ConfigureAdditionalOptions(DataTablesConfiguration configuration, IList<DataTablesColumn<Person, PersonViewModel>> columns)
         {
-            return new Dictionary<string, dynamic>
-            {
-                { "stateSave", true },
-                { "colReorder", true },
-                { "pagingType", "full_numbers" },
-                { "search", new { smart = true } }
-            };
-        }
+            base.ConfigureAdditionalOptions(configuration, columns);
 
-        public override IDictionary<string, dynamic> AdditionalFilterOptions()
-        {
-            return new Dictionary<string, dynamic>
-            {
-                { "filters_position", "footer" }
-            };
+            configuration.AdditionalOptions["stateSave"] = true;
         }
     }
 }

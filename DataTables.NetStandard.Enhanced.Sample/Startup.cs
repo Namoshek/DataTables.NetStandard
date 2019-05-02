@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using DataTables.NetStandard.Configuration;
-using DataTables.NetStandard.Enhanced.Configuration;
 using DataTables.NetStandard.Enhanced.Sample.DataTables;
 using DataTables.NetStandard.Enhanced.Sample.DataTables.ViewModels;
 using DataTables.NetStandard.TemplateMapper;
@@ -33,12 +31,6 @@ namespace DataTables.NetStandard.Enhanced.Sample
 
             services.AddDataTablesTemplateMapper();
             services.AddScoped<PersonDataTable>();
-
-            // Configure DataTables configuration builder
-            DataTablesConfigurationBuilder.DefaultConfiguration.AdditionalOptions.Add("stateSave", false);
-            DataTablesConfigurationBuilder.DefaultConfiguration.AdditionalOptions.Add("scrollX", true);
-            EnhancedDataTablesConfiguration.FilterConfiguration.DefaultSelectionLabelValue = "Select something";
-            EnhancedDataTablesConfiguration.FilterConfiguration.DefaultTextInputPlaceholderValue = "Type to find";
 
             // Building the service provider early to get the IViewRenderService is a hack that is necessary to get access 
             // to the Razor partial compiler in the DefaultMappingProfile. As the IViewRenderService depends on services
