@@ -8,7 +8,7 @@ The package is heavily inspired by Laravels (PHP) counterpart [`yajra/datatables
 and extensions of said package.
 
 **The package is still Work in Progress, although we already use it ourselfs in production.
-So I recomment trying it out yourself. Feedback is definitely appreciated thoguh.**
+So I recomment trying it out yourself. Feedback is definitely appreciated though.**
 
 #### Why this package?
 
@@ -58,11 +58,10 @@ $> Install-Package DataTables.NetStandard.Enhanced
 
 ## Usage
 
-To create a DataTable, you'll need to create a new class implementing the 
-[`IDataTable` ](DataTables.NetStandard/Abstract/IDataTable.cs) interface.
-There is an abstract base class called [`DataTable`](DataTables.NetStandard/DataTable.cs)
-available for you to inherit from, providing default implementations for most methods.
-You only have to provide own implementations for a few methods:
+To create a DataTable, you'll need to create a new class extending the 
+abstract base class called [`DataTable`](DataTables.NetStandard/DataTable.cs).
+The base provides default implementations for most methods, but is fully customizable.
+You only have to provide own implementations for a few methods to get started:
 
 ```csharp
 public class PersonDataTable : DataTable<Person, PersonViewModel>, IDataTable<Person, PersonViewModel>
@@ -89,7 +88,7 @@ public class PersonDataTable : DataTable<Person, PersonViewModel>, IDataTable<Pe
 
 As you can see, a DataTable always requires two models to work. One is used internally to access 
 the underlying data while the other is used to render the results for the response.
-The dats is mapped using a configurable mapping function. We recommend using the great
+The data is mapped using a configurable mapping function. We recommend using the great
 [`AutoMapper`](https://github.com/AutoMapper/AutoMapper) package by initializing the mapper
 in the `Startup.cs` and configuring the mapping function in the custom DataTable class
 as seen above.
@@ -118,16 +117,12 @@ For a quick start, we recommend having a look at the [PersonDataTable](DataTable
 example in the [Sample](DataTables.NetStandard.Sample/) project. It is a basic example showcasing
 what is possible with this package and how easy it is to setup a new DataTable.
 
-After defining a custom DataTable, you only have to register it in your service container,
-inject it to your controller and pass it to the view via the `ViewBag`. In the view,
-you can then render the HTML and the JavaScript for your table. Rendering the global defaults
-for your DataTables is optional:
+After defining a custom DataTable, you only have to register it in your service container.
+You can then inject it into your view and render the HTML as well as the JavaScript for your table. 
 
 ```csharp
 // MyTable.cshtml
-@{
-    var DataTable = (MyCustomDataTable)ViewBag.MyCustomDataTable;
-}
+@inject MyCustomDataTable DataTable
 
 <div class="table-responsive">
   @Html.Raw(DataTable.RenderHtml())
@@ -138,12 +133,6 @@ for your DataTables is optional:
         @Html.Raw(DataTable.RenderScript(Url.Action("TableData", "MyController")))
     });
 }
-
-// _Layout.cshtml (Optional)
-<script type="text/javascript">
-    @Html.Raw(DataTables.NetStandard.Configuration.DataTablesConfigurationBuilder.BuildGlobalConfigurationScript())
-</script>
-@RenderSection("Scripts", required: false)
 ```
 
 Please note that this package does not include the actual DataTables script file as well as the stylesheet.
@@ -157,7 +146,7 @@ some related `Location` information. The example showcases a lot of the supporte
 options combined in one table.
 
 ```csharp
-public class PersonDataTable : DataTable<Person, PersonViewModel>, IDataTable<Person, PersonViewModel>
+public class PersonDataTable : DataTable<Person, PersonViewModel>
 {
     protected SampleDbContext _dbContext;
 
@@ -186,7 +175,9 @@ public class PersonDataTable : DataTable<Person, PersonViewModel>, IDataTable<Pe
                 PublicPropertyName = nameof(PersonViewModel.Name),
                 PrivatePropertyName = nameof(Person.Name),
                 IsOrderable = true,
-                IsSearchable = true
+                IsSearchable = true,
+                OrderingIndex = 0,
+                OrderingDirection = ListSortDirection.Descending
             },
             new DataTablesColumn<Person, PersonViewModel>
             {
@@ -251,6 +242,11 @@ public class PersonDataTable : DataTable<Person, PersonViewModel>, IDataTable<Pe
     {
         return _dbContext.Persons.Include(p => p.Location);
     }
+
+    public override Expression<Func<Person, PersonViewModel>> MappingFunction()
+    {
+        return p => AutoMapper.Mapper.Map<PersonViewModel>(p);
+    }
 }
 ```
 
@@ -258,20 +254,27 @@ public class PersonDataTable : DataTable<Person, PersonViewModel>, IDataTable<Pe
 
 ### Global Configuration and per-table Overrides
 
-Configuring your DataTables globally is possible through the `DataTablesConfigurationBuilder`
-which has a singleton-like property called `DefaultConfiguration`. Currently, this configuration
-object does not provide properties for common settings directly, but instead exposes a dictionary
-which you can fill with any configuration options you need.
+Configuring your DataTables globally is possible by using an (abstract) base table.
 
 ```csharp
-// Startup.cs (or somewhere else, but before rendering the DataTable scripts)
-DataTablesConfigurationBuilder.DefaultConfiguration.AdditionalOptions.Add("stateSave", false);
-DataTablesConfigurationBuilder.DefaultConfiguration.AdditionalOptions.Add("search", new
+public abstract class BaseDataTable<TEntity, TEntityViewModel> : DataTable<TEntity, TEntityViewModel>
 {
-    Smart = true,
-    Regex = false,
-    Search = "Initial search string"
-});
+    public override Expression<Func<TEntity, TEntityViewModel>> MappingFunction()
+    {
+        return e => AutoMapper.Mapper.Map<TEntityViewModel>(e);
+    }
+
+    protected override void ConfigureAdditionalOptions(DataTablesConfiguration configuration, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
+    {
+        configuration.AdditionalOptions["stateSave"] = false;
+        configuration.AdditionalOptions["search"] = new
+        {
+            Smart = true,
+            Regex = false,
+            Search = "Initial search string"
+        }
+    }
+}
 ```
 
 _Note: Please be aware that the options passed to this AdditionalOptions dictionary will not be transformed
@@ -279,25 +282,17 @@ from PascalCase to camelCase or similar. They are serialized the way they are co
 objects passed as value, like `Smart`, `Regex` or `Search` in above example, **are** translated to
 camelCase though!_
 
-By changing the default configuration, all your rendered DataTable scripts will receive these options
-if they are not being overwritten by the concrete DataTable implementation through overriding the 
-`public IDictionary<string, dynamic> AdditionalDataTableOptions()` method. The ajax URL as well as 
-the method (`GET`/`POST`) are set when rendering the DataTable scripts with 
-`personDataTable.RenderScript(Url.Action("TableData", "Person"), "post")`.
-
 ### Configuring DataTable instances
 
-Adding additional options for a specific DataTable or overriding global defaults is possible by overriding
-the implementation for the `AdditionalDataTableOptions()` method:
+When configuring individual DataTable instances inheriting from a base table,
+it is recommended to still apply the configuration of the base table:
 
 ```csharp
-public override IDictionary<string, dynamic> AdditionalDataTableOptions()
+protected override void ConfigureAdditionalOptions(DataTablesConfiguration configuration, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
 {
-    return new Dictionary<string, dynamic>
-    {
-        { "stateSave", false },
-        { "search", new { Smart = true, Regex = false, Search = null } }
-    };
+    base.ConfigureAdditionalOptions(configuration, columns);
+
+    configuration.AdditionalOptions["scrollX"] = true;
 }
 ```
 
@@ -387,8 +382,10 @@ All members of type `Person` that are not referenced by the `PublicPropertyName`
 one `DataTablesColumn` will not be part of the serialized data that is sent to the client.
 This is done in order to prevent sending data to the client which we did not intend to send.
 
-For better security and in order to fully utilize the power of this package,
-we recommend using a separate view model at any time though.
+You will still have to provide a `MappingFunction`, though it may simply return the incoming object.
+
+**For better security and in order to fully utilize the power of this package,
+we recommend using a separate view model at any time though.**
 
 ### Action Column Rendering and Data Transformation
 
@@ -463,10 +460,9 @@ for the `IServiceCollection` called `services.AddDataTablesTemplateMapper()` whi
 
 ### Customizing the Table Rendering
 
-For the method `string RenderHtml()` required by the `IDataTable` interface, a default implementation
+For the method `string RenderHtml()` required to render a DataTable instance, a default implementation
 has been added to the abstract `DataTable` base class. It renders the table with the help of some
-other methods, of which all are marked as `virtual` which allows you to override their implementations
-seemlessly:
+other methods, of which all are marked as `protected virtual` to allow overriding their implementations:
 
 ```csharp
 public virtual string RenderHtml()
@@ -498,8 +494,10 @@ produces an output like this:
 
 ```js
 var dt_PersonDataTable = $('#PersonDataTable').DataTable({
-    ajax: 'https://localhost:5001/Persons/TableData',
-    method: 'post',
+    ajax: {
+        url: 'https://localhost:5001/Persons/TableData',
+        method: 'get'
+    },
     columns: [...],
     stateSave: false,
     // more options ...
@@ -510,7 +508,7 @@ Using the `personDataTable.GetTableIdentifier()` method, you have access to the 
 in above example. This means you can simply add your plugin JavaScript code in your view right after rendering the
 DataTable in order to have access to the table through the `dt_PersonDataTable` variable.
 
-As an example, you can have a look at the [sample project](DataTables.NetStandard.Sample/) where we are using a DataTable extension package called
+As an example, you can have a look at the following sample where we are using a DataTable extension package called
 [yadcf](https://github.com/vedmack/yadcf). It provides filters for individual columns and can be initialized easily.
 For better illustration, here a full example including the rendering of the DataTable script:
 
@@ -609,7 +607,7 @@ new EnhancedDataTablesColumn<Person, PersonViewModel>
     IsOrderable = true,
     IsSearchable = true,
     ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.Country))
-},
+}
 ```
 
 The filter implements the `IFilterWithSelectableData` interface. For all filters of this type, the `EnhancedDataTable` will load
@@ -617,7 +615,7 @@ distinct values based on the given `LabelValuePair` when rendering the table or 
 with the remaining set of possible values (cumulative search).
 This will only happen if you pass a `Expression<Func<TEntity, LabelValuePair>>` to the filter constructor as seen in the example above.
 Alternatively, you can also pass an `IList<LabelValuePair>` with the options to display. This is useful if you want to display
-the localized options of an enum for example:
+the localized options of an enum for example. Or you use some data from a repository:
 
 ```csharp
 new EnhancedDataTablesColumn<Person, PersonViewModel>
@@ -629,7 +627,7 @@ new EnhancedDataTablesColumn<Person, PersonViewModel>
     IsOrderable = true,
     IsSearchable = true,
     ColumnFilter = new SelectFilter<Person>(_countryRepository.GetAll())
-},
+}
 ```
 
 Options of a select filter can also display a label different to the value they represent. This is especially useful if you want to
@@ -644,14 +642,13 @@ new EnhancedDataTablesColumn<Person, PersonViewModel>
     PrivatePropertyName = nameof(Person.Location.Id),
     IsOrderable = true,
     IsSearchable = true,
-    SearchPredicate = (p, s) => p.Location.Id == s.ParseAsIntOrDefault(0),
+    SearchPredicate = (p, s) => (p.Location.Street + " " + p.Location.HouseNumber).ToLower().Contains(s.ToLower()),
+    ColumnSearchPredicate = (p, s) => p.Location.ToString() == s,
     ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.FullAddress, p.Location.Id.ToString()))
 }
 ```
 
-_Please note that also the value of a `LabelValuePair` has always to be a string as the search of DataTables works with strings only.
-You can still perform foreign key search in the database by using a proper `SearchPredicate` as shown in the example above, though.
-In the example, an extension method for the `string` class is used which tries to parse the string as `int` and returns a default on error._
+_Please note that also the value of a `LabelValuePair` has always to be a string as the search of DataTables works with strings only._
 
 ### Filter Configuration
 

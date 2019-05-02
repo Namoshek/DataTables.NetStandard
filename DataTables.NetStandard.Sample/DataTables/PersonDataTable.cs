@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataTables.NetStandard.Sample.DataTables
 {
-    public class PersonDataTable : DataTable<Person, PersonViewModel>
+    public class PersonDataTable : BaseDataTable<Person, PersonViewModel>
     {
         protected SampleDbContext _dbContext;
 
@@ -156,14 +156,13 @@ namespace DataTables.NetStandard.Sample.DataTables
             return p => AutoMapper.Mapper.Map<PersonViewModel>(p);
         }
 
-        public override IDictionary<string, dynamic> AdditionalDataTableOptions()
+        protected override void ConfigureAdditionalOptions(DataTablesConfiguration configuration, IList<DataTablesColumn<Person, PersonViewModel>> columns)
         {
-            return new Dictionary<string, dynamic>
-            {
-                { "stateSave", true },
-                { "pagingType", "full_numbers" },
-                { "search", new { smart = true } }
-            };
+            base.ConfigureAdditionalOptions(configuration, columns);
+
+            configuration.AdditionalOptions["stateSave"] = true;
+            configuration.AdditionalOptions["pagingType"] = "full_numbers";
+            configuration.AdditionalOptions["search"] = new { smart = true };
         }
     }
 }

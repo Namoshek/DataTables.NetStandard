@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using DataTables.NetStandard.Configuration;
 using DataTables.NetStandard.Extensions;
 using DataTables.NetStandard.Util;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace DataTables.NetStandard
 {
@@ -17,6 +18,7 @@ namespace DataTables.NetStandard
     public abstract class DataTable<TEntity, TEntityViewModel>
     {
         protected string _tableIdentifier;
+        protected DataTablesConfiguration _configuration;
 
         /// <summary>
         /// DataTable constructor. Gets and stores the table identifier.
@@ -24,6 +26,9 @@ namespace DataTables.NetStandard
         public DataTable()
         {
             SetTableIdentifier(BuildTableIdentifier());
+
+            _configuration = new DataTablesConfiguration();
+            Configure(_configuration);
         }
 
         /// <summary>
@@ -99,7 +104,7 @@ namespace DataTables.NetStandard
         /// <param name="method">The http method used for the data endpoint (get or post)</param>
         public virtual string RenderScript(string url, string method = "get")
         {
-            return DataTablesConfigurationBuilder.BuildDataTableConfigurationScript(Columns(), GetTableIdentifier(), url, method, AdditionalDataTableOptions());
+            return BuildConfigurationScript(GetTableIdentifier(), url, method);
         }
 
         /// <summary>
@@ -118,15 +123,6 @@ namespace DataTables.NetStandard
             sb.Append("</table>");
 
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// Additional data table options. The options are serialized as they are without changing PascalCase to
-        /// camelCase or something similar.
-        /// </summary>
-        public virtual IDictionary<string, dynamic> AdditionalDataTableOptions()
-        {
-            return new Dictionary<string, dynamic>();
         }
 
         /// <summary>
@@ -166,6 +162,103 @@ namespace DataTables.NetStandard
         public virtual IList<string> GetDistinctColumnValues(Expression<Func<TEntity, string>> property)
         {
             return Query().Select(property).Distinct().ToList();
+        }
+
+        /// <summary>
+        /// Builds the configuration script for the DataTable instance.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <typeparam name="TEntityViewModel">The type of the entity view model.</typeparam>
+        /// <param name="tableName">Name of the table.</param>
+        /// <param name="url">The URL.</param>
+        /// <param name="method">The method.</param>
+        public string BuildConfigurationScript(string tableName, string url, string method)
+        {
+            var configuration = (DataTablesConfiguration)_configuration.Clone();
+            configuration.Ajax = new DataTablesConfiguration.AjaxConfiguration
+            {
+                Url = url,
+                Method = method
+            };
+
+            var config = JsonConvert.SerializeObject(configuration, GetSerializerSettings());
+
+            return $"var dt_{tableName} = $('#{tableName}').DataTable({config});";
+        }
+
+        /// <summary>
+        /// Allows to configure the DataTable instance.
+        /// </summary>
+        /// <param name="configuration"></param>
+        protected virtual void Configure(DataTablesConfiguration configuration)
+        {
+            var columns = Columns();
+
+            ConfigureColumns(configuration, columns);
+            ConfigureColumnOrdering(configuration, columns);
+            ConfigureAdditionalOptions(configuration, columns);
+        }
+
+        /// <summary>
+        /// Configures the columns in the DataTable settings which are serialized when rendering the table script.
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="columns"></param>
+        protected virtual void ConfigureColumns(DataTablesConfiguration configuration, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
+        {
+            foreach (var column in columns)
+            {
+                configuration.Columns.Add(new DataTablesConfiguration.DataTablesConfigurationColumn
+                {
+                    Data = column.PublicName,
+                    Name = column.PublicName,
+                    Title = column.DisplayName ?? column.PublicName.FirstCharToUpper(),
+                    Searchable = column.IsSearchable,
+                    Orderable = column.IsOrderable,
+                    AdditionalOptions = column.AdditionalOptions.DeepClone()
+                });
+            }
+        }
+
+        /// <summary>
+        /// Configures the column ordering in the DataTable settings which are serialized when rendering the table script.
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="columns"></param>
+        protected virtual void ConfigureColumnOrdering(DataTablesConfiguration configuration, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
+        {
+            var orderedColumns = columns.Where(c => c.OrderingIndex > -1).OrderBy(c => c.OrderingIndex);
+            foreach (var column in orderedColumns)
+            {
+                configuration.Order.Add(new List<string>
+                {
+                    columns.IndexOf(column).ToString(),
+                    column.OrderingDirection == System.ComponentModel.ListSortDirection.Descending ? "desc" : "asc"
+                });
+            }
+        }
+
+        /// <summary>
+        /// Allows to configure additional table options.
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="columns"></param>
+        protected virtual void ConfigureAdditionalOptions(DataTablesConfiguration configuration, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
+        {
+            // We don't configure anything here, but we provide a default implementation.
+        }
+
+        /// <summary>
+        /// Gets the serializer settings used to serialize the DataTables configuration.
+        /// </summary>
+        protected static JsonSerializerSettings GetSerializerSettings()
+        {
+            return new JsonSerializerSettings
+            {
+                Formatting = Formatting.None,
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
         }
 
         /// <summary>
