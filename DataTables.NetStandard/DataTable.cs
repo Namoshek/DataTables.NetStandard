@@ -19,6 +19,7 @@ namespace DataTables.NetStandard
     {
         protected string _tableIdentifier;
         protected DataTablesConfiguration _configuration;
+        protected bool _isConfigured = false;
 
         /// <summary>
         /// DataTable constructor. Gets and stores the table identifier.
@@ -28,7 +29,6 @@ namespace DataTables.NetStandard
             SetTableIdentifier(BuildTableIdentifier());
 
             _configuration = new DataTablesConfiguration();
-            Configure(_configuration);
         }
 
         /// <summary>
@@ -71,6 +71,8 @@ namespace DataTables.NetStandard
         /// <param name="query">The query.</param>
         public virtual DataTablesResponse<TEntity, TEntityViewModel> RenderResponse(string query)
         {
+            Configure();
+
             var request = BuildRequest(query);
             var data = RenderResults(request);
 
@@ -84,6 +86,8 @@ namespace DataTables.NetStandard
         /// <param name="query">The query.</param>
         public virtual IPagedList<TEntityViewModel> RenderResults(string query)
         {
+            Configure();
+
             return Query().ToPagedList(BuildRequest(query));
         }
 
@@ -94,6 +98,8 @@ namespace DataTables.NetStandard
         /// <returns></returns>
         public virtual IPagedList<TEntityViewModel> RenderResults(DataTablesRequest<TEntity, TEntityViewModel> request)
         {
+            Configure();
+
             return Query().ToPagedList(request);
         }
 
@@ -104,6 +110,8 @@ namespace DataTables.NetStandard
         /// <param name="method">The http method used for the data endpoint (get or post)</param>
         public virtual string RenderScript(string url, string method = "get")
         {
+            Configure();
+
             return BuildConfigurationScript(GetTableIdentifier(), url, method);
         }
 
@@ -112,6 +120,8 @@ namespace DataTables.NetStandard
         /// </summary>
         public virtual string RenderHtml()
         {
+            Configure();
+
             var sb = new StringBuilder();
 
             sb.Append($"<table id=\"{GetTableIdentifier()}\">");
@@ -189,14 +199,20 @@ namespace DataTables.NetStandard
         /// <summary>
         /// Allows to configure the DataTable instance.
         /// </summary>
-        /// <param name="configuration"></param>
-        protected virtual void Configure(DataTablesConfiguration configuration)
+        protected virtual void Configure()
         {
+            if (_isConfigured)
+            {
+                return;
+            }
+
             var columns = Columns();
 
-            ConfigureColumns(configuration, columns);
-            ConfigureColumnOrdering(configuration, columns);
-            ConfigureAdditionalOptions(configuration, columns);
+            ConfigureColumns(_configuration, columns);
+            ConfigureColumnOrdering(_configuration, columns);
+            ConfigureAdditionalOptions(_configuration, columns);
+
+            _isConfigured = true;
         }
 
         /// <summary>

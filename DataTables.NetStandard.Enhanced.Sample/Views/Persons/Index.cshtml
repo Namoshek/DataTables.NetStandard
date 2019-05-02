@@ -1,8 +1,9 @@
 ﻿@using DataTables.NetStandard.Enhanced.Sample.DataTables
 
+@inject PersonDataTable DataTable
+
 @{
     ViewData["Title"] = "Home Page";
-    var DataTable = (PersonDataTable)ViewBag.DataTable;
 }
 
 <div class="table-responsive">

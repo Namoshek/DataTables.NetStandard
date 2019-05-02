@@ -16,8 +16,6 @@ namespace DataTables.NetStandard.Enhanced.Sample.Controllers
 
         public IActionResult Index()
         {
-            ViewBag.DataTable = _personDataTable;
-
             return View();
         }
 

@@ -37,7 +37,7 @@ Awesome, then we have something in common! :smile:
     - [TextInput Filter](#textinput-filter)
     - [Select Filter](#select-filter)
   - [Filter Configuration](#filter-configuration)
-    - [Global Defaults](#global-defaults)
+    - [Per-Table Configuration](#per-table-configuration)
     - [Per-Usage Configuration](#per-usage-configuration)
 - [License](#license)
 
@@ -561,7 +561,7 @@ public class PersonDataTable : EnhancedDataTable<Person, PersonViewModel>
                 PrivatePropertyName = nameof(Person.Name),
                 IsOrderable = true,
                 IsSearchable = true,
-                ColumnFilter = new TextInputFilter()
+                ColumnFilter = CreateTextInputFilter()
             },
             // More columns ...
         };
@@ -588,7 +588,7 @@ new EnhancedDataTablesColumn<Person, PersonViewModel>
     PrivatePropertyName = nameof(Person.Name),
     IsOrderable = true,
     IsSearchable = true,
-    ColumnFilter = new TextInputFilter()
+    ColumnFilter = CreateTextInputFilter()
 }
 ```
 
@@ -606,7 +606,7 @@ new EnhancedDataTablesColumn<Person, PersonViewModel>
     PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.Country)}",
     IsOrderable = true,
     IsSearchable = true,
-    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.Country))
+    ColumnFilter = CreateSelectFilter(p => new LabelValuePair(p.Location.Country))
 }
 ```
 
@@ -626,7 +626,7 @@ new EnhancedDataTablesColumn<Person, PersonViewModel>
     PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.Country)}",
     IsOrderable = true,
     IsSearchable = true,
-    ColumnFilter = new SelectFilter<Person>(_countryRepository.GetAll())
+    ColumnFilter = CreateSelectFilter(_countryRepository.GetAll())
 }
 ```
 
@@ -644,7 +644,7 @@ new EnhancedDataTablesColumn<Person, PersonViewModel>
     IsSearchable = true,
     SearchPredicate = (p, s) => (p.Location.Street + " " + p.Location.HouseNumber).ToLower().Contains(s.ToLower()),
     ColumnSearchPredicate = (p, s) => p.Location.ToString() == s,
-    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.FullAddress, p.Location.Id.ToString()))
+    ColumnFilter = CreateSelectFilter(p => new LabelValuePair(p.Location.FullAddress, p.Location.Id.ToString()))
 }
 ```
 
@@ -653,32 +653,32 @@ _Please note that also the value of a `LabelValuePair` has always to be a string
 ### Filter Configuration
 
 When configuring your filters with additional options, you can always choose between configuring only one instance of a filter
-or all of your filters through a global configuration.
+or all filters of your DataTable. By using a base table for all of your DataTable instances, you can also use a _global_ configuration.
 
-#### Global Defaults
+#### Per-Table Configuration
 
-You can customize some of the filter options globally through the `EnhancedDataTablesConfiguration` class which holds a singleton
-of the `DataTablesFilterConfiguration`. You can do this anywhere in your code. Changes to this configuration will be picked up
-by your `EnhancedDataTables` if the configuration changes were made before the table script has been rendered. It is recommended
-to place this configuration somewhere in the `Startup` class though:
+Configuring your filters is done in the `ConfigureFilters` method within your DataTable (or a base table, if you prefer):
 
 ```csharp
-public class Startup
+protected override void ConfigureFilters(DataTablesFilterConfiguration configuration)
 {
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // Configure DataTables filters
-        EnhancedDataTablesConfiguration.FilterConfiguration.DefaultSelectionLabelValue = "Select something";
-        EnhancedDataTablesConfiguration.FilterConfiguration.DefaultTextInputPlaceholderValue = "Type to find";
+    configuration.DefaultSelectionLabelValue = "Select something";
+    configuration.DefaultTextInputPlaceholderValue = "Type to find";
 
-        // Other application configuration...
-    }
+    configuration.AdditionalFilterOptions.Add("filters_position", "footer");
+
+    var selectFilterConfiguration = configuration.GetAdditionalColumnFilterOptions(typeof(SelectFilter<TEntity>));
+    selectFilterConfiguration["select_type"] = "select2";
 }
 ```
 
+You can add additional options for the whole `yadcf` library via the `AdditionalFilterOptions` dictionary.
+Additional options for individual filter types can be added by retrieving the corresponding dictionary with
+`configuration.GetAdditionalColumnFilterOptions(type)` where `type` is the type of a filter class.
+
 #### Per-Usage Configuration
 
-Alternatively, you can also configure your filters when defining your table columns:
+Alternatively, you can also configure your filters when defining your table columns and their filters:
 
 ```csharp
 new EnhancedDataTablesColumn<Person, PersonViewModel>
@@ -689,10 +689,10 @@ new EnhancedDataTablesColumn<Person, PersonViewModel>
     PrivatePropertyName = $"{nameof(Person.Location)}.{nameof(Location.Country)}",
     IsOrderable = true,
     IsSearchable = true,
-    ColumnFilter = new SelectFilter<Person>(p => new LabelValuePair(p.Location.Country, p.Location.Country))
+    ColumnFilter = CreateSelectFilter(p => new LabelValuePair(p.Location.Country, p.Location.Country), p =>
     {
-        DefaultSelectionLabelValue = "Choose something",
-    }
+        p.DefaultSelectionLabelValue = "Choose something";
+    })
 }
 ```
 
