@@ -16,4 +16,4 @@ jobs:
     - name: Build the projects
       run: dotnet build --configuration Release
     - name: Pack the publish package
-      uses: dotnet pack -c Release -o out
+      run: dotnet pack -c Release -o out
