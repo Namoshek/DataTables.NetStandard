@@ -43,7 +43,7 @@ namespace DataTables.NetStandard
             PagesCount = PageSize <= 0 ? 1 : (int)Math.Ceiling((double)(TotalCount / PageSize));
 
             int skipCount = Math.Abs((PageNumber - 1) * PageSize);
-            int takeCount = PageSize <= 0 ? TotalCount : PageSize;
+            int takeCount = PageSize <= 0 ? int.MaxValue : PageSize;
 
             var result = queryable.Skip(skipCount).Take(takeCount).ToList();
 
