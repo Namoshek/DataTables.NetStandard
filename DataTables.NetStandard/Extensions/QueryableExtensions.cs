@@ -125,6 +125,27 @@ namespace DataTables.NetStandard.Extensions
         }
 
         /// <summary>
+        /// Orders the given <see cref="IQueryable{TEntity}"/> by the given <paramref name="propertyName"/>.
+        /// The method will consider the given <paramref name="direction"/> and if the order should be applied
+        /// with <paramref name="caseInsensitive"/> logic.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="query">The query.</param>
+        /// <param name="orderExpression">Name of the property.</param>
+        /// <param name="direction">The direction.</param>
+        /// <param name="alreadyOrdered">if set to <c>true</c>, follow-up order logic will be used.</param>
+        internal static IQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> query, 
+            Expression<Func<TEntity, object>> orderExpression, ListSortDirection direction, bool alreadyOrdered)
+        {
+            var methodName = GetOrderMethodName(direction, alreadyOrdered);
+            var typeArguments = new Type[] { typeof(TEntity), typeof(object) };
+
+            var resultExpr = Expression.Call(typeof(Queryable), methodName, typeArguments, query.Expression, orderExpression);
+
+            return query.Provider.CreateQuery<TEntity>(resultExpr);
+        }
+
+        /// <summary>
         /// Gets the name of the order method matching the given requirements.
         /// </summary>
         /// <param name="direction">The order direction.</param>

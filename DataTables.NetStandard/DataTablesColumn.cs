@@ -113,6 +113,12 @@ namespace DataTables.NetStandard
         public Expression<Func<TEntity, object>> ColumnOrderingProperty { get; set; }
 
         /// <summary>
+        /// Optional expression that specifies an expression which should be used if ordering by the column is required. 
+        /// If no expression provided, the same property will be used for sorting as specified by <see cref="PrivatePropertyName"/> value.
+        /// </summary>
+        public Expression<Func<TEntity, object>> ColumnOrderingExpression { get; set; }
+
+        /// <summary>
         /// Optional predicate expression that will be used to search by the searchable column when 
         /// <see cref="DataTablesRequest{TEntity, TEntityViewModel}.GlobalSearchValue"/> is specified.
         /// If no predicate is provided, the <see cref="SearchPredicate"/> or <see cref="string.Contains(string)"/> method is used by default.
