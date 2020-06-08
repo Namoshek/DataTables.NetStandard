@@ -157,11 +157,18 @@ namespace DataTables.NetStandard.Extensions
 
             foreach (var c in columns)
             {
-                var propertyName = c.ColumnOrderingProperty != null
-                    ? c.ColumnOrderingProperty.GetPropertyPath() 
-                    : c.PrivatePropertyName;
+                if (c.ColumnOrderingExpression != null)
+                {
+                    queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.OrderBy(c.ColumnOrderingExpression, c.OrderingDirection, alreadyOrdered);
+                }
+                else
+                {
+                    var propertyName = c.ColumnOrderingProperty != null
+                        ? c.ColumnOrderingProperty.GetPropertyPath()
+                        : c.PrivatePropertyName;
 
-                queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.OrderBy(propertyName, c.OrderingDirection, c.OrderingCaseInsensitive, alreadyOrdered);
+                    queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.OrderBy(propertyName, c.OrderingDirection, c.OrderingCaseInsensitive, alreadyOrdered);
+                }
 
                 alreadyOrdered = true;
             }
