@@ -16,6 +16,8 @@
     <PackageTags>datatables, datatables.net, queryable, linq, efcore, entity-framework-core</PackageTags>
     <PackageId>DataTables.NetStandard</PackageId>
     <Product>DataTables.NetStandard</Product>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -14,6 +14,8 @@
     <RepositoryUrl>https://github.com/Namoshek/DataTables.NetStandard.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>datatables, datatables.net, queryable, linq, efcore, entity-framework-core</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
