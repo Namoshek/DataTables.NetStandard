@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup .NET Core Build Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x'
+      - name: Build packages
+        run: dotnet build --configuration Release
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Pack NuGet packages
+        run: dotnet pack -c Release -o out
+      - name: Push NuGet packages to nuget.org
+        run: dotnet nuget push **/*.nupkg
+               --api-key ${{ secrets.NUGET_API_KEY }}
+               --source https://api.nuget.org/v3/index.json
+      
