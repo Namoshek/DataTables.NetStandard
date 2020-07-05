@@ -18,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DataTables.NetStandard" Version="0.5.1" />
+    <PackageReference Include="DataTables.NetStandard" Version="0.5.2" />
     <PackageReference Include="morelinq" Version="3.1.1" />
   </ItemGroup>
 
