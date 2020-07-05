@@ -56,6 +56,9 @@ Or, if you want the [enhanced DataTables](#enhanced-datatables), with:
 $> Install-Package DataTables.NetStandard.Enhanced
 ```
 
+More details about the enhanced DataTables can be found in the separate
+[GitHub repository](https://github.com/Namoshek/DataTables.NetStandard.Enhanced).
+
 ## Usage
 
 To create a DataTable, you'll need to create a new class extending the 
