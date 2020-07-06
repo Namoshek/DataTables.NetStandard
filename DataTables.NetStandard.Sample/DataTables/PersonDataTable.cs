@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using AutoMapper;
 using DataTables.NetStandard.Sample.DataTables.ViewModels;
 using DataTables.NetStandard.Sample.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DataTables.NetStandard.Sample.DataTables
 {
@@ -12,7 +11,7 @@ namespace DataTables.NetStandard.Sample.DataTables
     {
         protected SampleDbContext _dbContext;
 
-        public PersonDataTable(SampleDbContext dbContext)
+        public PersonDataTable(IMapper mapper, SampleDbContext dbContext) : base(mapper)
         {
             _dbContext = dbContext;
         }
@@ -150,11 +149,6 @@ namespace DataTables.NetStandard.Sample.DataTables
             return _dbContext.Persons
                 .Include(p => p.EmailAddresses)
                 .Include(p => p.Location);
-        }
-
-        public override Expression<Func<Person, PersonViewModel>> MappingFunction()
-        {
-            return p => AutoMapper.Mapper.Map<PersonViewModel>(p);
         }
 
         protected override void ConfigureAdditionalOptions(DataTablesConfiguration configuration, IList<DataTablesColumn<Person, PersonViewModel>> columns)
