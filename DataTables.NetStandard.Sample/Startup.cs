@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace DataTables.NetStandard.Sample
 {
@@ -36,10 +37,10 @@ namespace DataTables.NetStandard.Sample
             // to the Razor partial compiler in the DefaultMappingProfile. As the IViewRenderService depends on services
             // from Microsoft.AspNetCore.Mvc.Razor, it is necessary to configure MVC with services.AddMvc() before
             // configuring the Mapper like this.
-            Mapper.Initialize(m =>
+            services.AddAutoMapper(m =>
             {
                 m.AddProfile(new DefaultMappingProfile(services.BuildServiceProvider().GetService<IViewRenderService>()));
-            });
+            }, Assembly.GetAssembly(typeof(DefaultMappingProfile)));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
