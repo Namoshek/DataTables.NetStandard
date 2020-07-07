@@ -4,11 +4,10 @@ using DataTables.NetStandard.Sample.DataTables.ViewModels;
 using DataTables.NetStandard.TemplateMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
+using Microsoft.Extensions.Hosting;
 
 namespace DataTables.NetStandard.Sample
 {
@@ -25,26 +24,31 @@ namespace DataTables.NetStandard.Sample
         {
             services.AddDbContext<SampleDbContext>(options =>
             {
-                options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=DataTables.NetStandard.Sample;Trusted_Connection=True;");
+                options.UseSqlServer(Configuration.GetConnectionString("Database"));
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllersWithViews();
 
             services.AddDataTablesTemplateMapper();
             services.AddScoped<PersonDataTable>();
+
+            // We need to register custom services we want to use in the mapping profile.
+            services.AddTransient<IViewRenderService, ViewRenderService>();
 
             // Building the service provider early to get the IViewRenderService is a hack that is necessary to get access 
             // to the Razor partial compiler in the DefaultMappingProfile. As the IViewRenderService depends on services
             // from Microsoft.AspNetCore.Mvc.Razor, it is necessary to configure MVC with services.AddMvc() before
             // configuring the Mapper like this.
-            services.AddAutoMapper(m =>
+            services.AddScoped(provider => new MapperConfiguration(config =>
             {
-                m.AddProfile(new DefaultMappingProfile(services.BuildServiceProvider().GetService<IViewRenderService>()));
-            }, Assembly.GetAssembly(typeof(DefaultMappingProfile)));
+                config.AddProfile(new DefaultMappingProfile(provider.GetService<IViewRenderService>()));
+            }).CreateMapper());
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, SampleDbContext dbContext)
         {
+            dbContext.Database.Migrate();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -58,11 +62,13 @@ namespace DataTables.NetStandard.Sample
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Persons}/{action=Index}/{id?}");
+                    pattern: "{controller=Persons}/{action=Index}/{id?}");
             });
         }
     }
