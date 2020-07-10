@@ -166,7 +166,22 @@ public class PersonDataTable : DataTable<Person, PersonViewModel>
                 PublicPropertyName = nameof(PersonViewModel.Id),
                 PrivatePropertyName = nameof(Person.Id),
                 IsOrderable = true,
-                IsSearchable = true
+                IsSearchable = true,
+                SearchPredicate = (p, s) => false,
+                SearchPredicateProvider = (s) => (p, s) => true,
+                ColumnSearchPredicateProvider = (s) =>
+                {
+                    var minMax = s.Split("-delim-", System.StringSplitOptions.RemoveEmptyEntries);
+                    if (minMax.Length >= 2)
+                    {
+                        var min = long.Parse(minMax[0]);
+                        var max = long.Parse(minMax[1]);
+
+                        return (p, s) => p.Id >= min && p.Id <= max;
+                    }
+
+                    return (p, s) => false;
+                }
             },
             new DataTablesColumn<Person, PersonViewModel>
             {
@@ -318,8 +333,11 @@ public override IList<DataTablesColumn<Person, PersonViewModel>> Columns()
             IsSearchable = true,
             SearchRegex = true,
             SearchPredicate = (p, s) => p.Id.ToString().Contains(s),
+            SearchPredicateProvider = (s) => (p, s) => false,
             GlobalSearchPredicate = (p, s) => p.Id.ToString().Contains(s),
+            GlogbalSearchPredicateProvider = (s) => (p, s) => false,
             ColumnSearchPredicate = (p, s) => p.Id.ToString().Contains(s),
+            ColumnSearchPredicateProvider = (s) => (p, s) => false,
             ColumnOrderingProperty = (p) => p.Id,
             ColumnOrderingExpression = (p) => (p.Street + " " + (p.HouseNumber ?? "")).Trim().ToLower(),
             AdditionalOptions = new Dictionary<string, dynamic>
@@ -334,23 +352,26 @@ public override IList<DataTablesColumn<Person, PersonViewModel>> Columns()
 
 The columns have the following functions:
 
-Column                      | Mandatory | Default                         | Function
-----------------------------|-----------|---------------------------------|---------------------
-`PublicName`                | Yes       |                                 | The name that will be used in the response JSON object within the `data` segment.
-`DisplayName`               | No        | `PublicName.FirstCharToUpper()` | The column name used as title in the table header.
-`PublicPropertyName`        | Yes       |                                 | The name of the property on the view model used within the column.
-`PrivatePropertyName`       | Yes       |                                 | The name of the property on the query model used to query the data. Can be a composite property name in dot-notation (e.g. `Location.Street`).
-`IsOrderable`               | No        | `false`                         | If the table should be orderable by this column.
-`IsSearchable`              | No        | `false`                         | If the column should be searchable. Enables or disables both, column search as well as global search.
-`SearchRegex`               | No        | `false`                         | If column search values should be evaluated as regex expressions. The server-side option can still be disabled on a per-request basis by the client, but the client cannot enable regex evaluation if the server has it disabled for a column. **Note: regex search is performed in-memory as Linq queries containing `Regex.IsMatch(value, pattern)` cannot be translated to native SQL queries. Avoid using this option for larger data sets if possible.**
-`SearchPredicate`           | No        | `PrivatePropertyName` property `Contains(searchValue)` | An expression that is used to search the column both when a global search value as well as a column search value is set. `ColumnSearchPredicate` and `GlobalSearchPredicate` can both override this predicate for their specific use case. The expression receives the query model and the global or column search value, depending on the search, as parameters. _Note: You should make sure the expression can be translated by Linq to SQL, otherwise it may be evaluated in-memory._
-`GlobalSearchPredicate`     | No        | `SearchPredicate` or its default | An expression that is used to search the column when a global search value is set. The expression receives the query model and the global search value as parameters. _Note: You should make sure the expression can be translated by Linq to SQL, otherwise it may be evaluated in-memory._
-`ColumnSearchPredicate`     | No        | `SearchPredicate` or its default | An expression that is used to search the column when a column search value is set. The expression receives the query model and the column search value as parameters. _Note: You should make sure the expression can be translated by Linq to SQL, otherwise it may be evaluated in-memory._
-`ColumnOrderingProperty`    | No        | `PrivatePropertyName`           | An expression that selects a column of the query model to order the results by. Can be a nested property.
-`ColumnOrderingExpression`  | No        | `PrivatePropertyName`           | An expression that selects the data of the query model to order the results by. Can return complex expressions. Takes precedence over the `ColumnOrderingProperty`.
-`OrderingIndex`             | No        | `-1` (_ordering disabled_)      | A non-negative index for the ordering of this column. This option basically contains an ordering priority where columns with lower indexes will get ordered first. This is the default column ordering applied to a table on first load. If `stateSave` is enabled, the saved state will override this setting.
-`OrderingDirection`         | No        | `ListSortDirection.Ascending`   | The default sort direction. This option only takes effect if `OrderingIndex` is set.
-`AdditionalOptions`         | No        | empty `Dictionary`              | A dictionary that can be used to pass additional columns options which are serialized as part of the generated DataTable script. The additional options are serialized as they are, without changing dictionary keys from _PascalCase_ to _camelCase_.
+Column                         | Mandatory | Default                          | Function
+-------------------------------|-----------|----------------------------------|---------------------
+`PublicName`                   | Yes       |                                  | The name that will be used in the response JSON object within the `data` segment.
+`DisplayName`                  | No        | `PublicName.FirstCharToUpper()`  | The column name used as title in the table header.
+`PublicPropertyName`           | Yes       |                                  | The name of the property on the view model used within the column.
+`PrivatePropertyName`          | Yes       |                                  | The name of the property on the query model used to query the data. Can be a composite property name in dot-notation (e.g. `Location.Street`).
+`IsOrderable`                  | No        | `false`                          | If the table should be orderable by this column.
+`IsSearchable`                 | No        | `false`                          | If the column should be searchable. Enables or disables both, column search as well as global search.
+`SearchRegex`                  | No        | `false`                          | If column search values should be evaluated as regex expressions. The server-side option can still be disabled on a per-request basis by the client, but the client cannot enable regex evaluation if the server has it disabled for a column. **Note: regex search is performed in-memory as Linq queries containing `Regex.IsMatch(value, pattern)` cannot be translated to native SQL queries. Avoid using this option for larger data sets if possible.**
+`SearchPredicate`              | No        | `PrivatePropertyName` property `Contains(searchValue)` | An expression that is used to search the column both when a global search value as well as a column search value is set. `ColumnSearchPredicate` and `GlobalSearchPredicate` can both override this predicate for their specific use case. The expression receives the query model and the global or column search value, depending on the search, as parameters. _Note: You should make sure the expression can be translated by Linq to SQL, otherwise it may be evaluated in-memory._
+`SearchPredicateProvider`      | No        |                                  | An expression that is invoked with the search term in order to create a search predicate dynamically. Takes predecende over `SearchPredicate`.
+`GlobalSearchPredicate`        | No        | `SearchPredicate` or its default | An expression that is used to search the column when a global search value is set. The expression receives the query model and the global search value as parameters. _Note: You should make sure the expression can be translated by Linq to SQL, otherwise it may be evaluated in-memory._
+`GlobalSearchPredicateProvider`| No        |                                  | An expression that is invoked with the global search term in order to create a search predicate dynamically. Takes predecende over `GlobalSearchPredicate`, `SearchPredicate` and `SearchPredicateProvider`.
+`ColumnSearchPredicate`        | No        | `SearchPredicate` or its default | An expression that is used to search the column when a column search value is set. The expression receives the query model and the column search value as parameters. _Note: You should make sure the expression can be translated by Linq to SQL, otherwise it may be evaluated in-memory._
+`ColumnSearchPredicateProvider`| No        |                                  | An expression that is invoked with the column search term in order to create a search predicate dynamically. Takes predecende over `ColumnSearchPredicate`, `SearchPredicate` and `SearchPredicateProvider`.
+`ColumnOrderingProperty`       | No        | `PrivatePropertyName`            | An expression that selects a column of the query model to order the results by. Can be a nested property.
+`ColumnOrderingExpression`     | No        | `PrivatePropertyName`            | An expression that selects the data of the query model to order the results by. Can return complex expressions. Takes precedence over the `ColumnOrderingProperty`.
+`OrderingIndex`                | No        | `-1` (_ordering disabled_)       | A non-negative index for the ordering of this column. This option basically contains an ordering priority where columns with lower indexes will get ordered first. This is the default column ordering applied to a table on first load. If `stateSave` is enabled, the saved state will override this setting.
+`OrderingDirection`            | No        | `ListSortDirection.Ascending`    | The default sort direction. This option only takes effect if `OrderingIndex` is set.
+`AdditionalOptions`            | No        | empty `Dictionary`               | A dictionary that can be used to pass additional columns options which are serialized as part of the generated DataTable script. The additional options are serialized as they are, without changing dictionary keys from _PascalCase_ to _camelCase_.
 
 Properties selected with dot-notation require that the given nested objects get loaded by the query
 which is returned from the `Query()` method using `Include(propertyExpression)` or similar.
