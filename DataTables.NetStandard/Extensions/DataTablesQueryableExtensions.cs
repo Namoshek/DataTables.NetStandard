@@ -53,9 +53,14 @@ namespace DataTables.NetStandard.Extensions
 
                     foreach (var c in columns)
                     {
+                        var globalSearchPredicateByProvider = c.GlobalSarchPredicateProvider != null ? c.GlobalSarchPredicateProvider(globalSearchValue) : null;
+                        var searchPredicateByProvider = globalSearchPredicateByProvider == null && c.SearchPredicateProvider != null
+                            ? c.SearchPredicateProvider(globalSearchValue)
+                            : null;
+
                         Expression<Func<TEntity, bool>> expression;
 
-                        var searchPredicate = c.GlobalSearchPredicate ?? c.SearchPredicate;
+                        var searchPredicate = globalSearchPredicateByProvider ?? searchPredicateByProvider ?? c.GlobalSearchPredicate ?? c.SearchPredicate;
                         if (searchPredicate != null)
                         {
                             var expr = searchPredicate;
@@ -80,7 +85,10 @@ namespace DataTables.NetStandard.Extensions
                             : predicate.Or(expression);
                     }
 
-                    queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.Where(predicate);
+                    if (predicate != null)
+                    {
+                        queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.Where(predicate);
+                    }
                 }
             }
 
@@ -106,9 +114,14 @@ namespace DataTables.NetStandard.Extensions
 
                 foreach (var c in columns)
                 {
+                    var columnSearchPredicateByProvider = c.ColumnSearchPredicateProvider != null ? c.ColumnSearchPredicateProvider(c.SearchValue) : null;
+                    var searchPredicateByProvider = columnSearchPredicateByProvider == null && c.SearchPredicateProvider != null
+                        ? c.SearchPredicateProvider(c.SearchValue)
+                        : null;
+
                     Expression<Func<TEntity, bool>> expression;
 
-                    var searchPredicate = c.ColumnSearchPredicate ?? c.SearchPredicate;
+                    var searchPredicate = columnSearchPredicateByProvider ?? searchPredicateByProvider ?? c.ColumnSearchPredicate ?? c.SearchPredicate;
                     if (searchPredicate != null)
                     {
                         var expr = searchPredicate;
@@ -134,7 +147,10 @@ namespace DataTables.NetStandard.Extensions
                         : predicate.And(expression);
                 }
 
-                queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.Where(predicate);
+                if (predicate != null)
+                {
+                    queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.Where(predicate);
+                }
             }
 
             return queryable;

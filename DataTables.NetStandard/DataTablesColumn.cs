@@ -101,10 +101,40 @@ namespace DataTables.NetStandard
         public Expression<Func<TEntity, string, bool>> SearchPredicate { get; set; }
 
         /// <summary>
+        /// Optional search predicate provider. Can be used instead of <see cref="SearchPredicate"/>. Is being invoked with the
+        /// search term entered by the user, but before the query is passed to the database or similar.
+        /// The search predicate produced by this method takes precedence over the defined <see cref="SearchPredicate"/> .
+        /// </summary>
+        public Func<string, Expression<Func<TEntity, string, bool>>> SearchPredicateProvider { get; set; }
+
+        /// <summary>
         /// Optional predicate expression that will be used to search by the searchable column when <see cref="SearchValue"/> is specified.
         /// If no predicate is provided, the <see cref="SearchPredicate"/> or <see cref="string.Contains(string)"/> method is used by default.
         /// </summary>
         public Expression<Func<TEntity, string, bool>> ColumnSearchPredicate { get; set; }
+
+        /// <summary>
+        /// Optional column search predicate provider. Can be used instead of <see cref="ColumnSearchPredicate"/>. Is being invoked with the 
+        /// search term entered by the user, but before the query is passed to the database or similar.
+        /// The search predicate produced by this method takes precedence over the defined <see cref="ColumnSearchPredicate"/>,
+        /// <see cref="SearchPredicate"/> and the search predicate produced by <see cref="SearchPredicateProvider"/>.
+        /// </summary>
+        public Func<string, Expression<Func<TEntity, string, bool>>> ColumnSearchPredicateProvider { get; set; }
+
+        /// <summary>
+        /// Optional predicate expression that will be used to search by the searchable column when 
+        /// <see cref="DataTablesRequest{TEntity, TEntityViewModel}.GlobalSearchValue"/> is specified.
+        /// If no predicate is provided, the <see cref="SearchPredicate"/> or <see cref="string.Contains(string)"/> method is used by default.
+        /// </summary>
+        public Expression<Func<TEntity, string, bool>> GlobalSearchPredicate { get; set; }
+
+        /// <summary>
+        /// Optional column search predicate provider. Can be used instead of <see cref="GlobalSearchPredicate"/>. Is being invoked with the 
+        /// search term entered by the user, but before the query is passed to the database or similar.
+        /// The search predicate produced by this method takes precedence over the defined <see cref="GlobalSearchPredicate"/>,
+        /// <see cref="SearchPredicate"/> and the search predicate produced by <see cref="SearchPredicateProvider"/>.
+        /// </summary>
+        public Func<string, Expression<Func<TEntity, string, bool>>> GlobalSarchPredicateProvider { get; set; }
 
         /// <summary>
         /// Optional expression that specifies the different property which should be used if ordering by the column is required. 
@@ -117,13 +147,6 @@ namespace DataTables.NetStandard
         /// If no expression provided, the same property will be used for sorting as specified by <see cref="PrivatePropertyName"/> value.
         /// </summary>
         public Expression<Func<TEntity, object>> ColumnOrderingExpression { get; set; }
-
-        /// <summary>
-        /// Optional predicate expression that will be used to search by the searchable column when 
-        /// <see cref="DataTablesRequest{TEntity, TEntityViewModel}.GlobalSearchValue"/> is specified.
-        /// If no predicate is provided, the <see cref="SearchPredicate"/> or <see cref="string.Contains(string)"/> method is used by default.
-        /// </summary>
-        public Expression<Func<TEntity, string, bool>> GlobalSearchPredicate { get; set; }
 
         /// <summary>
         /// A dictionary of additional options that should be passed to the DataTables script for this column.
