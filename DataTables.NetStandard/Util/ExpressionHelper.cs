@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 namespace DataTables.NetStandard.Util
@@ -35,7 +36,7 @@ namespace DataTables.NetStandard.Util
         {
             var type = typeof(TEntity);
 
-            return Expression.Parameter(type, "e");
+            return Expression.Parameter(type, $"e{RandomNumberGenerator.GetInt32(int.MaxValue)}");
         }
 
         /// <summary>
