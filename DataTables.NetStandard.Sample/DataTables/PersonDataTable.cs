@@ -1,9 +1,9 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using System.Linq;
+using AutoMapper;
 using DataTables.NetStandard.Sample.DataTables.ViewModels;
 using DataTables.NetStandard.Sample.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace DataTables.NetStandard.Sample.DataTables
 {

@@ -16,7 +16,7 @@ namespace DataTables.NetStandard
     /// <seealso cref="DefaultContractResolver" />
     internal class DataTablesSerializationContractResolver<TEntity, TEntityViewModel> : DefaultContractResolver
     {
-        protected readonly IList<DataTablesColumn<TEntity, TEntityViewModel>> _columns;
+        private readonly IList<DataTablesColumn<TEntity, TEntityViewModel>> _columns;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataTablesSerializationContractResolver{TEntity, TEntityViewModel}"/> class.
@@ -59,15 +59,13 @@ namespace DataTables.NetStandard
         {
             var members = base.GetSerializableMembers(objectType);
 
-            // If the current type is not the view model type of our DataTables columns,
-            // we don't have to change anything.
+            // If the current type is not the view model type of our DataTables columns, we don't have to change anything.
             if (!_columns.GetType().GenericTypeArguments.First().GenericTypeArguments.Last().Equals(objectType))
             {
                 return members;
             }
 
-            // We only want to serialize members which are referenced by any table column within the
-            // `PublicPropertyName` property.
+            // We only want to serialize members which are referenced by any table column within the `PublicPropertyName` property.
             var result = new List<MemberInfo>();
             foreach (var member in members)
             {

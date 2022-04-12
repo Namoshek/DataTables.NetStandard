@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using DataTables.NetStandard.Util;
@@ -19,7 +20,8 @@ namespace DataTables.NetStandard.Extensions
         /// <typeparam name="TEntityViewModel">The type of the entity view model.</typeparam>
         /// <param name="queryable">The queryable.</param>
         /// <param name="request">The request.</param>
-        public static IPagedList<TEntityViewModel> ToPagedList<TEntity, TEntityViewModel>(this IQueryable<TEntity> queryable, 
+        public static IPagedList<TEntityViewModel> ToPagedList<TEntity, TEntityViewModel>(
+            this IQueryable<TEntity> queryable,
             DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             return queryable.Apply(request).ToPagedList();
@@ -34,7 +36,8 @@ namespace DataTables.NetStandard.Extensions
         /// <typeparam name="TEntityViewModel">The type of the entity view model.</typeparam>
         /// <param name="queryable">The queryable.</param>
         /// <param name="request">The request.</param>
-        public static Task<IPagedList<TEntityViewModel>> ToPagedListAsync<TEntity, TEntityViewModel>(this IQueryable<TEntity> queryable, 
+        public static Task<IPagedList<TEntityViewModel>> ToPagedListAsync<TEntity, TEntityViewModel>(
+            this IQueryable<TEntity> queryable,
             DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             return queryable.Apply(request).ToPagedListAsync();
@@ -50,7 +53,8 @@ namespace DataTables.NetStandard.Extensions
         /// <param name="queryable">The queryable.</param>
         /// <param name="request">The request.</param>
         public static IDataTablesQueryable<TEntity, TEntityViewModel> Apply<TEntity, TEntityViewModel>(
-            this IQueryable<TEntity> queryable, DataTablesRequest<TEntity, TEntityViewModel> request)
+            this IQueryable<TEntity> queryable,
+            DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             queryable = queryable.AsDataTablesQueryable(request)
                 .ApplyGlobalSearchFilter()
@@ -85,7 +89,8 @@ namespace DataTables.NetStandard.Extensions
         /// <param name="queryable">The queryable.</param>
         /// <param name="request">The request.</param>
         public static IDataTablesQueryable<TEntity, TEntityViewModel> AsDataTablesQueryable<TEntity, TEntityViewModel>(
-            this IQueryable<TEntity> queryable, DataTablesRequest<TEntity, TEntityViewModel> request)
+            this IQueryable<TEntity> queryable,
+            DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             return new DataTablesQueryable<TEntity, TEntityViewModel>(queryable, request);
         }
@@ -101,11 +106,15 @@ namespace DataTables.NetStandard.Extensions
         /// <param name="direction">The direction.</param>
         /// <param name="caseInsensitive">if set to <c>true</c>, the order logic is case insensitive.</param>
         /// <param name="alreadyOrdered">if set to <c>true</c>, follow-up order logic will be used.</param>
-        internal static IQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> query, 
-            string propertyName, ListSortDirection direction, bool caseInsensitive, bool alreadyOrdered)
+        internal static IQueryable<TEntity> OrderBy<TEntity>(
+            this IQueryable<TEntity> query,
+            string propertyName,
+            ListSortDirection direction,
+            bool caseInsensitive,
+            bool alreadyOrdered)
         {
             var type = typeof(TEntity);
-            var parameterExp = Expression.Parameter(type, "e");
+            var parameterExp = Expression.Parameter(type, $"e{RandomNumberGenerator.GetInt32(int.MaxValue)}");
             var propertyExp = ExpressionHelper.BuildPropertyExpression(parameterExp, propertyName);
 
             Expression exp = propertyExp;
@@ -134,8 +143,11 @@ namespace DataTables.NetStandard.Extensions
         /// <param name="orderExpression">Name of the property.</param>
         /// <param name="direction">The direction.</param>
         /// <param name="alreadyOrdered">if set to <c>true</c>, follow-up order logic will be used.</param>
-        internal static IQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> query, 
-            Expression<Func<TEntity, object>> orderExpression, ListSortDirection direction, bool alreadyOrdered)
+        internal static IQueryable<TEntity> OrderBy<TEntity>(
+            this IQueryable<TEntity> query,
+            Expression<Func<TEntity, object>> orderExpression,
+            ListSortDirection direction,
+            bool alreadyOrdered)
         {
             var methodName = GetOrderMethodName(direction, alreadyOrdered);
             var typeArguments = new Type[] { typeof(TEntity), typeof(object) };
@@ -150,20 +162,16 @@ namespace DataTables.NetStandard.Extensions
         /// </summary>
         /// <param name="direction">The order direction.</param>
         /// <param name="alreadyOrdered">if set to <c>true</c>, an order method for already ordered queryables will be returned.</param>
-        /// <returns></returns>
         internal static string GetOrderMethodName(ListSortDirection direction, bool alreadyOrdered)
         {
-            if (direction == ListSortDirection.Descending && !alreadyOrdered)
-                return nameof(Queryable.OrderByDescending);
+            return (direction, alreadyOrdered) switch
+            {
+                (ListSortDirection.Descending, false) => nameof(Queryable.OrderByDescending),
+                (ListSortDirection.Ascending, true) => nameof(Queryable.ThenBy),
+                (ListSortDirection.Descending, true) => nameof(Queryable.ThenByDescending),
 
-            if (direction == ListSortDirection.Ascending && alreadyOrdered)
-                return nameof(Queryable.ThenBy);
-
-            if (direction == ListSortDirection.Descending && alreadyOrdered)
-                return nameof(Queryable.ThenByDescending);
-
-            // direction == ListSortDirection.Ascending && alreadyOrdered == false
-            return nameof(Queryable.OrderBy);
+                _ => nameof(Queryable.OrderBy),
+            };
         }
     }
 }

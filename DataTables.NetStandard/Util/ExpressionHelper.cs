@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 namespace DataTables.NetStandard.Util
@@ -28,14 +29,14 @@ namespace DataTables.NetStandard.Util
         internal static readonly MethodInfo Regex_IsMatch = typeof(Regex).GetMethod(nameof(Regex.IsMatch), new[] { typeof(string), typeof(string) });
 
         /// <summary>
-        /// Builds a parameter expression for the given type
+        /// Builds a parameter expression for the given type.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         internal static ParameterExpression BuildParameterExpression<TEntity>()
         {
             var type = typeof(TEntity);
 
-            return Expression.Parameter(type, "e");
+            return Expression.Parameter(type, $"e{RandomNumberGenerator.GetInt32(int.MaxValue)}");
         }
 
         /// <summary>
@@ -66,7 +67,10 @@ namespace DataTables.NetStandard.Util
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="stringConstant">The string constant.</param>
         /// <param name="caseInsensitive">if set to <c>true</c> [case insensitive].</param>
-        internal static Expression<Func<TEntity, bool>> BuildStringContainsPredicate<TEntity>(string propertyName, string stringConstant, bool caseInsensitive)
+        internal static Expression<Func<TEntity, bool>> BuildStringContainsPredicate<TEntity>(
+            string propertyName,
+            string stringConstant,
+            bool caseInsensitive)
         {
             var parameterExp = BuildParameterExpression<TEntity>();
             var propertyExp = BuildPropertyExpression(parameterExp, propertyName);
@@ -77,7 +81,7 @@ namespace DataTables.NetStandard.Util
             {
                 exp = Expression.Call(propertyExp, Object_ToString);
             }
-            
+
             if (caseInsensitive)
             {
                 exp = Expression.Call(exp, String_ToLower);

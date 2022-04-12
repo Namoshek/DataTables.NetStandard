@@ -7,13 +7,13 @@ using DataTables.NetStandard.Extensions;
 namespace DataTables.NetStandard
 {
     /// <summary>
-    /// Represents DataTables column filtering/sorting info
+    /// Represents the server-side column filtering/sorting configuration for a DataTable.
     /// </summary>
     /// <typeparam name="TEntity">Model type</typeparam>
     public class DataTablesColumn<TEntity, TEntityViewModel> : ICloneable
     {
         /// <summary>
-        /// Column's index
+        /// The index of the column.
         /// </summary>
         public int Index { get; set; }
 

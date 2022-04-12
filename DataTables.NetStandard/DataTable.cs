@@ -44,7 +44,6 @@ namespace DataTables.NetStandard
         /// <summary>
         /// A mapping function used to map query models to view models.
         /// </summary>
-        /// <returns></returns>
         public abstract Expression<Func<TEntity, TEntityViewModel>> MappingFunction();
 
         /// <summary>
@@ -95,7 +94,6 @@ namespace DataTables.NetStandard
         /// Renders the results based on the given <see cref="DataTablesRequest{TEntity, TEntityViewModel}"/>.
         /// </summary>
         /// <param name="request">The request.</param>
-        /// <returns></returns>
         public virtual IPagedList<TEntityViewModel> RenderResults(DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             Configure();
@@ -220,7 +218,9 @@ namespace DataTables.NetStandard
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="columns"></param>
-        protected virtual void ConfigureColumns(DataTablesConfiguration configuration, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
+        protected virtual void ConfigureColumns(
+            DataTablesConfiguration configuration,
+            IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
         {
             foreach (var column in columns)
             {
@@ -241,7 +241,9 @@ namespace DataTables.NetStandard
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="columns"></param>
-        protected virtual void ConfigureColumnOrdering(DataTablesConfiguration configuration, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
+        protected virtual void ConfigureColumnOrdering(
+            DataTablesConfiguration configuration,
+            IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
         {
             var orderedColumns = columns.Where(c => c.OrderingIndex > -1).OrderBy(c => c.OrderingIndex);
             foreach (var column in orderedColumns)
@@ -259,7 +261,9 @@ namespace DataTables.NetStandard
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="columns"></param>
-        protected virtual void ConfigureAdditionalOptions(DataTablesConfiguration configuration, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
+        protected virtual void ConfigureAdditionalOptions(
+            DataTablesConfiguration configuration,
+            IList<DataTablesColumn<TEntity, TEntityViewModel>> columns)
         {
             // We don't configure anything here, but we provide a default implementation.
         }
@@ -361,7 +365,6 @@ namespace DataTables.NetStandard
         /// <paramref name="query"/>, <see cref="Columns"/> and <see cref="MappingFunction"/>.
         /// </summary>
         /// <param name="query">The query.</param>
-        /// <returns></returns>
         protected virtual DataTablesRequest<TEntity, TEntityViewModel> BuildRequest(string query)
         {
             return new DataTablesRequest<TEntity, TEntityViewModel>(query, Columns(), MappingFunction());

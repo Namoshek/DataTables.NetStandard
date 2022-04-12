@@ -25,7 +25,8 @@ namespace DataTables.NetStandard
         public int PageSize { get; set; }
 
         /// <summary>
-        /// Draw counter. This is used by DataTables to ensure that the Ajax returns from server-side processing requests are drawn in sequence by DataTables.
+        /// Draw counter. This is used by DataTables to ensure that the Ajax returns from server-side processing requests
+        /// are drawn in sequence by DataTables.
         /// </summary>
         public int Draw { get; set; }
 
@@ -65,7 +66,8 @@ namespace DataTables.NetStandard
         /// var column = request.Columns[s => s.FirstName];
         /// </code>
         /// </example>
-        public IList<DataTablesColumn<TEntity, TEntityViewModel>> Columns { get; private set; } = new List<DataTablesColumn<TEntity, TEntityViewModel>>();
+        public IList<DataTablesColumn<TEntity, TEntityViewModel>> Columns { get; private set; } =
+            new List<DataTablesColumn<TEntity, TEntityViewModel>>();
 
         /// <summary>
         /// Set this property to log incoming request parameters and resulting queries to the given delegate. 
@@ -99,51 +101,69 @@ namespace DataTables.NetStandard
         }
 
         /// <summary>
-        /// Creates new <see cref="DataTablesRequest{T}"/> from <see cref="IDictionary{String, Object}"/>.
-        /// This constructor is useful with it's needed to create <see cref="DataTablesRequest{T}"/> from the Nancy's <a href="https://github.com/NancyFx/Nancy/blob/master/src/Nancy/Request.cs">Request.Form</a> data.
+        /// Creates new <see cref="DataTablesRequest{TEntity, TEntityViewModel}"/> from <see cref="IDictionary{String, Object}"/>.
+        /// This constructor is useful to create <see cref="DataTablesRequest{TEntity, TEntityViewModel}"/> from
+        /// Nancy's <a href="https://github.com/NancyFx/Nancy/blob/master/src/Nancy/Request.cs">Request.Form</a> data.
         /// </summary>
         /// <param name="form">Request form data</param>
         /// <param name="columns">DataTable columns</param>
         /// <param name="mappingFunction">View model mapping function</param>
-        public DataTablesRequest(IDictionary<string, object> form, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns, 
+        public DataTablesRequest(IDictionary<string, object> form, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns,
             Expression<Func<TEntity, TEntityViewModel>> mappingFunction)
-            : this(form.Aggregate(new NameValueCollection(), (k, v) => { k.Add(v.Key, v.Value.ToString()); return k; }), columns, mappingFunction) { }
+            : this(form.Aggregate(new NameValueCollection(), (k, v) => { k.Add(v.Key, v.Value.ToString()); return k; }), columns, mappingFunction)
+        {
+        }
 
         /// <summary>
-        /// Creates new <see cref="DataTablesRequest{T}"/> from <see cref="DataTablesAjaxPostModel"/>.
+        /// Creates new <see cref="DataTablesRequest{TEntity, TEntityViewModel}"/> from <see cref="DataTablesAjaxPostModel"/>.
         /// </summary>
         /// <param name="ajaxPostModel">Contains datatables parameters sent from client side when POST method is used.</param>
         /// <param name="columns">DataTable columns</param>
         /// <param name="mappingFunction">View model mapping function</param>
         public DataTablesRequest(DataTablesAjaxPostModel ajaxPostModel, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns,
             Expression<Func<TEntity, TEntityViewModel>> mappingFunction)
-            : this(ajaxPostModel.ToNameValueCollection(), columns, mappingFunction) { }
+            : this(ajaxPostModel.ToNameValueCollection(), columns, mappingFunction)
+        {
+        }
 
         /// <summary>
-        /// Creates new <see cref="DataTablesRequest{T}"/> from <see cref="Uri"/> instance.
+        /// Creates new <see cref="DataTablesRequest{TEntity, TEntityViewModel}"/> from <see cref="Uri"/> instance.
         /// </summary>
         /// <param name="uri"><see cref="Uri"/> instance</param>
         /// <param name="columns">DataTable columns</param>
         /// <param name="mappingFunction">View model mapping function</param>
-        public DataTablesRequest(Uri uri, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns, Expression<Func<TEntity, TEntityViewModel>> mappingFunction)
-            : this(uri.Query, columns, mappingFunction) { }
+        public DataTablesRequest(
+            Uri uri,
+            IList<DataTablesColumn<TEntity, TEntityViewModel>> columns,
+            Expression<Func<TEntity, TEntityViewModel>> mappingFunction)
+            : this(uri.Query, columns, mappingFunction)
+        {
+        }
 
         /// <summary>
-        /// Creates new <see cref="DataTablesRequest{T}"/> from http query string.
+        /// Creates new <see cref="DataTablesRequest{TEntity, TEntityViewModel}"/> from http query string.
         /// </summary>
         /// <param name="queryString"></param>
         /// <param name="columns">DataTable columns</param>
         /// <param name="mappingFunction">View model mapping function</param>
-        public DataTablesRequest(string queryString, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns, Expression<Func<TEntity, TEntityViewModel>> mappingFunction)
-            : this(HttpUtility.ParseQueryString(queryString), columns, mappingFunction) { }
+        public DataTablesRequest(
+            string queryString,
+            IList<DataTablesColumn<TEntity, TEntityViewModel>> columns,
+            Expression<Func<TEntity, TEntityViewModel>> mappingFunction)
+            : this(HttpUtility.ParseQueryString(queryString), columns, mappingFunction)
+        {
+        }
 
         /// <summary>
-        /// Creates new <see cref="DataTablesRequest{T}"/> from <see cref="NameValueCollection"/> instance.
+        /// Creates new <see cref="DataTablesRequest{TEntity, TEntityViewModel}"/> from <see cref="NameValueCollection"/> instance.
         /// </summary>
         /// <param name="query"></param>
         /// <param name="columns">DataTable columns</param>
         /// <param name="mappingFunction">View model mapping function</param>
-        public DataTablesRequest(NameValueCollection query, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns, Expression<Func<TEntity, TEntityViewModel>> mappingFunction)
+        public DataTablesRequest(
+            NameValueCollection query,
+            IList<DataTablesColumn<TEntity, TEntityViewModel>> columns,
+            Expression<Func<TEntity, TEntityViewModel>> mappingFunction)
         {
             if (query == null)
             {
@@ -179,7 +199,7 @@ namespace DataTables.NetStandard
             Draw = int.TryParse(query["draw"], out int draw) ? draw : 0;
 
             GlobalSearchValue = query["search[value]"];
-            GlobalSearchRegex = bool.TryParse(query["search[regex]"], out bool searchRegex) ? searchRegex : false;
+            GlobalSearchRegex = bool.TryParse(query["search[regex]"], out bool searchRegex) && searchRegex;
         }
 
         /// <summary>
@@ -242,7 +262,7 @@ namespace DataTables.NetStandard
                     {
                         column.OrderingIndex = sortingIndex;
                         column.OrderingDirection = query[$"order[{index}][dir]"] == "desc"
-                            ? ListSortDirection.Descending 
+                            ? ListSortDirection.Descending
                             : ListSortDirection.Ascending;
                     }
                 }

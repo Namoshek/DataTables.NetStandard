@@ -117,13 +117,14 @@ namespace DataTables.NetStandard
         /// </returns>
         internal NameValueCollection ToNameValueCollection()
         {
-            var model = new NameValueCollection();
-
-            model["draw"] = Draw.ToString();
-            model["start"] = Start.ToString();
-            model["length"] = Length.ToString();
-            model[$"search[value]"] = Search.Value;
-            model[$"search[regex]"] = Search.Regex.ToString();
+            var model = new NameValueCollection
+            {
+                ["draw"] = Draw.ToString(),
+                ["start"] = Start.ToString(),
+                ["length"] = Length.ToString(),
+                [$"search[value]"] = Search.Value,
+                [$"search[regex]"] = Search.Regex.ToString()
+            };
 
             for (int i = 0; i < Columns.Count; i++)
             {
