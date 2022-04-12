@@ -13,21 +13,6 @@ namespace DataTables.NetStandard
     internal static class PredicateBuilder
     {
         /// <summary>
-        /// Creates a predicate that evaluates to true.
-        /// </summary>
-        public static Expression<Func<T, bool>> True<T>() { return param => true; }
-
-        /// <summary>
-        /// Creates a predicate that evaluates to false.
-        /// </summary>
-        public static Expression<Func<T, bool>> False<T>() { return param => false; }
-
-        /// <summary>
-        /// Creates a predicate expression from the specified lambda expression.
-        /// </summary>
-        public static Expression<Func<T, TResult>> Create<T, TResult>(Expression<Func<T, TResult>> predicate) { return predicate; }
-
-        /// <summary>
         /// Combines the first predicate with the second using the logical "and".
         /// </summary>
         public static Expression<Func<T, bool>> And<T>(this Expression<Func<T, bool>> first, Expression<Func<T, bool>> second)
@@ -44,50 +29,48 @@ namespace DataTables.NetStandard
         }
 
         /// <summary>
-        /// Negates the predicate.
-        /// </summary>
-        public static Expression<Func<T, bool>> Not<T>(this Expression<Func<T, bool>> expression)
-        {
-            var negated = Expression.Not(expression.Body);
-            return Expression.Lambda<Func<T, bool>>(negated, expression.Parameters);
-        }
-
-        /// <summary>
         /// Combines the first expression with the second using the specified merge function.
         /// </summary>
-        public static Expression<T> Compose<T>(this Expression<T> first, Expression<T> second, Func<Expression, Expression, Expression> merge)
+        private static Expression<T> Compose<T>(this Expression<T> first, Expression<T> second, Func<Expression, Expression, Expression> merge)
         {
-            // zip parameters (map from parameters of second to parameters of first)
+            // Zip parameters (map from parameters of second expression to parameters of first expression).
             var map = first.Parameters
                 .Select((f, i) => new { f, s = second.Parameters[i] })
                 .ToDictionary(p => p.s, p => p.f);
 
-            // replace parameters in the second lambda expression with the parameters in the first
+            // Replace parameters in the second lambda expression with the parameters from the first expression.
             var secondBody = ParameterRebinder.ReplaceParameters(map, second.Body);
 
-            // create a merged lambda expression with parameters from the first expression
+            // Create a merged lambda expression with parameters from the first expression.
             return Expression.Lambda<T>(merge(first.Body, secondBody), first.Parameters);
         }
 
+        /// <summary>
+        /// A helper to replace <see cref="ParameterExpression"/> in an <see cref="Expression"/>.
+        /// </summary>
         private class ParameterRebinder : ExpressionVisitor
         {
-            readonly Dictionary<ParameterExpression, ParameterExpression> map;
+            private readonly Dictionary<ParameterExpression, ParameterExpression> map;
 
-            ParameterRebinder(Dictionary<ParameterExpression, ParameterExpression> map)
+            private ParameterRebinder(Dictionary<ParameterExpression, ParameterExpression> map)
             {
                 this.map = map ?? new Dictionary<ParameterExpression, ParameterExpression>();
             }
 
+            /// <summary>
+            /// Replace expressions in <paramref name="exp"/> based on the <paramref name="map"/>.
+            /// </summary>
+            /// <param name="map"></param>
+            /// <param name="exp"></param>
             public static Expression ReplaceParameters(Dictionary<ParameterExpression, ParameterExpression> map, Expression exp)
             {
                 return new ParameterRebinder(map).Visit(exp);
             }
 
+            /// <inheritdoc/>
             protected override Expression VisitParameter(ParameterExpression p)
             {
-                ParameterExpression replacement;
-
-                if (map.TryGetValue(p, out replacement))
+                if (map.TryGetValue(p, out ParameterExpression replacement))
                 {
                     p = replacement;
                 }

@@ -38,10 +38,8 @@ namespace DataTables.NetStandard
         }
 
         /// <summary>
-        /// Serializes the whole entity as JSON string. Uses the column configurations to properly
-        /// format the result and its keys.
+        /// Serializes the whole entity as JSON string. Uses the column configurations to properly format the result and its keys.
         /// </summary>
-        /// <returns></returns>
         public string AsJsonString()
         {
             return JsonConvert.SerializeObject(this, new JsonSerializerSettings

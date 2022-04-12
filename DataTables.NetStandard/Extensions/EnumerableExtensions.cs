@@ -14,7 +14,8 @@ namespace DataTables.NetStandard.Extensions
         /// <param name="source">The source.</param>
         /// <param name="request">The request.</param>
         public static IPagedList<TEntityViewModel> ToPagedList<TEntity, TEntityViewModel>(
-            this IEnumerable<TEntity> source, DataTablesRequest<TEntity, TEntityViewModel> request)
+            this IEnumerable<TEntity> source,
+            DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             return source.AsQueryable().ToPagedList(request);
         }
@@ -27,7 +28,8 @@ namespace DataTables.NetStandard.Extensions
         /// <param name="source">The source.</param>
         /// <param name="request">The request.</param>
         public static Task<IPagedList<TEntityViewModel>> ToPagedListAsync<TEntity, TEntityViewModel>(
-            this IEnumerable<TEntity> source, DataTablesRequest<TEntity, TEntityViewModel> request)
+            this IEnumerable<TEntity> source,
+            DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             return Task.Factory.StartNew(() => source.AsQueryable().ToPagedList(request));
         }

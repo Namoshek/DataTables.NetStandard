@@ -1,7 +1,7 @@
-﻿using System;
+﻿using DataTables.NetStandard.Abstract;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using DataTables.NetStandard.Abstract;
 
 namespace DataTables.NetStandard
 {
@@ -18,10 +18,10 @@ namespace DataTables.NetStandard
     /// <typeparam name="TEntity">Data type</typeparam>
     internal class PagedList<TEntity, TEntityViewModel> : List<TEntityViewModel>, IPagedList<TEntityViewModel>
     {
-        public int TotalCount { get; protected set; }
-        public int PageNumber { get; protected set; }
-        public int PageSize { get; protected set; }
-        public int PagesCount { get; protected set; }
+        public int TotalCount { get; }
+        public int PageNumber { get; }
+        public int PageSize { get; }
+        public int PagesCount { get; }
 
         internal PagedList(IPagedList other) : base()
         {

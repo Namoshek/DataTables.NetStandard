@@ -26,8 +26,8 @@ namespace DataTables.NetStandard
     /// <typeparam name="TEntity">Model type</typeparam>
     internal class DataTablesQueryable<TEntity, TEntityViewModel> : IDataTablesQueryable<TEntity, TEntityViewModel>
     {
-        private IQueryable<TEntity> _sourceQueryable;
-        private DataTablesQueryProvider<TEntity, TEntityViewModel> _sourceProvider;
+        private readonly IQueryable<TEntity> _sourceQueryable;
+        private readonly DataTablesQueryProvider<TEntity, TEntityViewModel> _sourceProvider;
 
         public DataTablesRequest<TEntity, TEntityViewModel> Request { get; }
 

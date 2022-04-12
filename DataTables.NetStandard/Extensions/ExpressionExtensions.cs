@@ -4,12 +4,12 @@ using System.Text;
 namespace DataTables.NetStandard.Extensions
 {
     /// <summary>
-    /// Utility extension methods for <see cref="Expression" />
+    /// Utility extension methods for <see cref="Expression" />.
     /// </summary>
     internal static class ExpressionExtensions
     {
         /// <summary>
-        /// Gets property path from an expression
+        /// Gets the property path from an expression.
         /// </summary>
         /// <param name="expr">Expression instance, for example 'p => p.Office.Street.Address'.</param>
         /// <returns>Full property path like "Office.Street.Address"</returns>
@@ -24,7 +24,9 @@ namespace DataTables.NetStandard.Extensions
                 {
                     path.Insert(0, ".");
                 }
+                
                 path.Insert(0, memberExpression.Member.Name);
+
                 memberExpression = GetMemberExpression(memberExpression.Expression);
             }
             while (memberExpression != null);
@@ -32,22 +34,29 @@ namespace DataTables.NetStandard.Extensions
             return path.ToString();
         }
 
+        /// <summary>
+        /// Retrieve the nearest <see cref="MemberExpression"/> from the given <paramref name="expression"/>.
+        /// </summary>
+        /// <param name="expression"></param>
         private static MemberExpression GetMemberExpression(Expression expression)
         {
-            if (expression is MemberExpression)
+            if (expression is MemberExpression memberExpression)
             {
-                return (MemberExpression)expression;
+                return memberExpression;
             }
-            else if (expression is LambdaExpression)
+
+            if (expression is LambdaExpression)
             {
                 var lambdaExpression = expression as LambdaExpression;
-                if (lambdaExpression.Body is MemberExpression)
+                
+                if (lambdaExpression.Body is MemberExpression memberExpression2)
                 {
-                    return (MemberExpression)lambdaExpression.Body;
+                    return memberExpression2;
                 }
-                else if (lambdaExpression.Body is UnaryExpression)
+
+                if (lambdaExpression.Body is UnaryExpression unaryExpression)
                 {
-                    return ((MemberExpression)((UnaryExpression)lambdaExpression.Body).Operand);
+                    return (MemberExpression)unaryExpression.Operand;
                 }
             }
 

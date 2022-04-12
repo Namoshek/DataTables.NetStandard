@@ -13,20 +13,22 @@ namespace DataTables.NetStandard.Extensions
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <typeparam name="TEntityViewModel">The type of the entity view model.</typeparam>
-        /// <param name="queryable">The queryable.</param>
-        public static IPagedList<TEntityViewModel> ToPagedList<TEntity, TEntityViewModel>(this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
+        /// <param name="queryable"></param>
+        public static IPagedList<TEntityViewModel> ToPagedList<TEntity, TEntityViewModel>(
+            this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
         {
             return new PagedList<TEntity, TEntityViewModel>(queryable);
         }
 
         /// <summary>
-        /// Builds a <see cref="PagedList{TEntity, TEntityViewModel}"/> from the given <see cref="IDataTablesQueryable{TEntity, TEntityViewModel}"/> asynchronously.
+        /// Builds a <see cref="PagedList{TEntity, TEntityViewModel}"/> from the given
+        /// <see cref="IDataTablesQueryable{TEntity, TEntityViewModel}"/> asynchronously.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <typeparam name="TEntityViewModel">The type of the entity view model.</typeparam>
-        /// <param name="queryable">The queryable.</param>
-        /// <returns></returns>
-        public static Task<IPagedList<TEntityViewModel>> ToPagedListAsync<TEntity, TEntityViewModel>(this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
+        /// <param name="queryable"></param>
+        public static Task<IPagedList<TEntityViewModel>> ToPagedListAsync<TEntity, TEntityViewModel>(
+            this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
         {
             return Task.Factory.StartNew<IPagedList<TEntityViewModel>>(() => new PagedList<TEntity, TEntityViewModel>(queryable));
         }
@@ -38,7 +40,7 @@ namespace DataTables.NetStandard.Extensions
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <typeparam name="TEntityViewModel">The type of the entity view model.</typeparam>
-        /// <param name="queryable">The queryable.</param>
+        /// <param name="queryable"></param>
         public static IDataTablesQueryable<TEntity, TEntityViewModel> ApplyGlobalSearchFilter<TEntity, TEntityViewModel>(
             this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
         {
@@ -53,35 +55,44 @@ namespace DataTables.NetStandard.Extensions
 
                     foreach (var c in columns)
                     {
-                        var globalSearchPredicateByProvider = c.GlobalSarchPredicateProvider != null ? c.GlobalSarchPredicateProvider(globalSearchValue) : null;
+                        var globalSearchPredicateByProvider = c.GlobalSarchPredicateProvider != null
+                            ? c.GlobalSarchPredicateProvider(globalSearchValue)
+                            : null;
+
                         var searchPredicateByProvider = globalSearchPredicateByProvider == null && c.SearchPredicateProvider != null
                             ? c.SearchPredicateProvider(globalSearchValue)
                             : null;
 
                         Expression<Func<TEntity, bool>> expression;
 
-                        var searchPredicate = globalSearchPredicateByProvider ?? searchPredicateByProvider ?? c.GlobalSearchPredicate ?? c.SearchPredicate;
+                        var searchPredicate = globalSearchPredicateByProvider
+                            ?? searchPredicateByProvider
+                            ?? c.GlobalSearchPredicate
+                            ?? c.SearchPredicate;
+
                         if (searchPredicate != null)
                         {
                             var expr = searchPredicate;
                             var entityParam = expr.Parameters.Single(p => p.Type == typeof(TEntity));
-                            var searchValueConstant = Expression.Constant(globalSearchValue);
-                            expression = (Expression<Func<TEntity, bool>>)Expression.Lambda(Expression.Invoke(expr, entityParam, searchValueConstant), entityParam);
+                            var searchValueConstant = Expression.Constant(globalSearchValue, typeof(string));
+                            expression = (Expression<Func<TEntity, bool>>)Expression.Lambda(
+                                Expression.Invoke(expr, entityParam, searchValueConstant),
+                                entityParam);
+                        }
+                        else if (queryable.Request.GlobalSearchRegex)
+                        {
+                            expression = ExpressionHelper.BuildRegexPredicate<TEntity>(c.PrivatePropertyName, globalSearchValue);
                         }
                         else
                         {
-                            if (queryable.Request.GlobalSearchRegex)
-                            {
-                                expression = ExpressionHelper.BuildRegexPredicate<TEntity>(c.PrivatePropertyName, globalSearchValue);
-                            }
-                            else
-                            {
-                                expression = ExpressionHelper.BuildStringContainsPredicate<TEntity>(c.PrivatePropertyName, globalSearchValue, c.SearchCaseInsensitive);
-                            }
+                            expression = ExpressionHelper.BuildStringContainsPredicate<TEntity>(
+                                c.PrivatePropertyName,
+                                globalSearchValue,
+                                c.SearchCaseInsensitive);
                         }
 
                         predicate = predicate == null
-                            ? PredicateBuilder.Create(expression)
+                            ? expression
                             : predicate.Or(expression);
                     }
 
@@ -101,7 +112,7 @@ namespace DataTables.NetStandard.Extensions
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <typeparam name="TEntityViewModel">The type of the entity view model.</typeparam>
-        /// <param name="queryable">The queryable.</param>
+        /// <param name="queryable"></param>
         public static IDataTablesQueryable<TEntity, TEntityViewModel> ApplyColumnSearchFilter<TEntity, TEntityViewModel>(
             this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
         {
@@ -114,36 +125,44 @@ namespace DataTables.NetStandard.Extensions
 
                 foreach (var c in columns)
                 {
-                    var columnSearchPredicateByProvider = c.ColumnSearchPredicateProvider != null ? c.ColumnSearchPredicateProvider(c.SearchValue) : null;
+                    var columnSearchPredicateByProvider = c.ColumnSearchPredicateProvider != null
+                        ? c.ColumnSearchPredicateProvider(c.SearchValue)
+                        : null;
+
                     var searchPredicateByProvider = columnSearchPredicateByProvider == null && c.SearchPredicateProvider != null
                         ? c.SearchPredicateProvider(c.SearchValue)
                         : null;
 
                     Expression<Func<TEntity, bool>> expression;
 
-                    var searchPredicate = columnSearchPredicateByProvider ?? searchPredicateByProvider ?? c.ColumnSearchPredicate ?? c.SearchPredicate;
+                    var searchPredicate = columnSearchPredicateByProvider
+                        ?? searchPredicateByProvider
+                        ?? c.ColumnSearchPredicate
+                        ?? c.SearchPredicate;
+
                     if (searchPredicate != null)
                     {
                         var expr = searchPredicate;
                         var entityParam = expr.Parameters.Single(p => p.Type == typeof(TEntity));
-                        var searchValueConstant = Expression.Constant(c.SearchValue);
-                        expression = (Expression<Func<TEntity, bool>>)Expression.Lambda(Expression.Invoke(expr, entityParam, searchValueConstant), entityParam);
+                        var searchValueConstant = Expression.Constant(c.SearchValue, typeof(string));
+                        expression = (Expression<Func<TEntity, bool>>)Expression.Lambda(
+                            Expression.Invoke(expr, entityParam, searchValueConstant),
+                            entityParam);
+                    }
+                    else if (c.SearchRegex)
+                    {
+                        expression = ExpressionHelper.BuildRegexPredicate<TEntity>(c.PrivatePropertyName, c.SearchValue);
                     }
                     else
                     {
-                        if (c.SearchRegex)
-                        {
-                            expression = ExpressionHelper.BuildRegexPredicate<TEntity>(c.PrivatePropertyName, c.SearchValue);
-                        }
-                        else
-                        {
-                            expression = ExpressionHelper.BuildStringContainsPredicate<TEntity>(c.PrivatePropertyName,
-                                c.SearchValue, c.SearchCaseInsensitive);
-                        }
+                        expression = ExpressionHelper.BuildStringContainsPredicate<TEntity>(
+                            c.PrivatePropertyName,
+                            c.SearchValue,
+                            c.SearchCaseInsensitive);
                     }
 
                     predicate = predicate == null
-                        ? PredicateBuilder.Create(expression)
+                        ? expression
                         : predicate.And(expression);
                 }
 
@@ -161,9 +180,9 @@ namespace DataTables.NetStandard.Extensions
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <typeparam name="TEntityViewModel">The type of the entity view model.</typeparam>
-        /// <param name="queryable">The queryable.</param>
-        /// <returns></returns>
-        public static IDataTablesQueryable<TEntity, TEntityViewModel> ApplyOrder<TEntity, TEntityViewModel>(this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
+        /// <param name="queryable"></param>
+        public static IDataTablesQueryable<TEntity, TEntityViewModel> ApplyOrder<TEntity, TEntityViewModel>(
+            this IDataTablesQueryable<TEntity, TEntityViewModel> queryable)
         {
             var columns = queryable.Request.Columns
                 .Where(c => c.IsOrderable && c.OrderingIndex >= 0)
@@ -175,7 +194,10 @@ namespace DataTables.NetStandard.Extensions
             {
                 if (c.ColumnOrderingExpression != null)
                 {
-                    queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.OrderBy(c.ColumnOrderingExpression, c.OrderingDirection, alreadyOrdered);
+                    queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.OrderBy(
+                        c.ColumnOrderingExpression,
+                        c.OrderingDirection,
+                        alreadyOrdered);
                 }
                 else
                 {
@@ -183,7 +205,11 @@ namespace DataTables.NetStandard.Extensions
                         ? c.ColumnOrderingProperty.GetPropertyPath()
                         : c.PrivatePropertyName;
 
-                    queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.OrderBy(propertyName, c.OrderingDirection, c.OrderingCaseInsensitive, alreadyOrdered);
+                    queryable = (IDataTablesQueryable<TEntity, TEntityViewModel>)queryable.OrderBy(
+                        propertyName,
+                        c.OrderingDirection,
+                        c.OrderingCaseInsensitive,
+                        alreadyOrdered);
                 }
 
                 alreadyOrdered = true;
