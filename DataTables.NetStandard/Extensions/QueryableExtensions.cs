@@ -21,7 +21,7 @@ namespace DataTables.NetStandard.Extensions
         /// <param name="queryable">The queryable.</param>
         /// <param name="request">The request.</param>
         public static IPagedList<TEntityViewModel> ToPagedList<TEntity, TEntityViewModel>(
-            this IQueryable<TEntity> queryable, 
+            this IQueryable<TEntity> queryable,
             DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             return queryable.Apply(request).ToPagedList();
@@ -37,7 +37,7 @@ namespace DataTables.NetStandard.Extensions
         /// <param name="queryable">The queryable.</param>
         /// <param name="request">The request.</param>
         public static Task<IPagedList<TEntityViewModel>> ToPagedListAsync<TEntity, TEntityViewModel>(
-            this IQueryable<TEntity> queryable, 
+            this IQueryable<TEntity> queryable,
             DataTablesRequest<TEntity, TEntityViewModel> request)
         {
             return queryable.Apply(request).ToPagedListAsync();
@@ -107,7 +107,7 @@ namespace DataTables.NetStandard.Extensions
         /// <param name="caseInsensitive">if set to <c>true</c>, the order logic is case insensitive.</param>
         /// <param name="alreadyOrdered">if set to <c>true</c>, follow-up order logic will be used.</param>
         internal static IQueryable<TEntity> OrderBy<TEntity>(
-            this IQueryable<TEntity> query, 
+            this IQueryable<TEntity> query,
             string propertyName,
             ListSortDirection direction,
             bool caseInsensitive,
@@ -144,7 +144,7 @@ namespace DataTables.NetStandard.Extensions
         /// <param name="direction">The direction.</param>
         /// <param name="alreadyOrdered">if set to <c>true</c>, follow-up order logic will be used.</param>
         internal static IQueryable<TEntity> OrderBy<TEntity>(
-            this IQueryable<TEntity> query, 
+            this IQueryable<TEntity> query,
             Expression<Func<TEntity, object>> orderExpression,
             ListSortDirection direction,
             bool alreadyOrdered)

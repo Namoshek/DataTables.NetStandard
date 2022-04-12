@@ -108,7 +108,7 @@ namespace DataTables.NetStandard
         /// <param name="form">Request form data</param>
         /// <param name="columns">DataTable columns</param>
         /// <param name="mappingFunction">View model mapping function</param>
-        public DataTablesRequest(IDictionary<string, object> form, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns, 
+        public DataTablesRequest(IDictionary<string, object> form, IList<DataTablesColumn<TEntity, TEntityViewModel>> columns,
             Expression<Func<TEntity, TEntityViewModel>> mappingFunction)
             : this(form.Aggregate(new NameValueCollection(), (k, v) => { k.Add(v.Key, v.Value.ToString()); return k; }), columns, mappingFunction)
         {
@@ -262,7 +262,7 @@ namespace DataTables.NetStandard
                     {
                         column.OrderingIndex = sortingIndex;
                         column.OrderingDirection = query[$"order[{index}][dir]"] == "desc"
-                            ? ListSortDirection.Descending 
+                            ? ListSortDirection.Descending
                             : ListSortDirection.Ascending;
                     }
                 }

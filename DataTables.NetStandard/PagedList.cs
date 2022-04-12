@@ -1,7 +1,7 @@
-﻿using DataTables.NetStandard.Abstract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DataTables.NetStandard.Abstract;
 
 namespace DataTables.NetStandard
 {

@@ -81,7 +81,7 @@ namespace DataTables.NetStandard.Util
             {
                 exp = Expression.Call(propertyExp, Object_ToString);
             }
-            
+
             if (caseInsensitive)
             {
                 exp = Expression.Call(exp, String_ToLower);

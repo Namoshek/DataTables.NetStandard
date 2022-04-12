@@ -24,7 +24,7 @@ namespace DataTables.NetStandard.Extensions
                 {
                     path.Insert(0, ".");
                 }
-                
+
                 path.Insert(0, memberExpression.Member.Name);
 
                 memberExpression = GetMemberExpression(memberExpression.Expression);
@@ -48,7 +48,7 @@ namespace DataTables.NetStandard.Extensions
             if (expression is LambdaExpression)
             {
                 var lambdaExpression = expression as LambdaExpression;
-                
+
                 if (lambdaExpression.Body is MemberExpression memberExpression2)
                 {
                     return memberExpression2;

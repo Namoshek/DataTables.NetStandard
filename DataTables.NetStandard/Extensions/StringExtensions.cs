@@ -18,7 +18,7 @@ namespace DataTables.NetStandard.Extensions
             {
                 null => throw new ArgumentNullException(nameof(input)),
                 "" => throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input)),
-                
+
                 _ => input.First().ToString().ToUpper() + input[1..],
             };
         }

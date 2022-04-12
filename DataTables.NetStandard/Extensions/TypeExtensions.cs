@@ -14,11 +14,11 @@ namespace DataTables.NetStandard.Extensions
         internal static PropertyInfo GetPropertyByName(this Type type, string propertyName)
         {
             string[] parts = propertyName.Split('.');
-            
+
             if (parts.Length > 1)
             {
                 var propertyInfo = type.GetProperty(parts[0]);
-                
+
                 if (propertyInfo == null)
                 {
                     return null;

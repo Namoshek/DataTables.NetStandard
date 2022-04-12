@@ -1,5 +1,3 @@
-using System;
-
 namespace DataTables.NetStandard.Sample.Models
 {
     public class ErrorViewModel
