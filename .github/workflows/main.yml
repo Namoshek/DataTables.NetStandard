@@ -1,15 +1,32 @@
 name: CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Test dotnet ${{ matrix.dotnet-version }}
+
+    runs-on: ${{ matrix.operating-system }}
+
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest]
+        dotnet-version: ['6.0.x']
+
     steps:
-    - uses: actions/checkout@v1
-    - name: Setup .NET Core Build Environment
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x'
-    - name: Build package
-      run: dotnet build --configuration Release
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Build package
+        run: dotnet build --configuration 'Release'
