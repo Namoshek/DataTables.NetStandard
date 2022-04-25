@@ -1,4 +1,4 @@
-# DataTables.NetStandard
+# DataTables.NetStandard [![Nuget](https://img.shields.io/nuget/v/DataTables.NetStandard?style=flat-square)](https://nuget.org/packages/DataTables.NetStandard)
 
 This package provides a way to create self-contained DataTable classes 
 for the famous [datatables.net](https://datatables.net) jQuery plugin which
