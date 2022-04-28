@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using DataTables.NetStandard.Util;
@@ -114,7 +113,7 @@ namespace DataTables.NetStandard.Extensions
             bool alreadyOrdered)
         {
             var type = typeof(TEntity);
-            var parameterExp = Expression.Parameter(type, $"e{RandomNumberGenerator.GetInt32(int.MaxValue)}");
+            var parameterExp = Expression.Parameter(type);
             var propertyExp = ExpressionHelper.BuildPropertyExpression(parameterExp, propertyName);
 
             Expression exp = propertyExp;
