@@ -97,8 +97,7 @@ namespace DataTables.NetStandard.Extensions
             bool caseInsensitive,
             bool alreadyOrdered)
         {
-            var type = typeof(TEntity);
-            var parameterExp = Expression.Parameter(type);
+            var parameterExp = ExpressionHelper.BuildParameterExpression<TEntity>();
             var propertyExp = ExpressionHelper.BuildPropertyExpression(parameterExp, propertyName);
 
             Expression exp = propertyExp;
@@ -110,7 +109,7 @@ namespace DataTables.NetStandard.Extensions
 
             var methodName = GetOrderMethodName(direction, alreadyOrdered);
             var orderByExp = Expression.Lambda(exp, parameterExp);
-            var typeArguments = new Type[] { type, propertyExp.Type };
+            var typeArguments = new Type[] { typeof(TEntity), propertyExp.Type };
 
             var resultExpr = Expression.Call(typeof(Queryable), methodName, typeArguments, query.Expression, Expression.Quote(orderByExp));
 
@@ -200,7 +199,7 @@ namespace DataTables.NetStandard.Extensions
                         if (searchPredicate != null)
                         {
                             var expr = searchPredicate;
-                            var entityParam = expr.Parameters.Single(p => p.Type == typeof(TEntity));
+                            var entityParam = ExpressionHelper.BuildParameterExpression<TEntity>();
                             var searchValueConstant = Expression.Constant(globalSearchValue, typeof(string));
                             expression = (Expression<Func<TEntity, bool>>)Expression.Lambda(
                                 Expression.Invoke(expr, entityParam, searchValueConstant),
@@ -272,7 +271,7 @@ namespace DataTables.NetStandard.Extensions
                     if (searchPredicate != null)
                     {
                         var expr = searchPredicate;
-                        var entityParam = expr.Parameters.Single(p => p.Type == typeof(TEntity));
+                        var entityParam = ExpressionHelper.BuildParameterExpression<TEntity>();
                         var searchValueConstant = Expression.Constant(c.SearchValue, typeof(string));
                         expression = (Expression<Func<TEntity, bool>>)Expression.Lambda(
                             Expression.Invoke(expr, entityParam, searchValueConstant),

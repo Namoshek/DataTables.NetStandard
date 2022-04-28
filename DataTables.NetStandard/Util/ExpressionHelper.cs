@@ -33,9 +33,7 @@ namespace DataTables.NetStandard.Util
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         internal static ParameterExpression BuildParameterExpression<TEntity>()
         {
-            var type = typeof(TEntity);
-
-            return Expression.Parameter(type);
+            return Expression.Parameter(typeof(TEntity));
         }
 
         /// <summary>
