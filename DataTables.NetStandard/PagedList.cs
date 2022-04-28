@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DataTables.NetStandard.Abstract;
@@ -34,11 +34,12 @@ namespace DataTables.NetStandard
         /// <summary>
         /// Creates new instance of <see cref="PagedList{TEntity}"/> collection.
         /// </summary>
-        /// <param name="queryable"><see cref="IDataTablesQueryable{TEntity}"/>instance to be paginated</param>
-        internal PagedList(IDataTablesQueryable<TEntity, TEntityViewModel> queryable) : base()
+        /// <param name="queryable"></param>
+        /// <param name="request"></param>
+        internal PagedList(IQueryable<TEntity> queryable, DataTablesRequest<TEntity, TEntityViewModel> request) : base()
         {
-            PageNumber = queryable.Request.PageNumber;
-            PageSize = queryable.Request.PageSize;
+            PageNumber = request.PageNumber;
+            PageSize = request.PageSize;
             TotalCount = queryable.Count();
             PagesCount = PageSize <= 0 ? 1 : (int)Math.Ceiling((double)(TotalCount / PageSize));
 
@@ -47,7 +48,7 @@ namespace DataTables.NetStandard
 
             var result = queryable.Skip(skipCount).Take(takeCount).ToList();
 
-            var mapToViewModel = queryable.Request.MappingFunction.Compile();
+            var mapToViewModel = request.MappingFunction.Compile();
             AddRange(result.Select(e => mapToViewModel(e)));
         }
     }
