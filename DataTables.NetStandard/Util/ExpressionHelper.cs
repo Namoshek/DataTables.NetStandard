@@ -38,7 +38,7 @@ namespace DataTables.NetStandard.Util
 
         /// <summary>
         /// Builds an <see cref="Expression"/> for the given <paramref name="propertyName"/>.
-        /// The property name has to be given as dot-separated property path, e.g. <code>Destination.Location.City</code>.
+        /// The property name has to be given as dot-separated property path, e.g. <c>Destination.Location.City</c>.
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="propertyName">Name of the property.</param>
@@ -85,7 +85,7 @@ namespace DataTables.NetStandard.Util
                 stringConstant = stringConstant.ToLower();
             }
 
-            var someValue = Expression.Constant(stringConstant, typeof(string));
+            var someValue = CreateConstantFilterExpression(stringConstant, typeof(string));
             var containsMethodExp = Expression.Call(exp, String_Contains, someValue);
 
             var notNullExp = Expression.NotEqual(exp, Expression.Constant(null, typeof(object)));
@@ -112,12 +112,28 @@ namespace DataTables.NetStandard.Util
                 exp = Expression.Call(propertyExp, Object_ToString);
             }
 
-            var regexExp = Expression.Constant(regex, typeof(string));
+            var regexExp = CreateConstantFilterExpression(regex, typeof(string));
             var resultExp = Expression.Call(Regex_IsMatch, exp, regexExp);
 
             var notNullExp = Expression.NotEqual(exp, Expression.Constant(null, typeof(object)));
 
             return Expression.Lambda<Func<TEntity, bool>>(Expression.AndAlso(notNullExp, resultExp), parameterExp);
+        }
+
+        /// <summary>
+        /// Creates a constant filter expression of the given <paramref name="value"/> and converts the type to the given <paramref name="type"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="type"></param>
+        internal static Expression CreateConstantFilterExpression(object value, Type type)
+        {
+            // The value is converted to anonymous function only returning the value itself.
+            Expression<Func<object>> valueExpression = () => value;
+
+            // Afterwards only the body of the function, which is the value, is converted to the delivered type.
+            // Therefore no Expression.Constant is necessary which lead to memory leaks, because EFCore caches such constants.
+            // Caching constants is not wrong, but creating constants of dynamic search values is wrong.
+            return Expression.Convert(valueExpression.Body, type);
         }
     }
 }

@@ -200,7 +200,7 @@ namespace DataTables.NetStandard.Extensions
                         {
                             var expr = searchPredicate;
                             var entityParam = ExpressionHelper.BuildParameterExpression<TEntity>();
-                            var searchValueConstant = Expression.Constant(globalSearchValue, typeof(string));
+                            var searchValueConstant = ExpressionHelper.CreateConstantFilterExpression(globalSearchValue, typeof(string));
                             expression = (Expression<Func<TEntity, bool>>)Expression.Lambda(
                                 Expression.Invoke(expr, entityParam, searchValueConstant),
                                 entityParam);
@@ -233,7 +233,7 @@ namespace DataTables.NetStandard.Extensions
         }
 
         /// <summary>
-        /// Applies the search filter for each of the searchable <see cref="DataTablesRequest{TEntity, TEntityViewModel}.Columns"/> 
+        /// Applies the search filter for each of the searchable <see cref="DataTablesRequest{TEntity, TEntityViewModel}.Columns"/>
         /// where a search value is present.
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
@@ -272,7 +272,7 @@ namespace DataTables.NetStandard.Extensions
                     {
                         var expr = searchPredicate;
                         var entityParam = ExpressionHelper.BuildParameterExpression<TEntity>();
-                        var searchValueConstant = Expression.Constant(c.SearchValue, typeof(string));
+                        var searchValueConstant = ExpressionHelper.CreateConstantFilterExpression(c.SearchValue, typeof(string));
                         expression = (Expression<Func<TEntity, bool>>)Expression.Lambda(
                             Expression.Invoke(expr, entityParam, searchValueConstant),
                             entityParam);

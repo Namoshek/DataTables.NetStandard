@@ -28,9 +28,9 @@ namespace DataTables.NetStandard.Sample.DataTables
                     PrivatePropertyName = nameof(Person.Id),
                     IsOrderable = true,
                     IsSearchable = true,
-                    SearchPredicate = (p, s) => false,                  // The fallback predicate will never match, but since we declared a provider, it is not used anyway.
-                    SearchPredicateProvider = (s) => (p, s) => true,    // The provider will return a predicate matching all entities (used for global search). This is just for illustration, it makes no sense.
-                    ColumnSearchPredicateProvider = (s) =>              // The column provider will return a predicate matching entities in a numeric range if the search term is properly formatted.
+                    SearchPredicate = (p, s) => false,                 // The fallback predicate will never match, but since we declared a provider, it is not used anyway.
+                    //SearchPredicateProvider = (s) => (p, s) => true, // The provider will return a predicate matching all entities (used for global search). This is just for illustration, it makes no sense.
+                    ColumnSearchPredicateProvider = (s) =>             // The column provider will return a predicate matching entities in a numeric range if the search term is properly formatted.
                     {
                         var minMax = s.Split("-delim-", System.StringSplitOptions.RemoveEmptyEntries);
                         if (minMax.Length >= 2)
