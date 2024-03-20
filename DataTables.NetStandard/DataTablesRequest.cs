@@ -51,13 +51,13 @@ namespace DataTables.NetStandard
 
         /// <summary>
         /// Collection of DataTables column info.
-        /// Each column can be acessed via indexer by corresponding property name or by property selector. 
+        /// Each column can be acessed via indexer by corresponding property name or by property selector.
         /// </summary>
         /// <example>
         /// Example for an entity Student that has public property FirstName.
         /// <code>
         /// // Get DataTables request from Http query parameters
-        /// var request = new DataTablesRequest&lt;Student&gt;(url); 
+        /// var request = new DataTablesRequest&lt;Student&gt;(url);
         /// 
         /// // Access by property name
         /// var column = request.Columns["FirstName"];
@@ -70,7 +70,7 @@ namespace DataTables.NetStandard
             new List<DataTablesColumn<TEntity, TEntityViewModel>>();
 
         /// <summary>
-        /// Set this property to log incoming request parameters and resulting queries to the given delegate. 
+        /// Set this property to log incoming request parameters and resulting queries to the given delegate.
         /// For example, to log to the console, set this property to <see cref="Console.Write(string)"/>.
         /// </summary>
         public Action<string> Log { get; set; }
@@ -194,7 +194,7 @@ namespace DataTables.NetStandard
         {
             int start = int.TryParse(query["start"], out start) ? start : 0;
             PageSize = int.TryParse(query["length"], out int length) ? length : 15;
-            PageNumber = start / PageSize + 1;
+            PageNumber = (start / PageSize) + 1;
 
             Draw = int.TryParse(query["draw"], out int draw) ? draw : 0;
 
